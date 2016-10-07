@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--This Is for the Full Day Activity (MainActivity) Whole Page Movement-->
+<com.daimajia.swipe.SwipeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/content_main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
+    <ImageView
+        android:layout_gravity="left|right|top"
+        android:layout_width="0dp"
+                android:layout_height="0dp"/>
+
+
+    <LinearLayout
+        android:layout_gravity="bottom"
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id= "@+id/information"
+                android:layout_gravity="center"
+                android:text="Information:\n something\n"/>
+        <!-- If you want to edit anything within the Full Day activity UnderPage Start Here-->
+
+    </LinearLayout>
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <include layout="@layout/sample_together" android:layout_width="match_parent" android:layout_height="match_parent" android:layout_marginTop="40dp"/>
+        <ImageView
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="60dp"
+            android:layout_width="65dp"
+            android:layout_height="65dp"/>
+    </RelativeLayout>
+</com.daimajia.swipe.SwipeLayout>

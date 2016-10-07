@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/First"
+            android:title="Day Builder" />
+
+        <item
+            android:id="@+id/Second"
+            android:title="Resturant Finder"/>
+        <item
+            android:id="@+id/Third"
+            android:title="Bar Hobber" />
+        <item
+            android:id="@+id/Fourth"
+            android:title="Event Enthusiast" />
+    </group>
+
+    <item android:title="Sections #1">
+        <menu>
+            <item
+                android:id="@+id/sectionOne"
+                android:title="Setting" />
+            <item
+                android:id="@+id/sectionTwo"
+                android:title="Section _ Index Two" />
+        </menu>
+    </item>
+
+</menu>
+
+
+
+    <!--
+
+                android:icon="@drawable/ic_menu_gallery" -->
+
+    <!--
+               android:id="@+id/nav_camera"
+               android:icon="@drawable/ic_menu_camera" -->
+
+    <!--
+                android:id="@+id/nav_slideshow"
+                android:icon="@drawable/ic_menu_slideshow" -->
+
+    <!--
+                android:id="@+id/nav_manage"
+                android:icon="@drawable/ic_menu_manage"-->
+    <!--
+
+     -->
+
