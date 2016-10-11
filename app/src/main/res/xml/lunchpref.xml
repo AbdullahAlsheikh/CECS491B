@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+
+    android:key="lunch_checkbox_pref"
+    android:title="Lunch Preferences">
+    <CheckBoxPreference
+
+        android:key="ChineseL"
+
+        android:title="Chinese"
+
+        android:defaultValue="false"/>
+
+    <CheckBoxPreference
+
+        android:key="IndianL"
+
+        android:title="Indian"
+
+        android:defaultValue="false" />
+
+    <CheckBoxPreference
+
+        android:key="MexicanL"
+
+        android:title="Mexican"
+
+
+        android:defaultValue="false" />
+
+    <CheckBoxPreference
+
+        android:key="AmericanL"
+
+        android:title="American"
+
+        android:defaultValue="false" />
+
+    <CheckBoxPreference
+
+        android:key="ItalianL"
+
+        android:title="Italian"
+
+        android:defaultValue="false"/>
+
+    <CheckBoxPreference
+
+        android:key="JapaneseL"
+
+        android:title="Japanese"
+
+        android:defaultValue="false" />
+
+    <CheckBoxPreference
+
+        android:key="KoreanL"
+
+        android:title="Korean"
+
+        android:defaultValue="false" />
+
+    <CheckBoxPreference
+
+        android:key="CombodianL"
+
+        android:title="Combodian"
+
+        android:defaultValue="false" />
+
+    <CheckBoxPreference
+
+        android:key="VietnameseL"
+
+        android:title="Vietnamese"
+
+        android:defaultValue="false" />
+
+    <CheckBoxPreference
+
+        android:key="GreekL"
+
+        android:title="Greek"
+
+        android:defaultValue="false" />
+
+    <CheckBoxPreference
+
+        android:key="MediterraneanL"
+
+        android:title="Mediterranean"
+
+        android:value="false"
+
+        android:defaultValue="false"/>
+
+    <CheckBoxPreference
+
+        android:key="Sea FoodL"
+
+        android:title="Sea Food"
+
+        android:value="false"
+
+        android:defaultValue="false"/>
+
+</PreferenceScreen>

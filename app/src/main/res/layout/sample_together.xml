@@ -5,25 +5,26 @@
     android:layout_height="match_parent"
     android:padding="10dp">
 
-    <include android:id="@+id/sample1" layout="@layout/sample1"
+    <include android:id="@+id/first_cube" layout="@layout/list_cube"
         android:layout_width="match_parent" android:layout_height="80dp"
         android:layout_marginTop="20dp"/>
 
 
-    <include android:id="@+id/list_cube" layout="@layout/list_cube"
+    <include android:id="@+id/second_cube" layout="@layout/list_cube"
         android:layout_width="match_parent" android:layout_height="80dp"
         android:layout_marginTop="10dp"/>
 
-    <include android:id="@+id/list_cube2" layout="@layout/list_cube2"
+    <include android:id="@+id/thrid_cube" layout="@layout/list_cube"
         android:layout_width="match_parent" android:layout_height="80dp"
         android:layout_marginTop="10dp"/>
 
-    <include android:id="@+id/list_cube3" layout="@layout/list_cube3"
+    <include android:id="@+id/fourth_cube" layout="@layout/list_cube"
         android:layout_width="match_parent" android:layout_height="80dp"
         android:layout_marginTop="10dp"/>
 
-    <include android:id="@+id/list_cube4" layout="@layout/list_cube4"
+    <include android:id="@+id/fifth_cube" layout="@layout/list_cube"
         android:layout_width="match_parent" android:layout_height="80dp"
         android:layout_marginTop="10dp"/>
 
 </LinearLayout>
+    

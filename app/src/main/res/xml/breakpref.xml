@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+
+    android:key="breakfast_pref"
+
+    android:title="Break Fast Preferences">
+    <CheckBoxPreference
+
+        android:key="DelisB"
+
+        android:title="Delis"
+
+        android:defaultValue="false"/>
+
+    <CheckBoxPreference
+
+        android:key="AmericanB"
+
+        android:title="American"
+
+        android:defaultValue="false"/>
+
+    <CheckBoxPreference
+
+        android:key="SandwichesB"
+
+        android:title="Sandwiches"
+
+        android:defaultValue="false"/>
+
+    <CheckBoxPreference
+
+        android:key="Coffee and TeaB"
+
+        android:title="Coffee and Tea"
+
+        android:defaultValue="false"/>
+
+    <CheckBoxPreference
+
+        android:key="BakeryB"
+
+        android:title="Bakery"
+
+        android:defaultValue="false"/>
+
+    <CheckBoxPreference
+
+        android:key="SaladB"
+
+        android:title="Salad"
+
+        android:defaultValue="false"/>
+
+
+</PreferenceScreen>

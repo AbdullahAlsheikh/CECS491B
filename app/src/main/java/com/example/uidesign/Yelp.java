@@ -1,4 +1,7 @@
 package com.example.uidesign;
+import android.content.Context;
+import android.content.SharedPreferences;
+
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -15,6 +18,8 @@ import org.scribe.oauth.OAuthService;
  * Created by Abdullah on 9/8/16.
  */
 public class Yelp {
+
+
 
     OAuthService service;
     Token accessToken;

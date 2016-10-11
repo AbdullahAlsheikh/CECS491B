@@ -4,6 +4,7 @@ import android.graphics.BitmapFactory;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Abdullah on 9/9/16.
@@ -49,16 +50,25 @@ public class ResultInfo {
 
 
 class BussnessInfo{
-
-
     //name Of Bussness
     public String name;
     //Rating of Business
     public String rating;
+    //Location and it's sub information
+    public mainlocation location;
     //URL of the Yelp acount(Web account)
     public String mobile_url;
     //The main Image of Business (String)
     public URL image_url;
+    //The distance from address entered
+    public int distance;
+    //The phone numebr of bussness
+    public String phone;
     //The main Image of Business (URL)
     public Bitmap Iconimg;
+}
+
+class mainlocation{
+    List<String> display_address;
+
 }

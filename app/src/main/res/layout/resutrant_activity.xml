@@ -5,23 +5,24 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     >
+
+
     <ImageView
         android:layout_gravity="left|right|top"
         android:layout_width="0dp"
         android:layout_height="0dp"/>
-
 
     <LinearLayout
         android:layout_gravity="bottom"
         android:gravity="center"
         android:layout_width="0dp"
         android:layout_height="0dp">
-        <!--<TextView-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:id= "@+id/information"-->
-            <!--android:layout_gravity="center"-->
-            <!--android:text="Information:\n something\n"/>-->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id= "@+id/single_filer_information"
+            android:layout_gravity="center"
+            android:text="Information:\n something\n"/>
 
     </LinearLayout>
 
@@ -29,7 +30,6 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-        <!--<include layout="@layout/sample_together" android:layout_width="match_parent" android:layout_height="match_parent" android:layout_marginTop="40dp"/>-->
         <include layout="@layout/resturant_together" android:layout_width="match_parent" android:layout_height="match_parent" android:layout_marginTop="40dp"/>
         <!--<ImageView-->
             <!--android:layout_alignParentBottom="true"-->
