@@ -24,6 +24,8 @@ public class Yelp {
     OAuthService service;
     Token accessToken;
     int limit = 5;
+    double radius =  5.0;
+
 
     /**
      * Setup the Yelp API OAuth credentials.
@@ -47,6 +49,20 @@ public class Yelp {
     public int getLimit(){
         return limit;
     }
+
+    public void setRadius(double radiusPar){
+        //Validate radius
+        if(radiusPar > 24.85)
+            radiusPar = 40000;
+        else if ( radiusPar < 1) {
+            radiusPar = 1609.34;
+        }
+        else{
+            radiusPar *= 1609.34;
+        }
+        radius = radiusPar;
+    }
+    public double getraduis(){return radius;}
 
     /**
      * Search with term and location.
@@ -74,6 +90,7 @@ public class Yelp {
         request.addQuerystringParameter("term", term);
         request.addQuerystringParameter("location", address);
         request.addQuerystringParameter("limit", String.valueOf(limit));
+        request.addQuerystringParameter("radius_filter", String.valueOf(radius));
         this.service.signRequest(this.accessToken, request);
         request.setConnectionKeepAlive(false);
         Response response = request.send();
@@ -107,8 +124,5 @@ public class Yelp {
         System.out.println(response.getBody());
         return response.getBody();
     }//End searchByLocation()
-
-
-
 
 }

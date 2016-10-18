@@ -32,29 +32,29 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent">
 
-        <ImageView
+        <TextView
             android:id="@+id/magnifier2"
-            android:src="@drawable/magnifier"
             android:layout_width="70dp"
-            android:background="#f7e79c"
+            android:text="Call"
+            android:background="#03ca17"
             android:paddingLeft="25dp"
             android:paddingRight="25dp"
             android:layout_height="match_parent" />
 
-        <ImageView
+        <TextView
             android:id="@+id/star2"
-            android:src="@drawable/star"
+            android:text="Nav"
+            android:background="@color/Yellow"
             android:layout_width="70dp"
-            android:background="#4cd964"
             android:paddingLeft="25dp"
             android:paddingRight="25dp"
             android:layout_height="match_parent" />
 
-        <ImageView
+        <TextView
             android:id="@+id/trash2"
-            android:src="@drawable/trash"
             android:layout_width="70dp"
-            android:background="@drawable/red"
+            android:text="Reload"
+            android:background="@color/Blue"
             android:paddingLeft="25dp"
             android:paddingRight="25dp"
             android:layout_height="match_parent" />
@@ -84,7 +84,7 @@
 
     <LinearLayout
         android:padding="10dp"
-        android:background="#ffffff"
+        android:background="@color/DarkGreen"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="horizontal">
@@ -109,7 +109,6 @@
                 android:layout_width="84dp"
                 android:layout_height="17dp"
                 android:id="@+id/rating_imag"
-                android:src="@drawable/star"
                 android:layout_toEndOf="@+id/activity_icon"
                 android:layout_below="@+id/activity_title"/>
 

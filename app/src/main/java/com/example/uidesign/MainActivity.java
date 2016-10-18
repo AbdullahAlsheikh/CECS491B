@@ -69,7 +69,9 @@ public class MainActivity extends  AppCompatActivity
 
 
     int limit = yelp.getLimit();
+    double radius = yelp.getraduis();
     String address = "California State University, Long Beach, CA";
+
 
 
 
@@ -83,6 +85,9 @@ public class MainActivity extends  AppCompatActivity
 
         limit = mSharedPreferences.getInt("limit", 0);
         yelp.setLimit(limit);
+
+        radius = (double) mSharedPreferences.getInt("radius", 0);
+        yelp.setRadius(radius);
 
         breakfast = mSharedPreferences.getString("breakfastCat", "");
         lunch = mSharedPreferences.getString("lunchCat", "");
@@ -242,7 +247,7 @@ public class MainActivity extends  AppCompatActivity
         });
 
 
-        bottominformation.setText("Address:\n " + address + "\nlimit:" + limit + "\n" + "breakfast" + breakfast  + "\nlunch" + lunch + "\nDinner" + dinner);
+        bottominformation.setText("Address:\n " + GPSLocationService.currentLocation + "\nlimit:" + limit + "\nRadius:" + radius + "\n" + "breakfast" + breakfast  + "\nlunch" + lunch + "\nDinner" + dinner);
 
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -350,7 +355,7 @@ public class MainActivity extends  AppCompatActivity
                 System.out.println("Index:  " + ran +  " Term:" + term);
                 try{
 
-                    String response = yelp.searchByLocation(term, address);
+                    String response = yelp.searchByLocation(term, GPSLocationService.currentLocation);
                     System.out.println(response);
                     Gson gson = new GsonBuilder().create();
 

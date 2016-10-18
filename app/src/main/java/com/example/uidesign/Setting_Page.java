@@ -21,8 +21,8 @@ public class Setting_Page  extends AppCompatActivity {
     Button breakPref, lunchPref, dinnerPref;
     Button next;
     private SharedPreferences mSharedPreferences;
-    SeekBar seekBar;
-    TextView limitText;
+    SeekBar seekBar, radiusBar;
+    TextView limitText, radiusText;
     private SharedPreferences.Editor mEditor;
 
 
@@ -37,14 +37,37 @@ public class Setting_Page  extends AppCompatActivity {
         lunchPref = (Button)findViewById(R.id.lunchPref);
         dinnerPref = (Button)findViewById(R.id.dinnerPref);
         seekBar = (SeekBar) findViewById(R.id.seekBar);
+        radiusBar = (SeekBar) findViewById(R.id.radiusBar);
         limitText = (TextView) findViewById(R.id.limitValue);
+        radiusText = (TextView) findViewById(R.id.radiusValue);
 
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
         mEditor = mSharedPreferences.edit();
+        int defLimit = (mSharedPreferences.getInt("limit", 0));
+        if ( defLimit == 0 ){
+            defLimit = 5;
+            limitText.setText(String.valueOf(defLimit));
+            seekBar.setProgress(0);
+            mEditor.putInt("limit", defLimit).commit();
 
-        limitText.setText(String.valueOf(mSharedPreferences.getInt("limit", 0)));
+        }else {
+            limitText.setText(String.valueOf(mSharedPreferences.getInt("limit", 0)));
+            seekBar.setProgress(mSharedPreferences.getInt("limit", 0) - 5);
+        }
 
-        seekBar.setProgress(mSharedPreferences.getInt("limit", 0) - 5);
+        int defRadius = (mSharedPreferences.getInt("radius", 0));
+        if ( defRadius == 0 ){
+            defRadius = 5;
+            radiusText.setText(String.valueOf(defRadius));
+            radiusBar.setProgress(0);
+            mEditor.putInt("radius", defRadius).commit();
+
+
+        }else {
+            limitText.setText(String.valueOf(mSharedPreferences.getInt("radius", 0)));
+            seekBar.setProgress(mSharedPreferences.getInt("radius", 0) - 5);
+        }
+
 
 
 
@@ -75,6 +98,32 @@ public class Setting_Page  extends AppCompatActivity {
 
         });
 
+        radiusBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                radiusText.setText(String.valueOf(seekBar.getProgress() + 5));
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+                radiusText.setText(String.valueOf(seekBar.getProgress()+ 5) );
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                radiusText.setText(String.valueOf(seekBar.getProgress() + 5) );
+
+                int mProgress = seekBar.getProgress() + 5;
+                mEditor.putInt("radius", mProgress).commit();
+
+                /**
+                 * to get value of seek bar use this
+                 *  int mProgress = mSharedPrefs.getInt("radius", 0);
+                 *  mSeekBar.setProgress(mProgress);
+                 */
+            }
+
+        });
 
 
         breakPref.setOnClickListener(new Button.OnClickListener(){
@@ -87,6 +136,8 @@ public class Setting_Page  extends AppCompatActivity {
                 Intent intent = new Intent(Setting_Page.this,setBreakPref.class);
 
                 startActivityForResult(intent, 0);
+                //                checkPref();
+
 
             }});
 
@@ -99,6 +150,7 @@ public class Setting_Page  extends AppCompatActivity {
                 Intent intent = new Intent(Setting_Page.this,setDinnerPref.class);
 
                 startActivityForResult(intent, 0);
+                //checkPref();
 
             }});
 
@@ -116,9 +168,23 @@ public class Setting_Page  extends AppCompatActivity {
 
                 startActivityForResult(intent, 0);
 
+                //checkPref();
+
             }});
 
+        //checkPref();
+    }
+
+    @Override
+    public void onBackPressed() {
         checkPref();
+        String a = mSharedPreferences.getString("lunchCat", "");
+        System.out.println("String from preferences for lunch: "+ a);
+        String a2 = mSharedPreferences.getString("dinnerCat", "");
+        System.out.println("String from preferences for dinner: "+ a2);
+        String a3 = mSharedPreferences.getString("breakfastCat", "");
+        System.out.println("String from preferences for break fast: "+ a3);
+        super.onBackPressed();
     }
 
     private void checkPref(){
