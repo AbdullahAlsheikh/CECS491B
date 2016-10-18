@@ -62,7 +62,7 @@ class BussnessInfo{
     public URL image_url;
     //Image of Business Rating (String)
     public URL rating_img_url;
-    //The distance from address entered
+    //The distance from address entered(Changed the distance form int to double)
     public double distance;
     //The phone numebr of bussness
     public String phone;
