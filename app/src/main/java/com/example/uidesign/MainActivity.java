@@ -4,6 +4,8 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -24,7 +26,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import com.google.gson.*;
 
-import java.util.ArrayList;
+import java.io.IOException;
 import java.util.Random;
 import com.daimajia.swipe.SwipeLayout;
 import com.google.android.gms.common.api.Status;
@@ -36,6 +38,8 @@ public class MainActivity extends  AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private ProgressDialog loadingSpinner;
+    private String planExcuteText = "";
+    private boolean firstPlanActivite = true;
 
     private Context mContext;
     private SharedPreferences mSharedPreferences;
@@ -46,10 +50,10 @@ public class MainActivity extends  AppCompatActivity
     String dinner;
 
 
-    String consumerKey = "dudmo3ssHxvpUP_i_Lw60A";
-    String consumerSecret = "fOhwH5mUo_CyzX2D2vcDUc8FNw8";
-    String token = "yPhkb0u9cRxGE8ikWRkH3ceMCCpKYpQA";
-    String tokenSecret = "-WoZd39mwu4X9iVDXo5bxDNOBBU";
+    private String consumerKey = "dudmo3ssHxvpUP_i_Lw60A";
+    private String consumerSecret = "fOhwH5mUo_CyzX2D2vcDUc8FNw8";
+    private String token = "yPhkb0u9cRxGE8ikWRkH3ceMCCpKYpQA";
+    private String tokenSecret = "-WoZd39mwu4X9iVDXo5bxDNOBBU";
     Yelp yelp = new Yelp(consumerKey, consumerSecret, token, tokenSecret);
 
     SwipeLayout list_cube0 = null;
@@ -58,11 +62,16 @@ public class MainActivity extends  AppCompatActivity
     SwipeLayout list_cube3 = null;
     SwipeLayout list_cube4 = null;
 
+
     BussnessInfo[] cube_info = new BussnessInfo[5];
+
+    int refreshIndex = 0;
 
 
     int limit = yelp.getLimit();
-    String address = "California State University, Long Beach, Long Beach, CA";
+    String address = "California State University, Long Beach, CA";
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,7 +112,7 @@ public class MainActivity extends  AppCompatActivity
 
                 stopService(new Intent(MainActivity.this, GPSLocationService.class));
 
-                GPSLocationService.currentLocation = (String) place.getName();
+                GPSLocationService.currentLocation = (String) place.getAddress();
 
                 autocompleteFragment.setText("GPSLocationService.currentLocation");
 
@@ -202,7 +211,11 @@ public class MainActivity extends  AppCompatActivity
         assert fullday != null;
 
 
-
+        if(firstPlanActivite){
+            planExcuteText = "Loading Data";
+            new GeneratePlanTask().execute();
+            firstPlanActivite = false;
+        }
 
         fullday.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -211,6 +224,12 @@ public class MainActivity extends  AppCompatActivity
                         .setAction("Action", null).show();
                 try {
 
+                    list_cube0.setVisibility(list_cube0.VISIBLE);
+                    list_cube.setVisibility(list_cube.VISIBLE);
+                    list_cube2.setVisibility(list_cube2.VISIBLE);
+                    list_cube3.setVisibility(list_cube3.VISIBLE);
+                    list_cube4.setVisibility(list_cube4.VISIBLE);
+                    planExcuteText = "Refreshing Entire Plan";
                     new GeneratePlanTask().execute();
 
                 } catch (Exception e) {
@@ -222,12 +241,8 @@ public class MainActivity extends  AppCompatActivity
             }
         });
 
-//        if(!(GPSLocationService.currentLocation.isEmpty()))
-//        {
-//            address = GPSLocationService.currentLocation;
-//        }
 
-        bottominformation.setText("Address:\n " + GPSLocationService.currentLocation + "\nlimit:" + limit + "\n" + "breakfast" + breakfast  + "\nlunch" + lunch + "\nDinner" + dinner);
+        bottominformation.setText("Address:\n " + address + "\nlimit:" + limit + "\n" + "breakfast" + breakfast  + "\nlunch" + lunch + "\nDinner" + dinner);
 
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -258,17 +273,14 @@ public class MainActivity extends  AppCompatActivity
         display.getSurfaceView().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //Toast.makeText(MainActivity.this, display.getId() + "Click on surface", Toast.LENGTH_SHORT).show();
-                Log.d(MainActivity.class.getName(), "click on surface");
-                Log.i("Phone Number", cube_info[index].phone + " Phone");
+
             }
         });
 
         display.getSurfaceView().setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                //Toast.makeText(MainActivity.this, display.getId() + "longClick on surface", Toast.LENGTH_SHORT).show();
-                Log.d(MainActivity.class.getName(), "longClick on surface");
+                //LongCLick For Yelp Site View
                 try {
                     Intent myIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(cube_info[index].mobile_url));
                     startActivity(myIntent);
@@ -282,7 +294,7 @@ public class MainActivity extends  AppCompatActivity
         display.findViewById(R.id.star2).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(MainActivity.this, display.getId() + "Star", Toast.LENGTH_SHORT).show();
+                //Show Navigation
                 String searchAddre = cube_info[index].location.display_address.get(0) + " "+ cube_info[index].location.display_address.get(1);
                 Log.i("test", "" +  searchAddre);
                 String map = "http://maps.google.co.in/maps?q=" + searchAddre;
@@ -295,14 +307,16 @@ public class MainActivity extends  AppCompatActivity
         display.findViewById(R.id.trash2).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(MainActivity.this, display.getId() + "Trash Bin", Toast.LENGTH_SHORT).show();
+                //Refresh Screen
+                refreshIndex = index;
+                new RefreshTask().execute(display);
             }
         });
 
         display.findViewById(R.id.magnifier2).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(MainActivity.this, display.getId() + "Magnifier", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(MainActivity.this, display.getId() + "Magnifier", Toast.LENGTH_SHORT).show();
                 Intent callIntent = new Intent(Intent.ACTION_CALL);
                 callIntent.setData(Uri.parse("tel:" + cube_info[index].phone));
                 try{
@@ -316,7 +330,12 @@ public class MainActivity extends  AppCompatActivity
         display.findViewById(R.id.delete).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(MainActivity.this, display.getId() + "Delete", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(MainActivity.this, display.getId() + "Delete", Toast.LENGTH_SHORT).show();
+                //Delete Event
+                //display.setVisibility(display.INVISIBLE);
+                display.setVisibility(SwipeLayout.INVISIBLE);
+
+
             }
         });
 
@@ -331,7 +350,7 @@ public class MainActivity extends  AppCompatActivity
                 System.out.println("Index:  " + ran +  " Term:" + term);
                 try{
 
-                    String response = yelp.searchByLocation(term, GPSLocationService.currentLocation);
+                    String response = yelp.searchByLocation(term, address);
                     System.out.println(response);
                     Gson gson = new GsonBuilder().create();
 
@@ -343,18 +362,28 @@ public class MainActivity extends  AppCompatActivity
                         @Override
                         public void run() {
                             try {
+                                try{
+                                    //Processing Main Bussness Image
+                                    ImageView icon = (ImageView) display.findViewById(R.id.activity_icon);
+                                    icon.setImageBitmap(bussnessInfo.icon_img);
+                                    //Processing Rating
+                                    ImageView ratingImg = (ImageView) display.findViewById(R.id.rating_imag);
+                                    ratingImg.setImageBitmap(bussnessInfo.rating_img);
+                                }catch (Exception img){
+                                    System.out.println("Thread Error -> " + img);
+                                    img.printStackTrace();
+                                }
 
-                                ImageView icon = (ImageView) display.findViewById(R.id.activity_icon);
-                                icon.setImageBitmap(bussnessInfo.Iconimg);
+
+
+                                System.out.println(bussnessInfo.name);
+                                TextView title = (TextView) display.findViewById(R.id.activity_title);
+                                title.setText(bussnessInfo.name);
 
                             } catch (Exception e) {
-                                System.out.println("Image Error -> " + e);
+                                System.out.println("Thread Error -> " + e);
                                 e.printStackTrace();
                             }
-
-                            System.out.println(bussnessInfo.name);
-                            TextView title = (TextView) display.findViewById(R.id.activity_title);
-                            title.setText(bussnessInfo.name);
 
                         }
                     });
@@ -368,7 +397,6 @@ public class MainActivity extends  AppCompatActivity
         });
 
         thread.start();
-
         thread.join();
     }
 
@@ -376,10 +404,14 @@ public class MainActivity extends  AppCompatActivity
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
+
             drawer.closeDrawer(GravityCompat.START);
+
         } else {
+
             super.onBackPressed();
-        }
+
+            }
     }
 
 
@@ -427,12 +459,10 @@ public class MainActivity extends  AppCompatActivity
 
     public class GeneratePlanTask extends AsyncTask<Void, Void, Void> {
         protected void onPreExecute() {
-            //progressBarStatus = 0;
 
-            //loadingSpinner = new ProgressDialog(senderView.getContext());
             loadingSpinner = new ProgressDialog(MainActivity.this);
             loadingSpinner.setCancelable(false);
-            loadingSpinner.setMessage("Generating a plan ...");
+            loadingSpinner.setMessage(planExcuteText + " ...");
             loadingSpinner.setProgressStyle(ProgressDialog.STYLE_SPINNER);
             loadingSpinner.setProgress(0);
             loadingSpinner.setMax(100);
@@ -442,7 +472,6 @@ public class MainActivity extends  AppCompatActivity
 
         @Override
         protected Void doInBackground(Void... params) {
-            //if (fullDayPlan) {
             try {
 
                 Random r = new Random();
@@ -450,7 +479,7 @@ public class MainActivity extends  AppCompatActivity
                 int randNum = r.nextInt(limit);
 
 
-                System.out.println("Random Number:  " + randNum + " limit: " + limit + " Catagory:" +breakfast);
+                System.out.println("Random Number:  " + randNum + " limit: " + limit + " Catagory:" + breakfast);
                 getYelpSearchResult(randNum, 0, "breakfast " + breakfast, list_cube0);
 
 
@@ -460,10 +489,8 @@ public class MainActivity extends  AppCompatActivity
 
 
                 randNum = r.nextInt(limit);
-
-                System.out.println("Random Number:  " + randNum + " limit: " + limit + " Catagory:" +lunch);
+                System.out.println("Random Number:  " + randNum + " limit: " + limit + " Catagory:" + lunch);
                 getYelpSearchResult(randNum, 2, "Lunch " + lunch, list_cube2);
-
 
 
                 randNum = r.nextInt(limit);
@@ -471,10 +498,9 @@ public class MainActivity extends  AppCompatActivity
                 getYelpSearchResult(randNum, 3, "Activity", list_cube3);
 
 
-
                 randNum = r.nextInt(limit);
-                System.out.println("Random Number:  " + randNum + " limit: " + limit + " Catagory:" +dinner);
-                getYelpSearchResult(randNum, 4,"Dinner " + dinner, list_cube4);
+                System.out.println("Random Number:  " + randNum + " limit: " + limit + " Catagory:" + dinner);
+                getYelpSearchResult(randNum, 4, "Dinner " + dinner, list_cube4);
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -484,9 +510,79 @@ public class MainActivity extends  AppCompatActivity
 
         @Override
         protected void onPostExecute(Void aVoid) {
-            //arrayAdapter.notifyDataSetChanged();
             loadingSpinner.dismiss();
         }
+    }
+
+
+    public class RefreshTask extends AsyncTask<SwipeLayout, Void, Void> {
+
+        protected void onPreExecute() {
+
+            loadingSpinner = new ProgressDialog(MainActivity.this);
+            loadingSpinner.setCancelable(false);
+            loadingSpinner.setMessage("Refreshing Event ...");
+            loadingSpinner.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            loadingSpinner.setProgress(0);
+            loadingSpinner.setMax(100);
+            loadingSpinner.show();
+
+        }
+
+        @Override
+        protected Void doInBackground(SwipeLayout... params) {
+            SwipeLayout r = params[0];
+            try {
+
+                Random random = new Random();
+
+                int randNum = random.nextInt(limit);
+
+
+                System.out.println("Random Number:  " + randNum + " limit: " + limit + " Catagory:" + breakfast);
+                getYelpSearchResult(randNum, refreshIndex, getCriteria(), r);
+
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        private String getCriteria(){
+            String refreshcriteria = null;
+            switch (refreshIndex){
+                case 0:
+                    refreshcriteria = "breakfast " + breakfast;
+                    Log.i("getCriteria", refreshcriteria +" "+refreshIndex);
+                    break;
+                case 1:
+                    refreshcriteria = "Park";
+                    Log.i("getCriteria", refreshcriteria +" "+refreshIndex);
+                    break;
+                case 2:
+                    refreshcriteria = "Lunch " + lunch;
+                    Log.i("getCriteria", refreshcriteria +" "+refreshIndex);
+                    break;
+                case 3:
+                    refreshcriteria =  "Activity";
+                    Log.i("getCriteria", refreshcriteria +" "+refreshIndex);
+                    break;
+                case 4:
+                    refreshcriteria = "Dinner " + dinner;
+                    Log.i("getCriteria", refreshcriteria +" "+refreshIndex);
+                    break;
+            }
+
+            return refreshcriteria;
+        }
+
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            loadingSpinner.dismiss();
+        }
+
     }
 }
 

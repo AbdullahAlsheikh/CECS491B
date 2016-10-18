@@ -267,7 +267,7 @@ public class ResturantActivity  extends AppCompatActivity
                             try {
 
                                 ImageView icon = (ImageView) display.findViewById(R.id.activity_icon);
-                                icon.setImageBitmap(bussnessInfo.Iconimg);
+                                icon.setImageBitmap(bussnessInfo.icon_img);
 
                                 icon.setScaleType(ScaleType.FIT_XY);
 

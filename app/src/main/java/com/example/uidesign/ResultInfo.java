@@ -18,34 +18,34 @@ public class ResultInfo {
 
         try{
 
-            businesses.get(index).Iconimg = BitmapFactory.decodeStream(businesses.get(index).image_url.openConnection().getInputStream());
-
+            businesses.get(index).icon_img = BitmapFactory.decodeStream(businesses.get(index).image_url.openConnection().getInputStream());
+            businesses.get(index).rating_img = BitmapFactory.decodeStream(businesses.get(index).rating_img_url.openConnection().getInputStream());
 
         }catch (Exception e)
         {
-            System.out.println("Could Not process Image " + " error -> " + e);
-            businesses.get(index).Iconimg  = null;
+            System.out.println("Could Not process Images " + " error -> " + e);
+            businesses.get(index).icon_img  = null;
+            businesses.get(index).rating_img  = null;
         }
 
         return businesses.get(index);
     }
 
-    public String getName(int index){ return businesses.get(index).name; }
-
-    public String getRating(int index) { return businesses.get(index).rating; }
-
-    public void setImages(int index){
-        try{
-
-            businesses.get(index).Iconimg = BitmapFactory.decodeStream(businesses.get(index).image_url.openConnection().getInputStream());
-
-
-        }catch (Exception e)
-        {
-            businesses.get(index).Iconimg  = null;
-        }
-    }
-
+//    public String getName(int index){ return businesses.get(index).name; }
+//
+//    public String getRating(int index) { return businesses.get(index).rating; }
+//
+//    public void setImages(int index){
+//        try{
+//
+//            businesses.get(index).icon_img = BitmapFactory.decodeStream(businesses.get(index).image_url.openConnection().getInputStream());
+//
+//
+//        }catch (Exception e)
+//        {
+//            businesses.get(index).icon_img  = null;
+//        }
+//    }
 }
 
 
@@ -60,12 +60,16 @@ class BussnessInfo{
     public String mobile_url;
     //The main Image of Business (String)
     public URL image_url;
+    //Image of Business Rating (String)
+    public URL rating_img_url;
     //The distance from address entered
-    public int distance;
+    public double distance;
     //The phone numebr of bussness
     public String phone;
     //The main Image of Business (URL)
-    public Bitmap Iconimg;
+    public Bitmap icon_img;
+    //The main Image of rating
+    public Bitmap rating_img;
 }
 
 class mainlocation{
