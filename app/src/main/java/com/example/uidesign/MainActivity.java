@@ -13,6 +13,7 @@ import android.preference.Preference;
 import android.preference.PreferenceManager;
 import android.util.*;
 import android.os.Handler;
+import android.view.MotionEvent;
 import android.widget.*;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -27,6 +28,7 @@ import android.view.MenuItem;
 import com.google.gson.*;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Random;
 import com.daimajia.swipe.SwipeLayout;
 import com.google.android.gms.common.api.Status;
@@ -45,22 +47,24 @@ public class MainActivity extends  AppCompatActivity
     private SharedPreferences mSharedPreferences;
     private SharedPreferences.Editor mEditor;
 
-    String breakfast;
-    String lunch;
-    String dinner;
+    private String breakfast;
+    private String lunch;
+    private String dinner;
 
 
     private String consumerKey = "dudmo3ssHxvpUP_i_Lw60A";
     private String consumerSecret = "fOhwH5mUo_CyzX2D2vcDUc8FNw8";
     private String token = "yPhkb0u9cRxGE8ikWRkH3ceMCCpKYpQA";
     private String tokenSecret = "-WoZd39mwu4X9iVDXo5bxDNOBBU";
-    Yelp yelp = new Yelp(consumerKey, consumerSecret, token, tokenSecret);
+    private Yelp yelp = new Yelp(consumerKey, consumerSecret, token, tokenSecret);
 
-    SwipeLayout list_cube0 = null;
-    SwipeLayout list_cube = null;
-    SwipeLayout list_cube2 = null;
-    SwipeLayout list_cube3 = null;
-    SwipeLayout list_cube4 = null;
+    private SwipeLayout list_cube0 = null;
+    private SwipeLayout list_cube = null;
+    private SwipeLayout list_cube2 = null;
+    private SwipeLayout list_cube3 = null;
+    private SwipeLayout list_cube4 = null;
+
+    private SwipeLayout[] list_cubeArray = {list_cube0, list_cube,list_cube2, list_cube3, list_cube4};
 
 
     BussnessInfo[] cube_info = new BussnessInfo[5];
@@ -187,7 +191,7 @@ public class MainActivity extends  AppCompatActivity
         list_cube2.addDrag(SwipeLayout.DragEdge.Right, list_cube2.findViewById(R.id.rightside));
         list_cube2.addDrag(SwipeLayout.DragEdge.Top, starBottView_3);
         list_cube2.addDrag(SwipeLayout.DragEdge.Bottom, starBottView_3);
-        PressedAction(list_cube2,2);
+        PressedAction(list_cube2, 2);
 
 
         list_cube3 = (SwipeLayout) findViewById(R.id.fourth_cube);
@@ -198,7 +202,7 @@ public class MainActivity extends  AppCompatActivity
         list_cube3.addDrag(SwipeLayout.DragEdge.Right, list_cube3.findViewById(R.id.rightside));
         list_cube3.addDrag(SwipeLayout.DragEdge.Top, starBottView_4);
         list_cube3.addDrag(SwipeLayout.DragEdge.Bottom, starBottView_4);
-        PressedAction(list_cube3,3 );
+        PressedAction(list_cube3, 3);
 
 
         list_cube4 = (SwipeLayout) findViewById(R.id.fifth_cube);
@@ -212,8 +216,7 @@ public class MainActivity extends  AppCompatActivity
         PressedAction(list_cube4,4);
 
 
-        FloatingActionButton fullday = (FloatingActionButton) findViewById(R.id.fullday);
-        assert fullday != null;
+
 
 
         if(firstPlanActivite){
@@ -222,11 +225,15 @@ public class MainActivity extends  AppCompatActivity
             firstPlanActivite = false;
         }
 
+
+        FloatingActionButton fullday = (FloatingActionButton) findViewById(R.id.fullday);
+        assert fullday != null;
+
         fullday.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Pressed Full Day", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+//                Snackbar.make(view, "Pressed Full Day", Snackbar.LENGTH_LONG)
+//                        .setAction("Action", null).show();
                 try {
 
                     list_cube0.setVisibility(list_cube0.VISIBLE);
@@ -247,7 +254,7 @@ public class MainActivity extends  AppCompatActivity
         });
 
 
-        bottominformation.setText("Address:\n " + GPSLocationService.currentLocation + "\nlimit:" + limit + "\nRadius:" + radius + "\n" + "breakfast" + breakfast  + "\nlunch" + lunch + "\nDinner" + dinner);
+        bottominformation.setText("Address:\n " + GPSLocationService.currentLocation + "\nlimit:" + limit + "\nRadius:" + radius + "\n" + "breakfast" + breakfast + "\nlunch" + lunch + "\nDinner" + dinner);
 
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -267,19 +274,109 @@ public class MainActivity extends  AppCompatActivity
      */
     public void PressedAction(final SwipeLayout display,final int index ) {
 
+        display.setOnTouchListener(new View.OnTouchListener() {
+            public boolean onTouch(View v, MotionEvent event) {
+                if (event.getAction() == MotionEvent.ACTION_MOVE) {
+                    switch (index) {
+                        case 0:
+//                            Log.i("list", "is list0");
+//                            list_cube0.open();
+                            list_cube.close();
+                            list_cube2.close();
+                            list_cube3.close();
+                            list_cube4.close();
+                            break;
+                        case 1:
+//                            Log.i("list", "is list");
+//                            list_cube.open();
+                            list_cube0.close();
+                            list_cube2.close();
+                            list_cube3.close();
+                            list_cube4.close();
+                            break;
+                        case 2:
+//                            Log.i("list", "is list2");
+//                            list_cube2.open();
+                            list_cube0.close();
+                            list_cube.close();
+                            list_cube3.close();
+                            list_cube4.close();
+                            break;
+                        case 3:
+//                            Log.i("list", "is list3");
+//                            list_cube3.open();
+                            list_cube0.close();
+                            list_cube2.close();
+                            list_cube.close();
+                            list_cube4.close();
+                            break;
+                        case 4:
+                            Log.i("list", "is list4");
+//                            list_cube4.open();
+                            list_cube0.close();
+                            list_cube2.close();
+                            list_cube3.close();
+                            list_cube.close();
+                            break;
+
+                    }
+                }
+                return false;
+            }
+        });
 
         display.addRevealListener(R.id.delete, new SwipeLayout.OnRevealListener() {
             @Override
             public void onReveal(View child, SwipeLayout.DragEdge edge, float fraction, int distance) {
+                //Toast.makeText(MainActivity.this, "on reveal", Toast.LENGTH_SHORT).show();
 
+//                switch (index){
+//                    case 0:
+//                        Log.i("list","is list0" );
+//                        list_cube.close();
+//                        list_cube2.close();
+//                        list_cube3.close();
+//                        list_cube4.close();
+//                        break;
+//                    case 1:
+//                        Log.i("list","is list");
+//                        list_cube0.close();
+//                        list_cube2.close();
+//                        list_cube3.close();
+//                        list_cube4.close();
+//                        break;
+//                    case 2:
+//                        Log.i("list","is list2");
+//                        list_cube0.close();
+//                        list_cube.close();
+//                        list_cube3.close();
+//                        list_cube4.close();
+//                        break;
+//                    case 3:
+//                        Log.i("list","is list3");
+//                        list_cube0.close();
+//                        list_cube2.close();
+//                        list_cube.close();
+//                        list_cube4.close();
+//                        break;
+//                    case 4:
+//                        Log.i("list","is list4");
+//                        list_cube0.close();
+//                        list_cube2.close();
+//                        list_cube3.close();
+//                        list_cube.close();
+//                        break;
+//
+//                }
             }
         });
 
         display.getSurfaceView().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                Toast.makeText(MainActivity.this,  "click", Toast.LENGTH_SHORT).show();
             }
+
         });
 
         display.getSurfaceView().setOnLongClickListener(new View.OnLongClickListener() {
@@ -288,7 +385,9 @@ public class MainActivity extends  AppCompatActivity
                 //LongCLick For Yelp Site View
                 try {
                     Intent myIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(cube_info[index].mobile_url));
+                    display.close();
                     startActivity(myIntent);
+
                 } catch (Exception e) {
                     System.out.println("Been in on click method");
                 }
@@ -304,6 +403,7 @@ public class MainActivity extends  AppCompatActivity
                 Log.i("test", "" +  searchAddre);
                 String map = "http://maps.google.co.in/maps?q=" + searchAddre;
                 Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(map));
+                display.close();
                 startActivity(i);
 
             }
@@ -314,6 +414,7 @@ public class MainActivity extends  AppCompatActivity
             public void onClick(View v) {
                 //Refresh Screen
                 refreshIndex = index;
+                display.close();
                 new RefreshTask().execute(display);
             }
         });
@@ -324,11 +425,12 @@ public class MainActivity extends  AppCompatActivity
                 //Toast.makeText(MainActivity.this, display.getId() + "Magnifier", Toast.LENGTH_SHORT).show();
                 Intent callIntent = new Intent(Intent.ACTION_CALL);
                 callIntent.setData(Uri.parse("tel:" + cube_info[index].phone));
-                try{
+            try{
                     startActivity(callIntent);
-                } catch (android.content.ActivityNotFoundException ex){
-                    Toast.makeText(getApplicationContext(),"Call permission denied ",Toast.LENGTH_SHORT).show();
-                }
+                    display.close();
+                } catch (android.content.ActivityNotFoundException ex) {
+                Toast.makeText(getApplicationContext(), "Call permission denied ", Toast.LENGTH_SHORT).show();
+            }
             }
         });
 
@@ -338,6 +440,7 @@ public class MainActivity extends  AppCompatActivity
                 //Toast.makeText(MainActivity.this, display.getId() + "Delete", Toast.LENGTH_SHORT).show();
                 //Delete Event
                 //display.setVisibility(display.INVISIBLE);
+                display.close();
                 display.setVisibility(SwipeLayout.INVISIBLE);
 
 
@@ -355,12 +458,14 @@ public class MainActivity extends  AppCompatActivity
                 System.out.println("Index:  " + ran +  " Term:" + term);
                 try{
 
-                    String response = yelp.searchByLocation(term, GPSLocationService.currentLocation);
+                    String response = yelp.searchByLocation(term, address);
                     System.out.println(response);
                     Gson gson = new GsonBuilder().create();
+                    final String[] crit = term.split(" ");
+
 
                     ResultInfo result = gson.fromJson(response, ResultInfo.class);
-                    final BussnessInfo bussnessInfo = result.getBussnessInfo(ran);
+                    final BussnessInfo bussnessInfo = result.getBussnessInfo(ran, true);
                     cube_info[index] = bussnessInfo;
 
                     runOnUiThread(new Runnable() {
@@ -371,9 +476,12 @@ public class MainActivity extends  AppCompatActivity
                                     //Processing Main Bussness Image
                                     ImageView icon = (ImageView) display.findViewById(R.id.activity_icon);
                                     icon.setImageBitmap(bussnessInfo.icon_img);
+
                                     //Processing Rating
                                     ImageView ratingImg = (ImageView) display.findViewById(R.id.rating_imag);
                                     ratingImg.setImageBitmap(bussnessInfo.rating_img);
+
+
                                 }catch (Exception img){
                                     System.out.println("Thread Error -> " + img);
                                     img.printStackTrace();
@@ -381,9 +489,12 @@ public class MainActivity extends  AppCompatActivity
 
 
 
-                                System.out.println(bussnessInfo.name);
+                                System.out.println(bussnessInfo.name + " " + crit[0]);
                                 TextView title = (TextView) display.findViewById(R.id.activity_title);
                                 title.setText(bussnessInfo.name);
+
+                                TextView cri = (TextView) display.findViewById(R.id.activity_criteria);
+                                cri.setText(crit[0].trim());
 
                             } catch (Exception e) {
                                 System.out.println("Thread Error -> " + e);

@@ -86,6 +86,18 @@ public class Yelp {
 
     public String searchByLocation(String term, String address){
 
+        if(radius > 24.85){
+            radius = 40000;
+        }
+        else if ( radius < 1) {
+            radius = 1609.34;
+        }
+        else
+        {
+            radius *= 1609.34;
+        }
+
+
         OAuthRequest request = new OAuthRequest(Verb.GET, "http://api.yelp.com/v2/search/");
         request.addQuerystringParameter("term", term);
         request.addQuerystringParameter("location", address);

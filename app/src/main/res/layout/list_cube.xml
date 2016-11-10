@@ -32,28 +32,28 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent">
 
-        <TextView
+        <ImageView
             android:id="@+id/magnifier2"
             android:layout_width="70dp"
-            android:text="Call"
+            android:src="@android:drawable/sym_action_call"
             android:background="#03ca17"
             android:paddingLeft="25dp"
             android:paddingRight="25dp"
             android:layout_height="match_parent" />
 
-        <TextView
+        <ImageView
             android:id="@+id/star2"
-            android:text="Nav"
+            android:src="@android:drawable/ic_menu_compass"
             android:background="@color/Yellow"
             android:layout_width="70dp"
             android:paddingLeft="25dp"
             android:paddingRight="25dp"
             android:layout_height="match_parent" />
 
-        <TextView
+        <ImageView
             android:id="@+id/trash2"
             android:layout_width="70dp"
-            android:text="Reload"
+            android:src="@drawable/renew"
             android:background="@color/Blue"
             android:paddingLeft="25dp"
             android:paddingRight="25dp"
@@ -85,8 +85,8 @@
     <LinearLayout
         android:padding="10dp"
         android:background="@color/DarkGreen"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
         android:orientation="horizontal">
         <RelativeLayout
             android:layout_width="fill_parent"
@@ -94,14 +94,14 @@
 
             <ImageView
                 android:id="@+id/activity_icon"
-                android:layout_width="105dp"
-                android:layout_height= "67dp"
-                />
+                android:layout_width="100dp"
+                android:layout_height= "100dp"
+                android:layout_alignParentBottom="true" />
 
             <TextView
-                android:layout_height="35dp"
+                android:layout_height="wrap_content"
                 android:layout_width="match_parent"
-                android:text="Hello From list Cube"
+                android:text="Title"
                 android:id="@+id/activity_title"
                 android:layout_toEndOf="@+id/activity_icon" />
 
@@ -112,6 +112,13 @@
                 android:layout_toEndOf="@+id/activity_icon"
                 android:layout_below="@+id/activity_title"/>
 
+            <TextView
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:text="Criteria"
+                android:id="@+id/activity_criteria"
+                android:layout_toEndOf="@+id/activity_icon"
+                android:layout_below="@+id/rating_imag"/>
 
 
         </RelativeLayout>

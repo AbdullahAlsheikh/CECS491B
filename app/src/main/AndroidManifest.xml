@@ -18,7 +18,7 @@
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyDlOwy8Maq32ZR_jcFDGef8vuQJwogdtBU"/>
+            android:value="AIzaSyCKR8Wi9ARG5IKgkpFUp__3PJcT_hiwQM0"/>
 
         <activity
             android:name=".StartUpScreen"

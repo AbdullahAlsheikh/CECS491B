@@ -14,12 +14,18 @@ public class ResultInfo {
 
     private ArrayList<BussnessInfo> businesses = new ArrayList<BussnessInfo>();
 
-    public BussnessInfo   getBussnessInfo(int index){
+    public BussnessInfo getBussnessInfo(int index, boolean isSingle){
+
 
         try{
 
             businesses.get(index).icon_img = BitmapFactory.decodeStream(businesses.get(index).image_url.openConnection().getInputStream());
-            businesses.get(index).rating_img = BitmapFactory.decodeStream(businesses.get(index).rating_img_url.openConnection().getInputStream());
+            if(isSingle){
+                businesses.get(index).rating_img = BitmapFactory.decodeStream(businesses.get(index).rating_img_url_large.openConnection().getInputStream());
+            }else{
+                businesses.get(index).rating_img = BitmapFactory.decodeStream(businesses.get(index).rating_img_url.openConnection().getInputStream());
+            }
+
 
         }catch (Exception e)
         {
@@ -31,29 +37,21 @@ public class ResultInfo {
         return businesses.get(index);
     }
 
-//    public String getName(int index){ return businesses.get(index).name; }
-//
-//    public String getRating(int index) { return businesses.get(index).rating; }
-//
-//    public void setImages(int index){
-//        try{
-//
-//            businesses.get(index).icon_img = BitmapFactory.decodeStream(businesses.get(index).image_url.openConnection().getInputStream());
-//
-//
-//        }catch (Exception e)
-//        {
-//            businesses.get(index).icon_img  = null;
-//        }
+
+//    @Override
+//    public String toString() {
+//        return super.toString("Is it empty ? ->" + businesses.isEmpty());
 //    }
 }
 
 
 class BussnessInfo{
-    //name Of Bussness
+    //name Of Business
     public String name;
     //Rating of Business
     public String rating;
+    //Snippet of a review of the Business
+    public String snippet_text;
     //Location and it's sub information
     public mainlocation location;
     //URL of the Yelp acount(Web account)
@@ -62,6 +60,8 @@ class BussnessInfo{
     public URL image_url;
     //Image of Business Rating (String)
     public URL rating_img_url;
+    //
+    public URL rating_img_url_large;
     //The distance from address entered(Changed the distance form int to double)
     public double distance;
     //The phone numebr of bussness
@@ -70,6 +70,7 @@ class BussnessInfo{
     public Bitmap icon_img;
     //The main Image of rating
     public Bitmap rating_img;
+
 }
 
 class mainlocation{

@@ -8,19 +8,19 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 
-import com.facebook.CallbackManager;
-import com.facebook.FacebookSdk;
-import com.facebook.login.widget.LoginButton;
-import com.firebase.client.Firebase;
+//import com.facebook.CallbackManager;
+//import com.facebook.FacebookSdk;
+//import com.facebook.login.widget.LoginButton;
+//import com.firebase.client.Firebase;
 import com.google.android.gms.common.api.GoogleApiClient;
 
 
 public class MainMenu extends AppCompatActivity implements View.OnClickListener{
     //---------------------------------------Declarations---------------------------------------
-    Firebase mRef;
-    public static final String DB_URL = "https://incandescent-heat-931.firebaseio.com/";
-    private CallbackManager callbackManager;
-    private LoginButton FbLoginButton;
+//    Firebase mRef;
+//    public static final String DB_URL = "https://incandescent-heat-931.firebaseio.com/";
+//    private CallbackManager callbackManager;
+//    private LoginButton FbLoginButton;
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -32,9 +32,9 @@ public class MainMenu extends AppCompatActivity implements View.OnClickListener{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Firebase.setAndroidContext(this);
-        FacebookSdk.sdkInitialize(getApplicationContext());
-        callbackManager = CallbackManager.Factory.create();
+//        Firebase.setAndroidContext(this);
+//        FacebookSdk.sdkInitialize(getApplicationContext());
+//        callbackManager = CallbackManager.Factory.create();
         setContentView(R.layout.main_menu);
 
         full = (ImageView) findViewById(R.id.day);

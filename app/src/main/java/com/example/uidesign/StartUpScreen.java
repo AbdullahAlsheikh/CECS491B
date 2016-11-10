@@ -7,10 +7,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.content.Intent;
 import android.os.Handler;
-import com.facebook.AccessTokenTracker;
+//import com.facebook.AccessTokenTracker;
 
 public class StartUpScreen  extends AppCompatActivity {
-    private AccessTokenTracker accessTokenTracker;
+//    private AccessTokenTracker accessTokenTracker;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,7 +47,7 @@ public class StartUpScreen  extends AppCompatActivity {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
-            //startService(new Intent(this, GPSLocationService.class));
+            startService(new Intent(this, GPSLocationService.class));
 
 
         }
@@ -55,7 +55,7 @@ public class StartUpScreen  extends AppCompatActivity {
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
 
-            //startService(new Intent(this, GPSLocationService.class));
+            startService(new Intent(this, GPSLocationService.class));
 
 
         }

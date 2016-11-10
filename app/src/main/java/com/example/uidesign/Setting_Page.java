@@ -5,7 +5,13 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.design.widget.NavigationView;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.SeekBar;
@@ -14,7 +20,7 @@ import android.widget.TextView;
 /**
  * Created by Abdullah on 10/6/16.
  */
-public class Setting_Page  extends AppCompatActivity {
+public class Setting_Page  extends AppCompatActivity  implements NavigationView.OnNavigationItemSelectedListener{
 
     private Context mContext;
 
@@ -29,7 +35,7 @@ public class Setting_Page  extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.setting_layout);
+        setContentView(R.layout.setting_activity_main);
 
         mContext = getApplicationContext();
 
@@ -68,6 +74,9 @@ public class Setting_Page  extends AppCompatActivity {
             seekBar.setProgress(mSharedPreferences.getInt("radius", 0) - 5);
         }
 
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
 
 
@@ -171,7 +180,14 @@ public class Setting_Page  extends AppCompatActivity {
                 //checkPref();
 
             }});
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.setDrawerListener(toggle);
+        toggle.syncState();
 
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
         //checkPref();
     }
 
@@ -240,6 +256,46 @@ public class Setting_Page  extends AppCompatActivity {
 
         mEditor.apply();
 
-
     }
+
+    @SuppressWarnings("StatementWithEmptyBody")
+    public boolean onNavigationItemSelected(MenuItem item) {
+        // Handle navigation view item clicks here.
+        int id = item.getItemId();
+        if (id == R.id.First) {
+            final Intent singleResturant = new Intent(Setting_Page.this, MainActivity.class);
+            Setting_Page.this.startActivity(singleResturant);
+            finish();
+            System.out.println("within Full Day Activity");
+
+            // Handle the camera action
+        } else if (id == R.id.Second) {
+            final Intent singleResturant = new Intent(Setting_Page.this, ResturantActivity.class);
+            Setting_Page.this.startActivity(singleResturant);
+            finish();
+            System.out.println("Second Button");
+
+        } else if (id == R.id.Third) {
+            System.out.println("Third Button");
+
+
+        } else if (id == R.id.Fourth) {
+            System.out.println("Fourth Button");
+
+
+        } else if (id == R.id.sectionOne) {
+            System.out.println("Already in setting");
+
+
+
+        } else if (id == R.id.sectionTwo) {
+            System.out.println("Second Section Button");
+
+        }
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
+    }
+
 }
