@@ -3,7 +3,7 @@
 <com.daimajia.swipe.SwipeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
+    android:layout_width="fill_parent"
     android:layout_height="80dp"
     android:layout="@layout/list_cube"
     app:clickToClose="true">
@@ -83,7 +83,7 @@
 
 
     <LinearLayout
-        android:padding="10dp"
+
         android:background="@color/DarkGreen"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
@@ -94,9 +94,12 @@
 
             <ImageView
                 android:id="@+id/activity_icon"
+                android:paddingRight="10dp"
+                android:paddingLeft="5dp"
                 android:layout_width="100dp"
                 android:layout_height= "100dp"
-                android:layout_alignParentBottom="true" />
+                android:layout_alignParentTop="true"
+                android:layout_alignParentStart="true" />
 
             <TextView
                 android:layout_height="wrap_content"

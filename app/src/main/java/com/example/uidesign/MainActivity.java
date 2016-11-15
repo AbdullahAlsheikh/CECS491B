@@ -601,7 +601,7 @@ public class MainActivity extends  AppCompatActivity
 
                 randNum = r.nextInt(limit);
                 System.out.println("Random Number:  " + randNum + " limit: " + limit);
-                getYelpSearchResult(randNum, 1, "Park", list_cube);
+                getYelpSearchResult(randNum, 1, "Activity", list_cube);
 
 
                 randNum = r.nextInt(limit);
@@ -673,7 +673,7 @@ public class MainActivity extends  AppCompatActivity
                     Log.i("getCriteria", refreshcriteria +" "+refreshIndex);
                     break;
                 case 1:
-                    refreshcriteria = "Park";
+                    refreshcriteria = "Activity";
                     Log.i("getCriteria", refreshcriteria +" "+refreshIndex);
                     break;
                 case 2:

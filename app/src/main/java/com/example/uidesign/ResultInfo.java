@@ -1,6 +1,7 @@
 package com.example.uidesign;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.util.Log;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -18,12 +19,26 @@ public class ResultInfo {
 
 
         try{
+            //Getting the largest image possible
+            String imageurl = businesses.get(index).image_url.toString();
+            Log.i("Image URL", "URL:" + imageurl);
+            imageurl = imageurl.replace("/ms.jpg", "/l.jpg");
+            Log.i("Image URL", "NewURL:" + imageurl);
+            URL url = new URL(imageurl);
 
-            businesses.get(index).icon_img = BitmapFactory.decodeStream(businesses.get(index).image_url.openConnection().getInputStream());
+
+            businesses.get(index).icon_img = BitmapFactory.decodeStream(url.openConnection().getInputStream());
+
             if(isSingle){
+
+
                 businesses.get(index).rating_img = BitmapFactory.decodeStream(businesses.get(index).rating_img_url_large.openConnection().getInputStream());
+
+
             }else{
+
                 businesses.get(index).rating_img = BitmapFactory.decodeStream(businesses.get(index).rating_img_url.openConnection().getInputStream());
+
             }
 
 
