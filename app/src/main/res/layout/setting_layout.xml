@@ -108,3 +108,126 @@
 
 
 </TableLayout>
+
+
+<!--<?xml version="1.0" encoding="utf-8"?>-->
+<!--<TableLayout-->
+    <!--xmlns:android="http://schemas.android.com/apk/res/android"-->
+    <!--android:orientation="vertical" android:layout_width="match_parent"-->
+    <!--android:layout_height="match_parent"-->
+    <!--android:weightSum="1">-->
+
+
+    <!--<Button-->
+
+        <!--android:id="@+id/breakPref"-->
+
+        <!--android:layout_width="fill_parent"-->
+
+        <!--android:text="Break Fast Preference"-->
+
+        <!--android:elevation="0dp"-->
+        <!--android:layout_weight="0.25"-->
+        <!--android:layout_height="100dp" />-->
+
+    <!--<Button-->
+
+        <!--android:id="@+id/lunchPref"-->
+
+        <!--android:layout_width="fill_parent"-->
+
+        <!--android:layout_height="100dp"-->
+
+        <!--android:text="Lunch Preference"-->
+
+        <!--android:elevation="0dp"-->
+        <!--android:layout_weight="0.25"-->
+        <!--android:layout_below="@+id/breakPref"-->
+        <!--android:layout_alignParentStart="true" />-->
+
+    <!--<Button-->
+
+        <!--android:id="@+id/dinnerPref"-->
+
+        <!--android:layout_width="fill_parent"-->
+
+        <!--android:layout_height="100dp"-->
+
+        <!--android:text="Dinner Preference"-->
+
+        <!--android:elevation="0dp"-->
+        <!--android:layout_weight="0.25"-->
+        <!--android:layout_below="@+id/lunchPref"-->
+        <!--android:layout_alignParentStart="true" />-->
+
+    <!--<TextView-->
+        <!--android:text="  Set the search limit"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:id="@+id/textView3"-->
+        <!--android:textAllCaps="true"-->
+        <!--/>-->
+
+    <!--<TableRow>-->
+
+        <!--<SeekBar-->
+            <!--android:layout_width="288dp"-->
+            <!--android:layout_height="50dp"-->
+            <!--android:id="@+id/seekBar"-->
+            <!--android:max="14"-->
+            <!--android:progress="5"-->
+            <!--android:layout_marginStart="14dp"-->
+            <!--android:layout_alignParentStart="true"-->
+            <!--android:layout_below="@+id/dinnerPref" />-->
+
+        <!--<Space android:layout_height="wrap_content"-->
+            <!--android:layout_width="15dp" />-->
+
+        <!--<TextView-->
+            <!--android:id="@+id/limitValue"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="match_parent"-->
+            <!--android:gravity="center"-->
+            <!--android:text="5"-->
+            <!--/>-->
+
+
+    <!--</TableRow>-->
+
+    <!--<TextView-->
+        <!--android:text="  Set Distance limit"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:id="@+id/textView4"-->
+        <!--android:textAllCaps="true"-->
+        <!--/>-->
+
+    <!--<TableRow>-->
+
+        <!--<SeekBar-->
+            <!--android:layout_width="288dp"-->
+            <!--android:layout_height="50dp"-->
+            <!--android:id="@+id/radiusBar"-->
+            <!--android:max="14"-->
+            <!--android:progress="5"-->
+            <!--android:layout_marginStart="14dp"-->
+            <!--android:layout_alignParentStart="true"-->
+            <!--android:layout_below="@+id/dinnerPref" />-->
+
+        <!--<Space android:layout_height="wrap_content"-->
+            <!--android:layout_width="15dp" />-->
+
+        <!--<TextView-->
+            <!--android:id="@+id/radiusValue"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="match_parent"-->
+            <!--android:gravity="center"-->
+            <!--android:text="5"-->
+            <!--/>-->
+
+
+    <!--</TableRow>-->
+
+
+
+<!--</TableLayout>-->
