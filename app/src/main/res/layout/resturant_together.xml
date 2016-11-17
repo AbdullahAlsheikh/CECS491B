@@ -4,26 +4,126 @@
     android:id="@+id/resutrant_together"
     android:orientation="vertical"
     android:layout_height="match_parent"
-    android:padding="10dp">
-    
-    <ImageView
+    android:padding="10dp"
+    >
+    <!---->
+    <RelativeLayout
+        android:layout_width="388dp"
+        android:layout_height="300dp"
+        >
+
+        <TextView
+            android:id="@+id/activity_title"
+            android:textSize="22sp"
+            android:text="Test single resturant"
+            android:paddingTop="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="80dp"
+            android:layout_gravity="right"
+            android:layout_below="@+id/activity_icon"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentEnd="true"
+            android:layout_above="@+id/criteria" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="200dp"
+            android:id="@+id/activity_icon"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentStart="true"
+            android:scaleType="centerCrop"/>
+
+        <TextView
+            android:id="@+id/criteria"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text= "Criteria"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentStart="true" />
+
+        <ImageView
+            android:id="@+id/rating"
+            android:layout_width="166dp"
+            android:layout_height="30dp"
+            android:background="@color/Yellow"
+            android:paddingRight="25dp"
+            android:layout_alignBottom="@+id/activity_title"
+            android:layout_alignParentStart="true" />
+    </RelativeLayout>
+
+    <!--<include android:id="@+id/singleResutant" layout="@layout/single_cube"-->
+    <!--android:layout_width="match_parent" android:layout_height="80dp" />-->
+
+    <LinearLayout
+        android:padding="10dp"
+        android:background="@color/DarkYellow"
         android:layout_width="fill_parent"
-        android:layout_height="200dp"
-        android:layout_marginTop="20dp"
-        android:id="@+id/activity_icon"
-        />
+        android:layout_height="fill_parent">
 
-    <TextView
-        android:id="@+id/activity_title"
-        android:textSize="22sp"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:text="Test single resturant"
-        android:layout_width="match_parent"
-        android:layout_height="100dp" />
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/Yellow">
 
-    <include android:id="@+id/singleResutant" layout="@layout/single_cube"
-        android:layout_width="match_parent" android:layout_height="80dp" />
+
+            <TextView
+                android:id="@+id/description"
+                android:textSize="12sp"
+                android:text="Description of Resturant"
+                android:layout_width="match_parent"
+                android:layout_height="100dp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:layout_alignParentBottom="true"
+                android:orientation="horizontal">
+
+
+                <ImageButton
+                    android:layout_width="0dp"
+                    android:layout_weight="0.25"
+                    android:layout_height="100dp"
+                    android:id="@+id/webButton"
+                    android:background="@color/red"
+                    android:src ="@android:drawable/ic_dialog_info"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignParentStart="true"
+                    />
+
+                <ImageButton
+                    android:layout_width="0dp"
+                    android:layout_weight="0.25"
+                    android:layout_height="100dp"
+                    android:src="@android:drawable/ic_menu_compass"
+                    android:background="@color/Yellow"
+                    android:id="@+id/navButton"
+                    android:layout_alignParentBottom="true"
+                    android:layout_toEndOf="@+id/webButton" />
+
+                <ImageButton
+                    android:layout_width="0dp"
+                    android:layout_weight="0.25"
+                    android:layout_height="100dp"
+                    android:background="#03ca17"
+                    android:src= "@android:drawable/sym_action_call"
+                    android:id="@+id/callButton"
+                    android:layout_alignParentBottom="true"
+                    android:layout_toEndOf="@+id/navButton" />
+                <ImageButton
+                    android:layout_width="0dp"
+                    android:layout_weight="0.25"
+                    android:layout_height="100dp"
+                    android:background="@color/Blue"
+                    android:src= "@drawable/renew"
+                    android:id="@+id/fullday"
+                    android:layout_alignParentBottom="true"
+                    android:layout_toEndOf="@+id/callButton" />
+
+            </LinearLayout>
+
+        </RelativeLayout>
+    </LinearLayout>
 
 
 </LinearLayout>

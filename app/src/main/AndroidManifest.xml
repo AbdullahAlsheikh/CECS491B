@@ -18,7 +18,8 @@
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyDlOwy8Maq32ZR_jcFDGef8vuQJwogdtBU"/>
+            android:value="AIzaSyCKR8Wi9ARG5IKgkpFUp__3PJcT_hiwQM0"/>
+
 
         <activity
             android:name=".StartUpScreen"
@@ -42,14 +43,17 @@
         <activity android:name=".ResturantActivity">
 
         </activity>
+        <activity android:name=".EventsActivity"></activity>
         <activity android:name=".Setting_Page">
 
 
         </activity>
 
         <activity android:name=".setDinnerPref"></activity>
+        <activity android:name=".setActivityPref"></activity>
         <activity android:name=".setLunchPref"></activity>
         <activity android:name=".setBreakPref"></activity>
+        <activity android:name=".BarHoppingMode"></activity>
 
 
 

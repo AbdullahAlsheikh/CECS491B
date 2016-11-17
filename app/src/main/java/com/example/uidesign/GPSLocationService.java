@@ -9,7 +9,6 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.util.Log;
 
 import java.io.IOException;
 import java.util.List;
@@ -24,6 +23,7 @@ public class GPSLocationService extends Service
     private static final int LOCATION_INTERVAL = 0;
     private static final float LOCATION_DISTANCE = 0;
     public static String currentLocation = null;
+    public static String currentCity = null;
 
     private class LocationListener implements android.location.LocationListener
     {
@@ -152,7 +152,7 @@ public class GPSLocationService extends Service
                 //String strAddress = str.toString();
 
                 String strAddress = (address.getAddressLine(0) + ", " + address.getLocality() + ", " + address.getAdminArea() + " " + address.getPostalCode() + ", " + "USA");
-
+                currentCity = address.getLocality();
 
                 return strAddress;
             } else {

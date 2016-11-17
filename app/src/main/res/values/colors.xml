@@ -10,7 +10,7 @@
     <color name="red_press">#990000</color>
     <color name="dark_gray">#4C535B</color>
     <color name="dark_gray_press">#ff7e8a97</color>
-    <color name="Purple">#bb1c73</color>
+    <color name="Purple">#c16798</color>
     <color name="Yellow">#fddd6d</color>
     <color name="DarkYellow">#fac201</color>
     <color name="Green">#90c977</color>
@@ -18,5 +18,6 @@
     <color name="DBlue">#3b3999</color>
     <color name="Blue">#5792e4</color>
     <color name="Grey">#a5a5a7</color>
+    <color name="DarkPurple">#bb1c73</color>
 
 </resources>

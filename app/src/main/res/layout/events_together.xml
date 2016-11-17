@@ -1,0 +1,256 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:id="@+id/events_together"
+    android:orientation="vertical"
+    android:layout_height="match_parent"
+    android:padding="10dp"
+    >
+    <!---->
+    <RelativeLayout
+        android:layout_width="388dp"
+        android:layout_height="300dp"
+        >
+
+        <TextView
+            android:id="@+id/event_name"
+            android:textSize="22sp"
+            android:text="Event: "
+            android:paddingTop="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="80dp"
+            android:layout_gravity="right"
+            android:layout_below="@+id/eventsImage"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentEnd="true"
+             />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="200dp"
+            android:id="@+id/eventsImage"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentStart="true"
+            android:scaleType="centerCrop"/>
+
+
+
+
+    </RelativeLayout>
+
+    <!--<include android:id="@+id/singleResutant" layout="@layout/single_cube"-->
+    <!--android:layout_width="match_parent" android:layout_height="80dp" />-->
+
+    <LinearLayout
+        android:padding="10dp"
+        android:background="@color/DBlue"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        >
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/Blue">
+
+            <TextView
+                android:id="@+id/Venue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="15sp"
+                android:text= "Venue: Hollywood Pantages Theatre Hollywood Pantages Theatre  "
+                android:layout_alignParentTop="true"
+                android:layout_alignParentStart="true" />
+
+            <TextView
+                android:id="@+id/startDate"
+                android:textSize="15sp"
+                android:text="Start Date: "
+                android:layout_width="match_parent"
+                android:layout_alignParentStart="true"
+                android:layout_height="25dp"
+                android:layout_below="@+id/Venue"/>
+
+            <TextView
+                android:id="@+id/startTime"
+                android:textSize="15sp"
+                android:text="Start Time: "
+                android:layout_width="match_parent"
+                android:layout_height="25dp"
+                android:layout_alignParentStart="true"
+                android:layout_below="@+id/startDate"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:layout_alignParentBottom="true"
+                android:orientation="horizontal">
+
+
+                <ImageButton
+                    android:layout_width="0dp"
+                    android:layout_weight="0.25"
+                    android:layout_height="100dp"
+                    android:id="@+id/webButton"
+                    android:background="@color/red"
+                    android:src ="@android:drawable/ic_dialog_info"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignParentStart="true"
+                    />
+
+                <ImageButton
+                    android:layout_width="0dp"
+                    android:layout_weight="0.25"
+                    android:layout_height="100dp"
+                    android:src="@android:drawable/ic_menu_compass"
+                    android:background="@color/Yellow"
+                    android:id="@+id/navButton"
+                    android:layout_alignParentBottom="true"
+                    android:layout_toEndOf="@+id/webButton" />
+
+                <ImageButton
+                    android:layout_width="0dp"
+                    android:layout_weight="0.25"
+                    android:layout_height="100dp"
+                    android:background="#03ca17"
+                    android:src= "@android:drawable/sym_action_call"
+                    android:id="@+id/callButton"
+                    android:layout_alignParentBottom="true"
+                    android:layout_toEndOf="@+id/navButton" />
+                <ImageButton
+                    android:layout_width="0dp"
+                    android:layout_weight="0.25"
+                    android:layout_height="100dp"
+                    android:background="@color/Blue"
+                    android:src= "@drawable/renew"
+                    android:id="@+id/eventsReload"
+                    android:layout_alignParentBottom="true"
+                    android:layout_toEndOf="@+id/callButton" />
+
+            </LinearLayout>
+
+
+
+
+        </RelativeLayout>
+    </LinearLayout>
+
+
+</LinearLayout>
+
+<!--<LinearLayout-->
+    <!--xmlns:android="http://schemas.android.com/apk/res/android"-->
+    <!--xmlns:app="http://schemas.android.com/apk/res-auto"-->
+    <!--android:layout_width="fill_parent"-->
+    <!--android:id="@+id/events_together"-->
+    <!--android:orientation="vertical"-->
+    <!--android:layout_height="match_parent"-->
+    <!--android:padding="10dp"-->
+    <!--android:weightSum="1">-->
+
+    <!--<ImageView-->
+        <!--android:layout_width="fill_parent"-->
+        <!--android:layout_height="118dp"-->
+        <!--android:layout_marginTop="20dp"-->
+        <!--android:id="@+id/eventsImage"-->
+        <!--android:scaleType="centerCrop"-->
+        <!--/>-->
+
+    <!--<TextView-->
+        <!--android:id="@+id/event_name"-->
+        <!--android:textSize="22sp"-->
+        <!--android:layout_alignParentBottom="true"-->
+        <!--android:layout_centerHorizontal="true"-->
+        <!--android:text="Event: The Funk Show featuring Cameo, The SOS Band, Con Funk Shun, and more!"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_weight="0.06" />-->
+
+    <!--<TextView-->
+        <!--android:id="@+id/Venue"-->
+        <!--android:textSize="22sp"-->
+        <!--android:layout_alignParentBottom="true"-->
+        <!--android:layout_centerHorizontal="true"-->
+        <!--android:text="Venue: Long Beach Arena- Long Beach Convention and Entertainment Center"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content" />-->
+
+    <!--<TextView-->
+        <!--android:id="@+id/Address"-->
+        <!--android:textSize="22sp"-->
+        <!--android:layout_alignParentBottom="true"-->
+        <!--android:layout_centerHorizontal="true"-->
+        <!--android:text="Address: 300 E. Ocean Blvd."-->
+        <!--android:layout_width="373dp"-->
+        <!--android:layout_height="wrap_content" />-->
+
+    <!--<TextView-->
+        <!--android:id="@+id/City"-->
+        <!--android:textSize="22sp"-->
+        <!--android:layout_alignParentBottom="true"-->
+        <!--android:layout_centerHorizontal="true"-->
+        <!--android:text="City: Long Beach"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content" />-->
+
+    <!--<TextView-->
+        <!--android:id="@+id/State"-->
+        <!--android:textSize="22sp"-->
+        <!--android:layout_alignParentBottom="true"-->
+        <!--android:layout_centerHorizontal="true"-->
+        <!--android:text="State: CA"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content" />-->
+
+    <!--<TextView-->
+        <!--android:id="@+id/PostalCode"-->
+        <!--android:textSize="22sp"-->
+        <!--android:layout_alignParentBottom="true"-->
+        <!--android:layout_centerHorizontal="true"-->
+        <!--android:text="Postal Code: 90802"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content" />-->
+
+    <!--<TextView-->
+        <!--android:id="@+id/StartDate"-->
+        <!--android:textSize="22sp"-->
+        <!--android:layout_alignParentBottom="true"-->
+        <!--android:layout_centerHorizontal="true"-->
+        <!--android:text="Start Date: 2016-11-19"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content" />-->
+
+    <!--<TextView-->
+        <!--android:id="@+id/StartTime"-->
+        <!--android:textSize="22sp"-->
+        <!--android:layout_alignParentBottom="true"-->
+        <!--android:layout_centerHorizontal="true"-->
+        <!--android:text="Start Time: 19:00:00"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content" />-->
+
+
+    <!--<RelativeLayout-->
+        <!--android:id="@+id/relativeLayout1"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content">-->
+
+        <!--<ImageView-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--app:srcCompat="@drawable/next2"-->
+            <!--android:id="@+id/nextEvent"-->
+            <!--android:layout_alignParentRight="true"/>-->
+
+
+        <!--<ImageView-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--app:srcCompat="@drawable/back1"-->
+            <!--android:id="@+id/prevEvent"-->
+            <!--android:layout_alignParentLeft="true" />-->
+
+
+    <!--</RelativeLayout>-->
+
+
+<!--</LinearLayout>-->

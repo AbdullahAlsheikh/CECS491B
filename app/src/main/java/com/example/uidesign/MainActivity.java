@@ -4,35 +4,42 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
-import android.graphics.PorterDuff;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.preference.Preference;
-import android.preference.PreferenceManager;
-import android.util.*;
 import android.os.Handler;
-import android.widget.*;
+import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
-import com.google.gson.*;
+import android.view.MotionEvent;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
 
-import java.io.IOException;
-import java.util.Random;
 import com.daimajia.swipe.SwipeLayout;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
 import com.google.android.gms.location.places.ui.PlaceSelectionListener;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
+import java.util.ArrayList;
+import java.util.Random;
+
+import static com.example.uidesign.BarHoppingMode.contains;
 
 public class MainActivity extends  AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -47,7 +54,11 @@ public class MainActivity extends  AppCompatActivity
 
     String breakfast;
     String lunch;
-    String dinner;
+    String dinner, activity;
+
+    String businessName;
+    String[] business;
+
 
 
     private String consumerKey = "dudmo3ssHxvpUP_i_Lw60A";
@@ -68,7 +79,7 @@ public class MainActivity extends  AppCompatActivity
     int refreshIndex = 0;
 
 
-    int limit = yelp.getLimit();
+    int limit = 19;
     double radius = yelp.getraduis();
     String address = "California State University, Long Beach, CA";
 
@@ -83,15 +94,18 @@ public class MainActivity extends  AppCompatActivity
         mContext = getApplicationContext();
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
 
-        limit = mSharedPreferences.getInt("limit", 0);
-        yelp.setLimit(limit);
+        //limit = mSharedPreferences.getInt("limit", 0);
+        limit = 19;
+        //yelp.setLimit(limit);
 
         radius = (double) mSharedPreferences.getInt("radius", 0);
         yelp.setRadius(radius);
 
+        business = new String[5];
         breakfast = mSharedPreferences.getString("breakfastCat", "");
         lunch = mSharedPreferences.getString("lunchCat", "");
         dinner = mSharedPreferences.getString("dinnerCat", "");
+        activity = mSharedPreferences.getString("activityCat", "");
 
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -154,7 +168,7 @@ public class MainActivity extends  AppCompatActivity
         });
 
 
-
+        System.out.println("TestNetwork: " + isNetworkAvailable());
 
 
         list_cube0 = (SwipeLayout) findViewById(R.id.first_cube);
@@ -216,38 +230,46 @@ public class MainActivity extends  AppCompatActivity
         assert fullday != null;
 
 
-        if(firstPlanActivite){
+        if(firstPlanActivite && isNetworkAvailable()){
+
             planExcuteText = "Loading Data";
             new GeneratePlanTask().execute();
             firstPlanActivite = false;
         }
 
-        fullday.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Pressed Full Day", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-                try {
+            fullday.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    //Snackbar.make(view, "Pressed Full Day", Snackbar.LENGTH_LONG)
+                    //.setAction("Action", null).show();
+                    if (isNetworkAvailable()) {
+                    try {
 
-                    list_cube0.setVisibility(list_cube0.VISIBLE);
-                    list_cube.setVisibility(list_cube.VISIBLE);
-                    list_cube2.setVisibility(list_cube2.VISIBLE);
-                    list_cube3.setVisibility(list_cube3.VISIBLE);
-                    list_cube4.setVisibility(list_cube4.VISIBLE);
-                    planExcuteText = "Refreshing Entire Plan";
-                    new GeneratePlanTask().execute();
+                        list_cube0.setVisibility(list_cube0.VISIBLE);
+                        list_cube.setVisibility(list_cube.VISIBLE);
+                        list_cube2.setVisibility(list_cube2.VISIBLE);
+                        list_cube3.setVisibility(list_cube3.VISIBLE);
+                        list_cube4.setVisibility(list_cube4.VISIBLE);
+                        planExcuteText = "Refreshing Entire Plan";
+                        new GeneratePlanTask().execute();
 
-                } catch (Exception e) {
-                    System.out.println("full day set on click :Error -> " + e);
-                    e.printStackTrace();
+                    } catch (Exception e) {
+                        System.out.println("full day set on click :Error -> " + e);
+                        e.printStackTrace();
+                    }
+                    }else {
+                        Toast.makeText(MainActivity.this,"No Internet Connection", Toast.LENGTH_SHORT).show();
+                    }
+
+
                 }
+            });
 
 
-            }
-        });
 
-
-        bottominformation.setText("Address:\n " + GPSLocationService.currentLocation + "\nlimit:" + limit + "\nRadius:" + radius + "\n" + "breakfast" + breakfast  + "\nlunch" + lunch + "\nDinner" + dinner);
+        bottominformation.setText("Address:\n " + GPSLocationService.currentLocation + "\nlimit:" +
+                limit + "\nRadius:" + radius + "\n" + "breakfast" + breakfast  + "\nlunch" + lunch
+                + "\nDinner" + dinner + " Activity: " + activity);
 
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -266,6 +288,57 @@ public class MainActivity extends  AppCompatActivity
      * @param display
      */
     public void PressedAction(final SwipeLayout display,final int index ) {
+
+        display.setOnTouchListener(new View.OnTouchListener() {
+            public boolean onTouch(View v, MotionEvent event) {
+                if (event.getAction() == MotionEvent.ACTION_MOVE) {
+                    switch (index) {
+                        case 0:
+//                            Log.i("list", "is list0");
+//                            list_cube0.open();
+                            list_cube.close();
+                            list_cube2.close();
+                            list_cube3.close();
+                            list_cube4.close();
+                            break;
+                        case 1:
+//                            Log.i("list", "is list");
+//                            list_cube.open();
+                            list_cube0.close();
+                            list_cube2.close();
+                            list_cube3.close();
+                            list_cube4.close();
+                            break;
+                        case 2:
+//                            Log.i("list", "is list2");
+//                            list_cube2.open();
+                            list_cube0.close();
+                            list_cube.close();
+                            list_cube3.close();
+                            list_cube4.close();
+                            break;
+                        case 3:
+//                            Log.i("list", "is list3");
+//                            list_cube3.open();
+                            list_cube0.close();
+                            list_cube2.close();
+                            list_cube.close();
+                            list_cube4.close();
+                            break;
+                        case 4:
+                            Log.i("list", "is list4");
+//                            list_cube4.open();
+                            list_cube0.close();
+                            list_cube2.close();
+                            list_cube3.close();
+                            list_cube.close();
+                            break;
+
+                    }
+                }
+                return false;
+            }
+        });
 
 
         display.addRevealListener(R.id.delete, new SwipeLayout.OnRevealListener() {
@@ -289,6 +362,7 @@ public class MainActivity extends  AppCompatActivity
                 try {
                     Intent myIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(cube_info[index].mobile_url));
                     startActivity(myIntent);
+
                 } catch (Exception e) {
                     System.out.println("Been in on click method");
                 }
@@ -304,6 +378,7 @@ public class MainActivity extends  AppCompatActivity
                 Log.i("test", "" +  searchAddre);
                 String map = "http://maps.google.co.in/maps?q=" + searchAddre;
                 Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(map));
+                display.close();
                 startActivity(i);
 
             }
@@ -314,6 +389,7 @@ public class MainActivity extends  AppCompatActivity
             public void onClick(View v) {
                 //Refresh Screen
                 refreshIndex = index;
+                display.close();
                 new RefreshTask().execute(display);
             }
         });
@@ -322,8 +398,9 @@ public class MainActivity extends  AppCompatActivity
             @Override
             public void onClick(View v) {
                 //Toast.makeText(MainActivity.this, display.getId() + "Magnifier", Toast.LENGTH_SHORT).show();
-                Intent callIntent = new Intent(Intent.ACTION_CALL);
+                Intent callIntent = new Intent(Intent.ACTION_DIAL);
                 callIntent.setData(Uri.parse("tel:" + cube_info[index].phone));
+                display.close();
                 try{
                     startActivity(callIntent);
                 } catch (android.content.ActivityNotFoundException ex){
@@ -339,6 +416,7 @@ public class MainActivity extends  AppCompatActivity
                 //Delete Event
                 //display.setVisibility(display.INVISIBLE);
                 display.setVisibility(SwipeLayout.INVISIBLE);
+                display.close();
 
 
             }
@@ -355,18 +433,30 @@ public class MainActivity extends  AppCompatActivity
                 System.out.println("Index:  " + ran +  " Term:" + term);
                 try{
 
-                    String response = yelp.searchByLocation(term, GPSLocationService.currentLocation);
+//                    String response = yelp.searchByLocation(term, GPSLocationService.currentLocation);
+                    String response = yelp.searchByLocation(term, address);
                     System.out.println(response);
                     Gson gson = new GsonBuilder().create();
+                    final String[] crit = term.split(" ");
 
                     ResultInfo result = gson.fromJson(response, ResultInfo.class);
                     final BussnessInfo bussnessInfo = result.getBussnessInfo(ran);
                     cube_info[index] = bussnessInfo;
 
+
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             try {
+
+                                System.out.println(bussnessInfo.name);
+                                TextView title = (TextView) display.findViewById(R.id.activity_title);
+                                title.setText(bussnessInfo.name);
+
+                                TextView cri = (TextView) display.findViewById(R.id.activity_criteria);
+                                cri.setText(crit[0].trim());
+
+
                                 try{
                                     //Processing Main Bussness Image
                                     ImageView icon = (ImageView) display.findViewById(R.id.activity_icon);
@@ -379,17 +469,12 @@ public class MainActivity extends  AppCompatActivity
                                     img.printStackTrace();
                                 }
 
-
-
-                                System.out.println(bussnessInfo.name);
-                                TextView title = (TextView) display.findViewById(R.id.activity_title);
-                                title.setText(bussnessInfo.name);
-
                             } catch (Exception e) {
                                 System.out.println("Thread Error -> " + e);
                                 e.printStackTrace();
                             }
 
+                            businessName = bussnessInfo.name;
                         }
                     });
 
@@ -437,7 +522,12 @@ public class MainActivity extends  AppCompatActivity
             System.out.println("Second Button");
 
         } else if (id == R.id.Third) {
+            //this takes you to the bar hopping mode
             System.out.println("Third Button");
+            final Intent barMode = new Intent(MainActivity.this, BarHoppingMode.class);
+            MainActivity.this.startActivity(barMode);
+            finish();
+
 
 
         } else if (id == R.id.Fourth) {
@@ -478,7 +568,7 @@ public class MainActivity extends  AppCompatActivity
         @Override
         protected Void doInBackground(Void... params) {
             try {
-
+                ArrayList<String> businesses = new ArrayList<>(4);
                 Random r = new Random();
 
                 int randNum = r.nextInt(limit);
@@ -488,24 +578,61 @@ public class MainActivity extends  AppCompatActivity
                 getYelpSearchResult(randNum, 0, "breakfast " + breakfast, list_cube0);
 
 
-                randNum = r.nextInt(limit);
-                System.out.println("Random Number:  " + randNum + " limit: " + limit);
-                getYelpSearchResult(randNum, 1, "Park", list_cube);
+                Thread.sleep(100);
 
 
-                randNum = r.nextInt(limit);
+                business[0] = businessName;
+
+
+                Log.i("Var", "BussnessName: " + businessName + " Ran" + randNum);
+
+                do {
+                    randNum = r.nextInt(limit);
+                    System.out.println("Random Number:  " + randNum + " limit: " + limit);
+                    getYelpSearchResult(randNum, 1, "Activity " + activity, list_cube);
+                    Thread.sleep(100);
+                    Log.i("Var", "BussnessName: " + businessName + " Ran" + randNum);
+                }while (contains(business,businessName));
+                business[1] = businessName;
+
+
                 System.out.println("Random Number:  " + randNum + " limit: " + limit + " Catagory:" + lunch);
-                getYelpSearchResult(randNum, 2, "Lunch " + lunch, list_cube2);
+                Log.i("Test", "Random Number:  " + randNum + " limit: " + limit + " Catagory:" + dinner);
+                do {
+                    randNum = r.nextInt(limit);
+                    System.out.println("Random Number:  " + randNum + " limit: " + limit + " Catagory:" + lunch);
+                    getYelpSearchResult(randNum, 2, "Lunch " + lunch, list_cube2);
+                    Thread.sleep(100);
+                    Log.i("Var", "BussnessName: " + businessName + " Ran" + randNum);
+                }while(contains(business,businessName));
+                business[2] = businessName;
+                //
 
-
-                randNum = r.nextInt(limit);
                 System.out.println("Random Number:  " + randNum + " limit: " + limit);
-                getYelpSearchResult(randNum, 3, "Activity", list_cube3);
+                Log.i("Test", "Random Number:  " + randNum + " limit: " + limit + " Catagory:" + dinner);
+                do{
+                    randNum = r.nextInt(limit);
+                    getYelpSearchResult(randNum, 3, "Activity "+ activity, list_cube3);
+                    Thread.sleep(100);
+                    Log.i("Var", "BussnessName: " + businessName + " Ran" + randNum);
+                }while(contains(business,businessName));
+                business[3] = businessName;
 
-
-                randNum = r.nextInt(limit);
                 System.out.println("Random Number:  " + randNum + " limit: " + limit + " Catagory:" + dinner);
-                getYelpSearchResult(randNum, 4, "Dinner " + dinner, list_cube4);
+                Log.i("Test", "Random Number:  " + randNum + " limit: " + limit + " Catagory:" + dinner);
+                do{
+                    randNum = r.nextInt(limit);
+                    getYelpSearchResult(randNum, 4, "Dinner " + dinner, list_cube4);
+                    Thread.sleep(100);
+                    Log.i("Var", "BussnessName: " + businessName + " Ran" + randNum);
+                }while(contains(business,businessName));
+                business[4] = businessName;
+
+                for (String s : business){
+                    //Log.i("XXX",business[i]);
+                    System.out.println("businessNameWr: " + s);
+                    //businesses.remove(i);
+                }
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -562,7 +689,7 @@ public class MainActivity extends  AppCompatActivity
                     Log.i("getCriteria", refreshcriteria +" "+refreshIndex);
                     break;
                 case 1:
-                    refreshcriteria = "Park";
+                    refreshcriteria = "Acivity " + activity;
                     Log.i("getCriteria", refreshcriteria +" "+refreshIndex);
                     break;
                 case 2:
@@ -570,7 +697,7 @@ public class MainActivity extends  AppCompatActivity
                     Log.i("getCriteria", refreshcriteria +" "+refreshIndex);
                     break;
                 case 3:
-                    refreshcriteria =  "Activity";
+                    refreshcriteria =  "Activity " + activity;
                     Log.i("getCriteria", refreshcriteria +" "+refreshIndex);
                     break;
                 case 4:
@@ -589,8 +716,25 @@ public class MainActivity extends  AppCompatActivity
         }
 
     }
-}
 
+    private boolean isNetworkAvailable() {
+        boolean haveConnectedWifi = false;
+        boolean haveConnectedMobile = false;
+
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo[] netInfo = cm.getAllNetworkInfo();
+        for (NetworkInfo ni : netInfo) {
+            if (ni.getTypeName().equalsIgnoreCase("WIFI"))
+                if (ni.isConnected())
+                    haveConnectedWifi = true;
+            if (ni.getTypeName().equalsIgnoreCase("MOBILE"))
+                if (ni.isConnected())
+                    haveConnectedMobile = true;
+        }
+        return haveConnectedWifi || haveConnectedMobile;
+    }
+
+}
 
 
 

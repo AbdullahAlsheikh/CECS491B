@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.daimajia.swipe.SwipeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/resutrant_activity"
+    android:layout_width="match_parent"
+    android:background="@color/Blue"
+    android:layout_height="match_parent"
+    >
+
+
+    <ImageView
+        android:layout_gravity="left|right|top"
+        android:layout_width="0dp"
+        android:layout_height="0dp"/>
+
+    <LinearLayout
+        android:layout_gravity="bottom"
+        android:gravity="center"
+        android:layout_width="0dp"
+        android:layout_height="0dp">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id= "@+id/single_filer_information"
+            android:layout_gravity="center"
+            android:text="Information:\n something\n"/>
+
+    </LinearLayout>
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <include layout="@layout/events_together" android:layout_width="match_parent" android:layout_height="match_parent" android:layout_marginTop="40dp"/>
+        <!--<ImageView-->
+        <!--android:layout_alignParentBottom="true"-->
+        <!--android:layout_centerHorizontal="true"-->
+        <!--android:layout_marginBottom="60dp"-->
+        <!--android:layout_width="65dp"-->
+        <!--android:layout_height="65dp" />-->
+    </RelativeLayout>
+</com.daimajia.swipe.SwipeLayout>

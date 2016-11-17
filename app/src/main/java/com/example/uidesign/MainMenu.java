@@ -8,19 +8,19 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 
-import com.facebook.CallbackManager;
-import com.facebook.FacebookSdk;
-import com.facebook.login.widget.LoginButton;
-import com.firebase.client.Firebase;
+//import com.facebook.CallbackManager;
+//import com.facebook.FacebookSdk;
+//import com.facebook.login.widget.LoginButton;
+//import com.firebase.client.Firebase;
 import com.google.android.gms.common.api.GoogleApiClient;
 
 
 public class MainMenu extends AppCompatActivity implements View.OnClickListener{
     //---------------------------------------Declarations---------------------------------------
-    Firebase mRef;
+    //Firebase mRef;
     public static final String DB_URL = "https://incandescent-heat-931.firebaseio.com/";
-    private CallbackManager callbackManager;
-    private LoginButton FbLoginButton;
+    //private CallbackManager callbackManager;
+    //private LoginButton FbLoginButton;
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -32,9 +32,9 @@ public class MainMenu extends AppCompatActivity implements View.OnClickListener{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Firebase.setAndroidContext(this);
-        FacebookSdk.sdkInitialize(getApplicationContext());
-        callbackManager = CallbackManager.Factory.create();
+//        Firebase.setAndroidContext(this);
+//        FacebookSdk.sdkInitialize(getApplicationContext());
+//        callbackManager = CallbackManager.Factory.create();
         setContentView(R.layout.main_menu);
 
         full = (ImageView) findViewById(R.id.day);
@@ -116,17 +116,16 @@ public class MainMenu extends AppCompatActivity implements View.OnClickListener{
 
         switch (v.getId() /*to get clicked view id**/) {
             case R.id.night:
-
-                //Intent activity = new Intent(this,night.class);
-                //startActivity(activity);
+                Intent activity = new Intent(this,BarHoppingMode.class);
+                startActivity(activity);
                 break;
             case R.id.day:
                 Intent activity1 = new Intent(this,MainActivity.class);
                 startActivity(activity1);
                 break;
             case R.id.event:
-                //Intent activity2 = new Intent(this,event.class);
-                //startActivity(activity2);
+                Intent activity2 = new Intent(this,EventsActivity.class);
+                startActivity(activity2);
                 break;
             case R.id.single:
                 Intent activity3 = new Intent(this,ResturantActivity.class);

@@ -10,7 +10,7 @@
     <ImageView
         android:layout_gravity="left|right|top"
         android:layout_width="0dp"
-                android:layout_height="0dp"/>
+        android:layout_height="0dp"/>
 
 
     <LinearLayout
@@ -32,7 +32,10 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-        <include layout="@layout/sample_together" android:layout_width="match_parent" android:layout_height="match_parent" android:layout_marginTop="40dp"/>
+        <include layout="@layout/sample_together"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="40dp"/>
         <ImageView
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"

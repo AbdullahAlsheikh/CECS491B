@@ -1,32 +1,42 @@
 package com.example.uidesign;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.support.design.widget.NavigationView;
-import android.support.v7.app.AppCompatActivity;
-import android.view.MenuItem;
-import android.util.Log;
-import android.widget.*;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.view.View;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
+import com.daimajia.swipe.SwipeLayout;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
 import com.google.android.gms.location.places.ui.PlaceSelectionListener;
-import com.google.gson.*;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
+import java.util.Calendar;
 import java.util.Random;
-import com.daimajia.swipe.SwipeLayout;
+
 
 /**
  * Created by Abdullah on 10/3/16.
@@ -36,18 +46,26 @@ public class ResturantActivity  extends AppCompatActivity
 
     private ProgressDialog loadingSpinner;
 
-    LinearLayout togetherlayout;
+    private Context mContext;
+    private SharedPreferences mSharedPreferences;
+    private SharedPreferences.Editor mEditor;
 
-    String consumerKey = "dudmo3ssHxvpUP_i_Lw60A";
-    String consumerSecret = "fOhwH5mUo_CyzX2D2vcDUc8FNw8";
-    String token = "yPhkb0u9cRxGE8ikWRkH3ceMCCpKYpQA";
-    String tokenSecret = "-WoZd39mwu4X9iVDXo5bxDNOBBU";
-    Yelp yelp = new Yelp(consumerKey, consumerSecret, token, tokenSecret);
+    private static LinearLayout togetherlayout;
 
+    private String consumerKey = "dudmo3ssHxvpUP_i_Lw60A";
+    private String consumerSecret = "fOhwH5mUo_CyzX2D2vcDUc8FNw8";
+    private String token = "yPhkb0u9cRxGE8ikWRkH3ceMCCpKYpQA";
+    private String tokenSecret = "-WoZd39mwu4X9iVDXo5bxDNOBBU";
+    private Yelp yelp = new Yelp(consumerKey, consumerSecret, token, tokenSecret);
+    String breakfast;
+    String lunch;
+    String dinner, activity;
 
-    BussnessInfo single_activty_info = null;
-    int limit = yelp.getLimit();
-    String address = "California State University, Long Beach, Long Beach, CA";
+    private BussnessInfo single_activty_info = null;
+    private int limit = 19;
+    private String address = "California State University, Long Beach, Long Beach, CA";
+
+    private  boolean startSingleActivite = true;
 
 
 
@@ -57,6 +75,16 @@ public class ResturantActivity  extends AppCompatActivity
         setContentView(R.layout.resturant_activity_main);
         setTitle("Single Activity");
         togetherlayout = (LinearLayout) findViewById(R.id.resutrant_together);
+
+        mContext = getApplicationContext();
+        mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
+
+
+//        yelp.setLimit(limit);
+
+        breakfast = mSharedPreferences.getString("breakfastCat", "");
+        lunch = mSharedPreferences.getString("lunchCat", "");
+        dinner = mSharedPreferences.getString("dinnerCat", "");
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -115,21 +143,48 @@ public class ResturantActivity  extends AppCompatActivity
         });
 
 
+        ImageButton call = (ImageButton) findViewById(R.id.callButton);
+        call.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent callIntent = new Intent(Intent.ACTION_DIAL);
+                callIntent.setData(Uri.parse("tel:" + single_activty_info.phone));
+                try{
+                    startActivity(callIntent);
+                } catch (android.content.ActivityNotFoundException ex){
+                    Toast.makeText(getApplicationContext(),"Call permission denied ",Toast.LENGTH_SHORT).show();
+                }
+            }
+
+        });
+
+        ImageButton nav = (ImageButton) findViewById(R.id.navButton);
+        nav.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String searchAddre = single_activty_info.location.display_address.get(0) + " "+ single_activty_info.location.display_address.get(1);
+                Log.i("test", "" + searchAddre);
+                String map = "http://maps.google.co.in/maps?q=" + searchAddre;
+                Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(map));
+                startActivity(i);
+            }
+        });
+
+        ImageButton web = (ImageButton) findViewById(R.id.webButton);
+        web.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent myIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(single_activty_info.mobile_url));
+                startActivity(myIntent);
+            }
+        });
 
 
-        final SwipeLayout singleCube = (SwipeLayout) findViewById(R.id.singleResutant);
-        singleCube.setShowMode(SwipeLayout.ShowMode.PullOut);
-        View starBottView = singleCube.findViewById(R.id.starbott);
-
-        singleCube.addDrag(SwipeLayout.DragEdge.Left, singleCube.findViewById(R.id.wrapper));
-        singleCube.addDrag(SwipeLayout.DragEdge.Right, singleCube.findViewById(R.id.single_bottom_wrapper));
-        singleCube.addDrag(SwipeLayout.DragEdge.Top, starBottView);
-        singleCube.addDrag(SwipeLayout.DragEdge.Bottom, starBottView);
-        PressedAction(singleCube);
 
 
-        FloatingActionButton fullday = (FloatingActionButton) findViewById(R.id.fullday);
-        assert fullday != null;
+
+        ImageButton fullday = (ImageButton) findViewById(R.id.fullday);
+        //assert fullday != null;
 
 
 
@@ -137,8 +192,8 @@ public class ResturantActivity  extends AppCompatActivity
         fullday.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Pressed Full Day", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+//                Snackbar.make(view, "Pressed Full Day", Snackbar.LENGTH_LONG)
+//                        .setAction("Action", null).show();
                 try {
                     new GeneratePlanTask().execute();
 
@@ -151,7 +206,12 @@ public class ResturantActivity  extends AppCompatActivity
             }
         });
 
-//        bottominformation.setText("Address:\n " + address + "\nlimit:" + limit + "\n");
+        if(startSingleActivite){
+
+            new GeneratePlanTask().execute();
+            startSingleActivite = false;
+        }
+
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -164,112 +224,50 @@ public class ResturantActivity  extends AppCompatActivity
     }
 
 
-    public void PressedAction(final SwipeLayout display) {
 
-
-        display.addRevealListener(R.id.delete, new SwipeLayout.OnRevealListener() {
-            @Override
-            public void onReveal(View child, SwipeLayout.DragEdge edge, float fraction, int distance) {
-
-            }
-        });
-
-        display.getSurfaceView().setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(ResturantActivity.this, display.getId() + "Click on surface", Toast.LENGTH_SHORT).show();
-
-
-            }
-        });
-        display.getSurfaceView().setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                Toast.makeText(ResturantActivity.this, display.getId() + "longClick on surface", Toast.LENGTH_SHORT).show();
-                Log.i("test", single_activty_info.mobile_url);
-                try {
-                    Intent myIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(single_activty_info.mobile_url));
-                    startActivity(myIntent);
-                } catch (Exception e) {
-                    System.out.println("Been in on click method");
-                }
-
-                return true;
-            }
-        });
-        display.findViewById(R.id.star2).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //navigation functionality
-                Toast.makeText(ResturantActivity.this, display.getId() + "Star", Toast.LENGTH_SHORT).show();
-                String searchAddre = single_activty_info.location.display_address.get(0) + " "+ single_activty_info.location.display_address.get(1);
-                Log.i("test", "" +  searchAddre);
-                String map = "http://maps.google.co.in/maps?q=" + searchAddre;
-                Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(map));
-                startActivity(i);
-            }
-        });
-
-        display.findViewById(R.id.trash2).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(ResturantActivity.this, display.getId() + "Trash Bin", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        display.findViewById(R.id.magnifier2).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //Calling Functionality
-                Toast.makeText(ResturantActivity.this, display.getId() + "Magnifier", Toast.LENGTH_SHORT).show();
-                Log.i("test", single_activty_info.phone);
-                Intent callIntent = new Intent(Intent.ACTION_CALL);
-                callIntent.setData(Uri.parse("tel:" + single_activty_info.phone));
-                try{
-                    startActivity(callIntent);
-                } catch (android.content.ActivityNotFoundException ex){
-                    Toast.makeText(getApplicationContext(),"Call permission denied ",Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-
-        display.findViewById(R.id.delete).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(ResturantActivity.this, display.getId() + "Delete", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-    }
-
-
-    public synchronized void getYelpSearchResult(final int index, final String term, final LinearLayout display) throws InterruptedException{
+    public synchronized void getYelpSearchResult(final int ran, final String term, final LinearLayout display) throws InterruptedException{
         Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
 
-                System.out.println("Index:  " + index +  " Term:" + term);
+                System.out.println("random:  " + ran +  " Term:" + term);
                 try{
 
 //                    String response = yelp.searchByLocation(term, GPSLocationService.currentLocation);
-                    String response = yelp.searchByLocation(term, GPSLocationService.currentLocation);
-
+                    String response = yelp.searchByLocation(term, address);
                     System.out.println(response);
                     Gson gson = new GsonBuilder().create();
 
                     ResultInfo result = gson.fromJson(response, ResultInfo.class);
-                    final BussnessInfo bussnessInfo = result.getBussnessInfo(index);
+                    final BussnessInfo bussnessInfo = result.getBussnessInfo(ran);
                     single_activty_info = bussnessInfo;
 
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
+                            System.out.println(bussnessInfo.name + " " + bussnessInfo.snippet_text);
+                            TextView title = (TextView) display.findViewById(R.id.activity_title);
+                            title.setText(bussnessInfo.name);
+
+                            TextView snippet_text = (TextView) display.findViewById(R.id.description);
+                            snippet_text.setText(bussnessInfo.snippet_text);
+
+                            TextView criteria = (TextView) display.findViewById(R.id.criteria);
+                            criteria.setText(term);
+
                             try {
 
                                 ImageView icon = (ImageView) display.findViewById(R.id.activity_icon);
+                                // Bitmap blurredIcon = BlurBuilder.blur(ResturantActivity.this, bussnessInfo.icon_img);
+
+//                                icon.setImageBitmap(blurredIcon);
                                 icon.setImageBitmap(bussnessInfo.icon_img);
 
                                 icon.setScaleType(ScaleType.FIT_XY);
+
+
+                                ImageView ratingImg = (ImageView) display.findViewById(R.id.rating);
+                                ratingImg.setImageBitmap(bussnessInfo.rating_img);
 
 
                             } catch (Exception e) {
@@ -277,9 +275,7 @@ public class ResturantActivity  extends AppCompatActivity
                                 e.printStackTrace();
                             }
 
-                            System.out.println(bussnessInfo.name);
-                            TextView title = (TextView) display.findViewById(R.id.activity_title);
-                            title.setText(bussnessInfo.name);
+
 
                         }
                     });
@@ -298,29 +294,6 @@ public class ResturantActivity  extends AppCompatActivity
 
     }
 
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        // Inflate the menu; this adds items to the action bar if it is present.
-//        getMenuInflater().inflate(R.menu.main, menu);
-//        return true;
-//    }
-//
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//        // Handle action bar item clicks here. The action bar will
-//        // automatically handle clicks on the Home/Up button, so long
-//        // as you specify a parent activity in AndroidManifest.xml.
-//        int id = item.getItemId();
-//
-//        //noinspection SimplifiableIfStatement
-//        if (id == R.id.action_settings) {
-//            System.out.println("Pressed Settings");
-//            return true;
-//        }
-//
-//        return super.onOptionsItemSelected(item);
-//    }
-
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
@@ -330,14 +303,21 @@ public class ResturantActivity  extends AppCompatActivity
             System.out.println("First Button");
             final Intent mainIntent = new Intent(ResturantActivity.this, MainActivity.class);
             ResturantActivity.this.startActivity(mainIntent);
+            finish();
         } else if (id == R.id.Second) {
             System.out.println("Already in Single Activiy");
 
         } else if (id == R.id.Third) {
+            final Intent barHopping = new Intent(ResturantActivity.this, BarHoppingMode.class);
+            ResturantActivity.this.startActivity(barHopping);
+            finish();
             System.out.println("Third Button");
 
 
         } else if (id == R.id.Fourth) {
+            final Intent events = new Intent(ResturantActivity.this, EventsActivity.class);
+            ResturantActivity.this.startActivity(events);
+            finish();
             System.out.println("Fourth Button");
 
 
@@ -345,7 +325,7 @@ public class ResturantActivity  extends AppCompatActivity
             System.out.println("First Section Button");
             final Intent mainIntent = new Intent(ResturantActivity.this, Setting_Page.class);
             ResturantActivity.this.startActivity(mainIntent);
-
+            finish();
         } else if (id == R.id.sectionTwo) {
             System.out.println("Second Section Button");
 
@@ -374,24 +354,35 @@ public class ResturantActivity  extends AppCompatActivity
 
         @Override
         protected Void doInBackground(Void... params) {
-            //if (fullDayPlan) {
-                try {
-                    Random r = new Random();
+            try {
+                Calendar c = Calendar.getInstance();
+                Log.e("Time HOD", "" + c.get(Calendar.HOUR_OF_DAY));
 
-                    int randNum = r.nextInt(limit);
-                    System.out.println("Random Number:  " + randNum + " limit: " + limit);
-                    getYelpSearchResult(randNum, "Restaurant", togetherlayout);
+                String cri = "Restaurant";
+                if(6 < c.get(Calendar.HOUR_OF_DAY) &&  c.get(Calendar.HOUR_OF_DAY)  <= 11){
 
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    cri = "Breakfast "+ breakfast ;
+                    Log.e("Time", cri );
+                }else if(12 <= c.get(Calendar.HOUR_OF_DAY) && c.get(Calendar.HOUR_OF_DAY) <= 17){
+
+                    cri = "Lunch " + lunch;
+                    Log.e("Time", cri );
+                }else{
+
+                    cri = "Dinner " + dinner ;
+                    Log.e("Time", cri );
                 }
-//            } else {
-//                try {
-//                    getYelpSearchResult(0, "Restaurant", finalAddress);
-//                } catch (InterruptedException e) {
-//                    e.printStackTrace();
-//                }
-//            }
+
+                Random r = new Random();
+                int randNum = r.nextInt(limit);
+
+                System.out.println("Random Number:  " + randNum + " limit: " + limit);
+                getYelpSearchResult(randNum, cri, togetherlayout);
+
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
             return null;
         }
 
@@ -404,3 +395,27 @@ public class ResturantActivity  extends AppCompatActivity
 
 }
 
+
+//class BlurBuilder {
+//    private static final float BITMAP_SCALE = 0.4f;
+//    private static final float BLUR_RADIUS = 0.1f;
+//
+//    public static Bitmap blur(Context context, Bitmap image) {
+//        int width = Math.round(image.getWidth() * BITMAP_SCALE);
+//        int height = Math.round(image.getHeight() * BITMAP_SCALE);
+//
+//        Bitmap inputBitmap = Bitmap.createScaledBitmap(image, width, height, false);
+//        Bitmap outputBitmap = Bitmap.createBitmap(inputBitmap);
+//
+//        RenderScript rs = RenderScript.create(context);
+//        ScriptIntrinsicBlur theIntrinsic = ScriptIntrinsicBlur.create(rs, Element.U8_4(rs));
+//        Allocation tmpIn = Allocation.createFromBitmap(rs, inputBitmap);
+//        Allocation tmpOut = Allocation.createFromBitmap(rs, outputBitmap);
+//        theIntrinsic.setRadius(BLUR_RADIUS);
+//        theIntrinsic.setInput(tmpIn);
+//        theIntrinsic.forEach(tmpOut);
+//        tmpOut.copyTo(outputBitmap);
+//
+//        return outputBitmap;
+//    }
+//}

@@ -36,37 +36,27 @@
     <Button
 
         android:id="@+id/dinnerPref"
-
         android:layout_width="fill_parent"
-
         android:layout_height="100dp"
-
         android:text="Dinner Preference"
-
         android:elevation="0dp"
         android:layout_weight="0.25"
         android:layout_below="@+id/lunchPref"
         android:layout_alignParentStart="true" />
 
-    <TextView
-        android:text="  Set the search limit"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/textView3"
-        android:textAllCaps="true"
-        />
+    <Button
+
+        android:id="@+id/activityPref"
+
+        android:layout_width="fill_parent"
+
+        android:text="Activity Preference"
+
+        android:elevation="0dp"
+        android:layout_weight="0.25"
+        android:layout_height="100dp" />
 
     <TableRow>
-
-        <SeekBar
-            android:layout_width="288dp"
-            android:layout_height="50dp"
-            android:id="@+id/seekBar"
-            android:max="14"
-            android:progress="5"
-            android:layout_marginStart="14dp"
-            android:layout_alignParentStart="true"
-            android:layout_below="@+id/dinnerPref" />
 
         <Space android:layout_height="wrap_content"
             android:layout_width="15dp" />
@@ -91,7 +81,6 @@
         />
 
     <TableRow>
-
         <SeekBar
             android:layout_width="288dp"
             android:layout_height="50dp"
