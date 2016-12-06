@@ -71,13 +71,25 @@
             android:clickable="true"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
+
             <ImageView
                 android:id="@+id/star"
                 android:layout_alignParentTop="true"
                 android:layout_centerHorizontal="true"
-                android:src="@drawable/star"
+                android:src="@drawable/deal"
                 android:layout_width="20dp"
                 android:layout_height="20dp" />
+
+            <TextView
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:text="No Deal"
+                android:id="@+id/deal_title"
+                android:gravity="center"
+                android:layout_alignParentLeft="false"
+                android:layout_alignParentBottom="false"
+                android:layout_centerVertical="true" />
+
         </RelativeLayout>
     </LinearLayout>
 

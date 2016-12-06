@@ -11,7 +11,7 @@
             android:title="Resturant Finder"/>
         <item
             android:id="@+id/Third"
-            android:title="Bar Hobber" />
+            android:title="Bar Hopper" />
         <item
             android:id="@+id/Fourth"
             android:title="Event Enthusiast" />

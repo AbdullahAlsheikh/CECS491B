@@ -5,16 +5,42 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.design.widget.NavigationView;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import com.facebook.AccessToken;
+import com.facebook.AccessTokenTracker;
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
+import com.facebook.appevents.AppEventsLogger;
+import com.facebook.login.LoginManager;
+import com.facebook.login.LoginResult;
+import com.facebook.login.widget.LoginButton;
+import com.facebook.login.widget.ProfilePictureView;
+
+import org.json.JSONObject;
+
+import java.util.concurrent.ExecutionException;
+
+import static com.example.uidesign.MainMenu.userId;
+
 /**
  * Created by Abdullah on 10/6/16.
  */
-public class Setting_Page  extends AppCompatActivity {
+public class Setting_Page  extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private Context mContext;
 
@@ -25,11 +51,115 @@ public class Setting_Page  extends AppCompatActivity {
     TextView limitText, radiusText;
     private SharedPreferences.Editor mEditor;
 
+    LoginButton facebookButton;
+    CallbackManager callbackManager;
+    private AccessToken accessToken;
+    AccessTokenTracker accessTokenTracker;
+    String[] fbInfo;
+    private NavigationView navView;
+    private View header;
+    ProfilePictureView profilePictureView;
+    TextView facebookName;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.setting_layout);
+        setContentView(R.layout.setting_activity_main);
+
+
+        fbInfo = new String[2];
+
+
+        callbackManager = CallbackManager.Factory.create();
+
+        facebookButton = (LoginButton) findViewById(R.id.button_facebook_login);
+        accessToken = AccessToken.getCurrentAccessToken();
+        navView = (NavigationView) findViewById(R.id.nav_view);
+        header = navView.getHeaderView(0);
+        profilePictureView = (ProfilePictureView) header.findViewById(R.id.facebook_picture);
+        facebookName = (TextView) header.findViewById(R.id.facebook_name);
+
+        LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+
+
+            @Override
+            public void onSuccess(LoginResult loginResult) {
+
+                //accessToken之後或許還會用到 先存起來
+                accessToken = loginResult.getAccessToken();
+
+                try {
+                    fbInfo = getFacebookInfo();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                }
+                Log.d("FB", "loading image with test " + fbInfo[1]);
+                loadImage(fbInfo[1]);
+                facebookName.setText(fbInfo[0]);
+
+            }
+
+            //登入取消
+            @Override
+            public void onCancel() {
+                // App code
+                Log.d("FB", "CANCEL");
+            }
+
+            //登入失敗
+            @Override
+            public void onError(FacebookException exception) {
+                // App code
+                Log.d("FB", exception.toString());
+            }
+
+
+        });
+        //always update
+        updateWithToken(accessToken);
+
+        accessTokenTracker = new AccessTokenTracker() {
+            @Override
+            protected void onCurrentAccessTokenChanged(AccessToken oldAccessToken, AccessToken newAccessToken) {
+                updateWithToken(newAccessToken);
+            }
+        };
+
+        if(isLoggedIn()){
+
+            try {
+                fbInfo = getFacebookInfo();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            }
+            Log.d("FB", "loading image with test " + fbInfo[1]);
+            loadImage(fbInfo[1]);
+            facebookName.setText(fbInfo[0]);
+
+
+            //loadImage(fbInfo[1]);
+        }
+
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.setDrawerListener(toggle);
+        toggle.syncState();
+
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+
+
+
 
         mContext = getApplicationContext();
 
@@ -79,6 +209,8 @@ public class Setting_Page  extends AppCompatActivity {
             radiusBar.setProgress(defRadius - 5);
             System.out.println("Value of radius on second run: "+ defRadius);
         }
+
+
 
 
 
@@ -205,13 +337,77 @@ public class Setting_Page  extends AppCompatActivity {
 
             }});
 
-        //checkPref();
+
     }
+
+    public void loadImage(String id) {
+        profilePictureView.setProfileId(id);
+        profilePictureView.setPresetSize(ProfilePictureView.SMALL);
+    }
+
+    private void updateWithToken(AccessToken currentAccessToken) {
+
+        if (currentAccessToken != null) {
+
+            try {
+                fbInfo = getFacebookInfo();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            }
+            Log.d("FB", "loading image with test " + fbInfo[1]);
+            loadImage(fbInfo[1]);
+            facebookName.setText(fbInfo[0]);
+            
+
+        }else{
+
+            Log.d("FB", "no logged in user");
+
+            navView = (NavigationView) findViewById(R.id.nav_view);
+            header = navView.getHeaderView(0);
+            profilePictureView = (ProfilePictureView) header.findViewById(R.id.facebook_picture);
+            profilePictureView.setProfileId("");
+            profilePictureView.setPresetSize(ProfilePictureView.SMALL);
+            facebookName.setText("User Name");
+
+        }
+
+    }
+
+    @Override
+    protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        callbackManager.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        // Logs 'install' and 'app activate' App Events.
+        AppEventsLogger.activateApp(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        // Logs 'app deactivate' App Event.
+        AppEventsLogger.deactivateApp(this);
+    }
+
 
     @Override
     public void onBackPressed() {
         checkPref();
-        
+        menuSave();
+        super.onBackPressed();
+    }
+
+    public void menuSave() {
+        checkPref();
         String a = mSharedPreferences.getString("lunchCat", "");
         System.out.println("String from preferences for lunch: "+ a);
         String a2 = mSharedPreferences.getString("dinnerCat", "");
@@ -220,23 +416,22 @@ public class Setting_Page  extends AppCompatActivity {
         System.out.println("String from preferences for break fast: "+ a3);
         String a4 = mSharedPreferences.getString("activityCat", "");
         System.out.println("String from preferences for activity: "+ a4);
-        super.onBackPressed();
     }
 
     private void checkPref(){
 
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(Setting_Page.this);
         mEditor = mSharedPreferences.edit();
-        String[] breakfast = {"DelisB","AmericanB","SandwichesB", "Coffee and TeaB", "BakeryB", "SaladB"};
+        String[] breakfast = {"DelisB","AmericanB","SandwichesB", "Coffee and TeaB", "BakeryB", "SaladB", "DealsB"};
 
         String[] lunch = {"ChineseL","IndianL","MexicanL","AmericanL", "ItalianL", "JapaneseL", "KoreanL",
-                "CombodianL", "VietnameseL", "GreekL", "MediterraneanL", "Sea FoodL"};
+                "CombodianL", "VietnameseL", "GreekL", "MediterraneanL", "Sea FoodL", "DealsL"};
 
         String[] dinner = {"ChineseD","IndianD","MexicanD","AmericanD", "ItalianD", "JapaneseD", "KoreanD",
-                "CombodianD", "VietnameseD", "GreekD", "MediterraneanD", "Sea FoodD"};
+                "CombodianD", "VietnameseD", "GreekD", "MediterraneanD", "Sea FoodD", "DealsD"};
 
         String[] activity = {"MuseumA","AquariumA","ParkA","Amusement ParkA", "MallA", "Movie TheatreA", "Skate ParkA",
-                "Skating RinkA", "BeachA", "SkiingA", "SnowboardingA"};
+                "Skating RinkA", "BeachA", "SkiingA", "SnowboardingA","DealsA"};
 
 
 
@@ -277,4 +472,91 @@ public class Setting_Page  extends AppCompatActivity {
 
 
     }
+
+    @SuppressWarnings("StatementWithEmptyBody")
+    public boolean onNavigationItemSelected(MenuItem item) {
+        // Handle navigation view item clicks here.
+        int id = item.getItemId();
+        menuSave();
+        if (id == R.id.First) {
+            final Intent singleResturant = new Intent(Setting_Page.this, MainActivity.class);
+            Setting_Page.this.startActivity(singleResturant);
+            finish();
+            System.out.println("within Full Day Activity");
+
+            // Handle the camera action
+        } else if (id == R.id.Second) {
+            final Intent singleResturant = new Intent(Setting_Page.this, ResturantActivity.class);
+            Setting_Page.this.startActivity(singleResturant);
+            finish();
+            System.out.println("Second Button");
+
+        } else if (id == R.id.Third) {
+            System.out.println("Third Button");
+
+
+        } else if (id == R.id.Fourth) {
+            System.out.println("Fourth Button");
+
+
+        } else if (id == R.id.sectionOne) {
+            System.out.println("Already in setting");
+
+
+
+        } else if (id == R.id.sectionTwo) {
+            System.out.println("Second Section Button");
+
+        }
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
+    }
+
+    public boolean isLoggedIn() {
+        AccessToken accessToken = AccessToken.getCurrentAccessToken();
+        return accessToken != null;
+    }
+
+    public static String[] getFacebookInfo() throws InterruptedException, ExecutionException {
+        final String[] info = new String[2];
+
+
+
+        // Run facebook graphRequest.
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                GraphRequest request = GraphRequest.newMeRequest(
+                        AccessToken.getCurrentAccessToken(),
+                        new GraphRequest.GraphJSONObjectCallback() {
+
+                            //當RESPONSE回來的時候
+                            @Override
+                            public void onCompleted(JSONObject object, GraphResponse response) {
+                                userId = object.optString("id");
+                                //讀出姓名 ID FB個人頁面連結
+                                Log.d("FB", "complete");
+                                Log.d("FB", object.optString("name"));
+                                Log.d("FB", object.optString("link"));
+                                Log.d("FB", userId);
+                                info[0] = object.optString("name");
+                                info[1] = object.optString("id");
+
+
+                            }
+                        });
+                Bundle parameters = new Bundle();
+                parameters.putString("fields", "id,name,link");
+                request.setParameters(parameters);
+                request.executeAndWait();
+
+            }
+        });
+        t.start();
+        t.join();
+        return info;
+    }
 }
+

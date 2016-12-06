@@ -111,15 +111,6 @@
                     android:layout_width="0dp"
                     android:layout_weight="0.25"
                     android:layout_height="100dp"
-                    android:background="#03ca17"
-                    android:src= "@android:drawable/sym_action_call"
-                    android:id="@+id/callButton"
-                    android:layout_alignParentBottom="true"
-                    android:layout_toEndOf="@+id/navButton" />
-                <ImageButton
-                    android:layout_width="0dp"
-                    android:layout_weight="0.25"
-                    android:layout_height="100dp"
                     android:background="@color/Blue"
                     android:src= "@drawable/renew"
                     android:id="@+id/eventsReload"

@@ -13,6 +13,7 @@ import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -25,6 +26,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -38,7 +40,6 @@ import com.facebook.login.widget.LoginButton;
 import com.facebook.login.widget.ProfilePictureView;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
-import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
@@ -50,13 +51,14 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Random;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
-import static com.example.uidesign.BarHoppingMode.contains;
 import static com.example.uidesign.MainMenu.userId;
 
-public class MainActivity extends  AppCompatActivity
+public class BarHoppingMode extends  AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private ProgressDialog loadingSpinner;
@@ -69,13 +71,9 @@ public class MainActivity extends  AppCompatActivity
 
     String breakfast;
     String lunch;
-    String dinner, activity;
+    String dinner;
 
     String businessName;
-    String[] business;
-
-
-
     private String consumerKey = "dudmo3ssHxvpUP_i_Lw60A";
     private String consumerSecret = "fOhwH5mUo_CyzX2D2vcDUc8FNw8";
     private String token = "yPhkb0u9cRxGE8ikWRkH3ceMCCpKYpQA";
@@ -98,61 +96,63 @@ public class MainActivity extends  AppCompatActivity
     double radius = yelp.getraduis();
     String address = "California State University, Long Beach, CA";
 
+    SwipeLayout swipeLayout;
+    Toolbar toolbar;
+    LinearLayout listCubes;
 
-    private InterstitialAd mInterstitial;
+    String[] business;
 
     LoginButton facebookButton;
     CallbackManager callbackManager;
     private AccessToken accessToken;
     AccessTokenTracker accessTokenTracker;
     String[] fbInfo;
-    private View header;
-    private NavigationView navView;
-    ProfilePictureView profilePictureView;
+    NavigationView navView;
+    View header;
     TextView facebookName;
-    public boolean[] dealCheck = new boolean[5];
+    ProfilePictureView profilePictureView;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
         mContext = getApplicationContext();
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
-
-        accessToken = AccessToken.getCurrentAccessToken();
-
 
         AdView mAdView = (AdView) findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder().build();
         mAdView.loadAd(adRequest);
-
-
+        accessToken = AccessToken.getCurrentAccessToken();
 
         //limit = mSharedPreferences.getInt("limit", 0);
         limit = 19;
-        //yelp.setLimit(limit);
+//        yelp.setLimit(limit);
 
-        radius = (double) mSharedPreferences.getInt("radius", 0);
+        radius = (double)mSharedPreferences.getInt("radius", 0);
         yelp.setRadius(radius);
 
-
-        business = new String[5];
-        breakfast = mSharedPreferences.getString("breakfastCat", "");
-        lunch = mSharedPreferences.getString("lunchCat", "");
-        dinner = mSharedPreferences.getString("dinnerCat", "");
-        activity = mSharedPreferences.getString("activityCat", "");
+//        breakfast = mSharedPreferences.getString("breakfastCat", "");
+//        lunch = mSharedPreferences.getString("lunchCat", "");
+//        dinner = mSharedPreferences.getString("dinnerCat", "");
 
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
 
-        SwipeLayout swipeLayout = (SwipeLayout)findViewById(R.id.content_main);
-        swipeLayout.setDragEdge(SwipeLayout.DragEdge.Bottom);
 
+        //initialize business names array
+        business = new String[5];
         TextView bottominformation = (TextView) findViewById(R.id.information);
+
+        toolbar.setBackgroundColor(getResources().getColor(R.color.DarkPurple));
+        swipeLayout = (SwipeLayout)findViewById(R.id.content_main);
+        swipeLayout.setDragEdge(SwipeLayout.DragEdge.Bottom);
+        swipeLayout.setBackgroundColor(getResources().getColor(R.color.Purple));
+        listCubes = (LinearLayout) findViewById(R.id.listCubes);
+//        listCubes.setBackgroundColor(getResources().getColor(R.color.Purple));
 
 
 
@@ -166,23 +166,19 @@ public class MainActivity extends  AppCompatActivity
             public void onPlaceSelected(Place place) {
                 // TODO: Get info about the selected place.
 
-                stopService(new Intent(MainActivity.this, GPSLocationService.class));
+                stopService(new Intent(BarHoppingMode.this, GPSLocationService.class));
 
                 GPSLocationService.currentLocation = (String) place.getAddress();
 
                 autocompleteFragment.setText("GPSLocationService.currentLocation");
 
                 Log.i(MainActivity.class.getName(), "Place: " + GPSLocationService.currentLocation);
-
-
             }
 
             @Override
             public void onError(Status status) {
-
             }
         });
-
 
 
         ImageButton autocompleteClear = (ImageButton) findViewById(R.id.place_autocomplete_clear_button);
@@ -190,7 +186,7 @@ public class MainActivity extends  AppCompatActivity
         autocompleteClear.setOnClickListener(new Button.OnClickListener() {
             public void onClick(View v) {
 
-                startService(new Intent(MainActivity.this, GPSLocationService.class));
+                startService(new Intent(BarHoppingMode.this, GPSLocationService.class));
 
                 final Handler handler = new Handler();
                 handler.postDelayed(new Runnable() {
@@ -209,10 +205,11 @@ public class MainActivity extends  AppCompatActivity
         });
 
 
-        System.out.println("TestNetwork: " + isNetworkAvailable());
+
 
 
         list_cube0 = (SwipeLayout) findViewById(R.id.first_cube);
+        //list_cube0
         list_cube0.setShowMode(SwipeLayout.ShowMode.PullOut);
         View starBottView = list_cube0.findViewById(R.id.starbott);
 
@@ -271,19 +268,36 @@ public class MainActivity extends  AppCompatActivity
         assert fullday != null;
 
 
-        if(firstPlanActivite && isNetworkAvailable() && GPSLocationService.currentLocation != null){
+        LinearLayout lyout_cube0 = (LinearLayout) list_cube0.findViewById(R.id.cubeInterface);
+        lyout_cube0.setBackgroundColor(getResources().getColor(R.color.DarkPurple));
 
+        LinearLayout lyout_cube1 = (LinearLayout) list_cube.findViewById(R.id.cubeInterface);
+        lyout_cube1 .setBackgroundColor(getResources().getColor(R.color.DarkPurple));
+
+        LinearLayout lyout_cube2 = (LinearLayout) list_cube2.findViewById(R.id.cubeInterface);
+        lyout_cube2 .setBackgroundColor(getResources().getColor(R.color.DarkPurple));
+
+        LinearLayout lyout_cube3 = (LinearLayout) list_cube3.findViewById(R.id.cubeInterface);
+        lyout_cube3.setBackgroundColor(getResources().getColor(R.color.DarkPurple));
+
+        LinearLayout lyout_cube4 = (LinearLayout) list_cube4.findViewById(R.id.cubeInterface);
+        lyout_cube4.setBackgroundColor(getResources().getColor(R.color.DarkPurple));
+
+
+
+        if(firstPlanActivite && isNetworkAvailable() && GPSLocationService.currentLocation != null){
             planExcuteText = "Loading Data";
             new GeneratePlanTask().execute();
             firstPlanActivite = false;
         }
 
-            fullday.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    //Snackbar.make(view, "Pressed Full Day", Snackbar.LENGTH_LONG)
-                    //.setAction("Action", null).show();
-                    if (isNetworkAvailable() && GPSLocationService.currentLocation != null) {
+        fullday.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Snackbar.make(view, "Pressed Full Day", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
+
+                if (isNetworkAvailable() && GPSLocationService.currentLocation != null) {
 
                     try {
 
@@ -294,26 +308,20 @@ public class MainActivity extends  AppCompatActivity
                         list_cube4.setVisibility(list_cube4.VISIBLE);
                         planExcuteText = "Refreshing Entire Plan";
                         new GeneratePlanTask().execute();
-//
-
 
                     } catch (Exception e) {
                         System.out.println("full day set on click :Error -> " + e);
                         e.printStackTrace();
                     }
-                    }else {
-                        Toast.makeText(MainActivity.this,"No Internet Connection", Toast.LENGTH_SHORT).show();
-                    }
-
 
                 }
-            });
+
+            }
+        });
 
 
-
-        bottominformation.setText("Address:\n " + GPSLocationService.currentLocation + "\nlimit:" +
-                limit + "\nRadius:" + radius + "\n" + "breakfast" + breakfast  + "\nlunch" + lunch
-                + "\nDinner" + dinner + " Activity: " + activity);
+        bottominformation.setText("Address:\n " + GPSLocationService.currentLocation + "\nlimit:" + limit + "\nRadius:" + radius + "\n" + "breakfast" + breakfast  + "\nlunch" + lunch + "\nDinner" + dinner);
+        bottominformation.setText("Address:\n " + address + "\nlimit:" + limit + "\nRadius:" + radius + "\n" + "breakfast" + breakfast  + "\nlunch" + lunch + "\nDinner" + dinner);
 
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -324,6 +332,8 @@ public class MainActivity extends  AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+
         navView = (NavigationView) findViewById(R.id.nav_view);
         header = navView.getHeaderView(0);
         profilePictureView = (ProfilePictureView) header.findViewById(R.id.facebook_picture);
@@ -341,15 +351,14 @@ public class MainActivity extends  AppCompatActivity
             Log.d("FB", "loading image with test " + fbInfo[1]);
             loadImage(fbInfo[1]);
             facebookName.setText(fbInfo[0]);
+
+
             //loadImage(fbInfo[1]);
         }
 
+
         updateWithToken(accessToken);
-
     }
-
-
-
 
     /**
      * When pressing any of the activities, here to process
@@ -409,6 +418,8 @@ public class MainActivity extends  AppCompatActivity
         });
 
 
+
+
         display.addRevealListener(R.id.delete, new SwipeLayout.OnRevealListener() {
             @Override
             public void onReveal(View child, SwipeLayout.DragEdge edge, float fraction, int distance) {
@@ -430,7 +441,6 @@ public class MainActivity extends  AppCompatActivity
                 try {
                     Intent myIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(cube_info[index].mobile_url));
                     startActivity(myIntent);
-
                 } catch (Exception e) {
                     System.out.println("Been in on click method");
                 }
@@ -493,9 +503,7 @@ public class MainActivity extends  AppCompatActivity
     }
 
 
-    public synchronized void getYelpSearchResult(final int ran, final int index ,final String term, final SwipeLayout display, int dealChecker) throws InterruptedException{
-
-        final int dealChecking = dealChecker;
+    public synchronized void getYelpSearchResult(final int ran, final int index ,final String term, final SwipeLayout display) throws InterruptedException{
 
         Thread thread = new Thread(new Runnable() {
             @Override
@@ -504,29 +512,22 @@ public class MainActivity extends  AppCompatActivity
                 System.out.println("Index:  " + ran +  " Term:" + term);
                 try{
 
-                     String response = yelp.searchByLocation(term, GPSLocationService.currentLocation);
-                    //String response = yelp.searchByLocation(term, address);
+                    String response = yelp.searchByLocation(term, GPSLocationService.currentLocation);
+//                    String response = yelp.searchByLocation(term, address);
                     System.out.println(response);
                     Gson gson = new GsonBuilder().create();
-                    final String[] crit = term.split(" ");
 
                     ResultInfo result = gson.fromJson(response, ResultInfo.class);
                     final BussnessInfo bussnessInfo = result.getBussnessInfo(ran);
                     cube_info[index] = bussnessInfo;
 
-
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             try {
-
                                 System.out.println(bussnessInfo.name);
                                 TextView title = (TextView) display.findViewById(R.id.activity_title);
                                 title.setText(bussnessInfo.name);
-
-                                TextView cri = (TextView) display.findViewById(R.id.activity_criteria);
-                                cri.setText(crit[0].trim());
-
 
                                 try{
                                     //Processing Main Bussness Image
@@ -540,22 +541,14 @@ public class MainActivity extends  AppCompatActivity
                                     img.printStackTrace();
                                 }
 
-                                TextView dealTitle = (TextView) display.findViewById(R.id.deal_title);
-                                dealTitle.setText("No Deal");
-
-                                //my part 11/11
-                                if (bussnessInfo.deals.get(0) != null){
-                                    dealCheck[dealChecking] = true;
-                                    dealTitle.setText(bussnessInfo.deals.get(0).title + "\n" + "*see Yelp for more details.");
-                                }
-
+                                businessName = bussnessInfo.name;
 
                             } catch (Exception e) {
                                 System.out.println("Thread Error -> " + e);
                                 e.printStackTrace();
                             }
 
-                            businessName = bussnessInfo.name;
+
                         }
                     });
 
@@ -582,7 +575,7 @@ public class MainActivity extends  AppCompatActivity
 
             super.onBackPressed();
 
-            }
+        }
     }
 
 
@@ -592,37 +585,38 @@ public class MainActivity extends  AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
         if (id == R.id.First) {
-
-            System.out.println("within Full Day Activity");
+            final Intent fullDay = new Intent(BarHoppingMode.this, MainActivity.class);
+            BarHoppingMode.this.startActivity(fullDay);
+            finish();
 
             // Handle the camera action
         } else if (id == R.id.Second) {
-            final Intent singleResturant = new Intent(MainActivity.this, ResturantActivity.class);
-            MainActivity.this.startActivity(singleResturant);
+            final Intent singleResturant = new Intent(BarHoppingMode.this, ResturantActivity.class);
+            BarHoppingMode.this.startActivity(singleResturant);
             finish();
             System.out.println("Second Button");
 
         } else if (id == R.id.Third) {
-            //this takes you to the bar hopping mode
+            //bar hopping mode
             System.out.println("Third Button");
-            final Intent barMode = new Intent(MainActivity.this, BarHoppingMode.class);
-            MainActivity.this.startActivity(barMode);
-            finish();
-
 
 
         } else if (id == R.id.Fourth) {
+            final Intent events = new Intent(BarHoppingMode.this, EventsActivity.class);
+            BarHoppingMode.this.startActivity(events);
+            finish();
             System.out.println("Fourth Button");
 
 
         } else if (id == R.id.sectionOne) {
             System.out.println("First Section Button");
-            final Intent mainIntent = new Intent(MainActivity.this, Setting_Page.class);
-            MainActivity.this.startActivity(mainIntent);
+            final Intent mainIntent = new Intent(BarHoppingMode.this, Setting_Page.class);
+            BarHoppingMode.this.startActivity(mainIntent);
             finish();
 
 
         } else if (id == R.id.sectionTwo) {
+
             System.out.println("Second Section Button");
 
         }
@@ -632,11 +626,28 @@ public class MainActivity extends  AppCompatActivity
         return true;
     }
 
+    public boolean isNetworkAvailable() {
+        boolean haveConnectedWifi = false;
+        boolean haveConnectedMobile = false;
+
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo[] netInfo = cm.getAllNetworkInfo();
+        for (NetworkInfo ni : netInfo) {
+            if (ni.getTypeName().equalsIgnoreCase("WIFI"))
+                if (ni.isConnected())
+                    haveConnectedWifi = true;
+            if (ni.getTypeName().equalsIgnoreCase("MOBILE"))
+                if (ni.isConnected())
+                    haveConnectedMobile = true;
+        }
+        return haveConnectedWifi || haveConnectedMobile;
+    }
+
 
     public class GeneratePlanTask extends AsyncTask<Void, Void, Void> {
         protected void onPreExecute() {
 
-            loadingSpinner = new ProgressDialog(MainActivity.this);
+            loadingSpinner = new ProgressDialog(BarHoppingMode.this);
             loadingSpinner.setCancelable(false);
             loadingSpinner.setMessage(planExcuteText + " ...");
             loadingSpinner.setProgressStyle(ProgressDialog.STYLE_SPINNER);
@@ -656,128 +667,113 @@ public class MainActivity extends  AppCompatActivity
 
 
                 System.out.println("Random Number:  " + randNum + " limit: " + limit + " Catagory:" + breakfast);
-                getYelpSearchResult(randNum, 0, "breakfast " + breakfast, list_cube0,0);
-
-
+                Log.i("Test", "Random Number:  " + randNum + " limit: " + limit + " Catagory:" + dinner);
+                getYelpSearchResult(randNum, 0, "Bar Club NightClub Lounge", list_cube0);
+                //add to business array
                 Thread.sleep(100);
 
 
                 business[0] = businessName;
-
+                //businesses.add(0,businessName);
 
                 Log.i("Var", "BussnessName: " + businessName + " Ran" + randNum);
 
+
+                System.out.println("Random Number:  " + randNum + " limit: " + limit);
+                Log.i("Test", "Random Number:  " + randNum + " limit: " + limit + " Catagory:" + dinner);
                 do {
                     randNum = r.nextInt(limit);
-                    System.out.println("Random Number:  " + randNum + " limit: " + limit);
-                    getYelpSearchResult(randNum, 1, "Activity " + activity, list_cube,1);
+                    getYelpSearchResult(randNum, 1, "Bar Club NightClub Lounge", list_cube);
                     Thread.sleep(100);
                     Log.i("Var", "BussnessName: " + businessName + " Ran" + randNum);
                 }while (contains(business,businessName));
                 business[1] = businessName;
+                //businesses.add(1,businessName);
 
 
                 System.out.println("Random Number:  " + randNum + " limit: " + limit + " Catagory:" + lunch);
                 Log.i("Test", "Random Number:  " + randNum + " limit: " + limit + " Catagory:" + dinner);
                 do {
                     randNum = r.nextInt(limit);
-                    System.out.println("Random Number:  " + randNum + " limit: " + limit + " Catagory:" + lunch);
-                    getYelpSearchResult(randNum, 2, "Lunch " + lunch, list_cube2,2);
+                    getYelpSearchResult(randNum, 2, "Bar Club NightClub Lounge", list_cube2);
                     Thread.sleep(100);
                     Log.i("Var", "BussnessName: " + businessName + " Ran" + randNum);
                 }while(contains(business,businessName));
                 business[2] = businessName;
-                //
+                //businesses.add(2,businessName);
+
+
+
 
                 System.out.println("Random Number:  " + randNum + " limit: " + limit);
                 Log.i("Test", "Random Number:  " + randNum + " limit: " + limit + " Catagory:" + dinner);
                 do{
                     randNum = r.nextInt(limit);
-                    getYelpSearchResult(randNum, 3, "Activity "+ activity, list_cube3,3);
+                    getYelpSearchResult(randNum, 3, "Bar Club NightClub Lounge", list_cube3);
                     Thread.sleep(100);
                     Log.i("Var", "BussnessName: " + businessName + " Ran" + randNum);
                 }while(contains(business,businessName));
                 business[3] = businessName;
+                //businesses.add(3,businessName);
+
+
+
 
                 System.out.println("Random Number:  " + randNum + " limit: " + limit + " Catagory:" + dinner);
                 Log.i("Test", "Random Number:  " + randNum + " limit: " + limit + " Catagory:" + dinner);
                 do{
                     randNum = r.nextInt(limit);
-                    getYelpSearchResult(randNum, 4, "Dinner " + dinner, list_cube4,4);
+                    getYelpSearchResult(randNum, 4, "Bar Club NightClub Lounge", list_cube4);
                     Thread.sleep(100);
                     Log.i("Var", "BussnessName: " + businessName + " Ran" + randNum);
                 }while(contains(business,businessName));
                 business[4] = businessName;
+                //businesses.add(4,businessName);
+
+
+               // businesses.clear();
 
                 for (String s : business){
                     //Log.i("XXX",business[i]);
                     System.out.println("businessNameWr: " + s);
                     //businesses.remove(i);
                 }
-
             } catch (Exception e) {
                 e.printStackTrace();
             }
+
+
+
             return null;
         }
 
+        @Override
         protected void onPostExecute(Void aVoid) {
             loadingSpinner.dismiss();
-
-
-            //my part 11/11
-            final Handler handler = new Handler();
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-
-                    if (dealCheck[0] == true){
-                        list_cube0.open(true, SwipeLayout.DragEdge.Bottom);
-                    }
-                    if (dealCheck[1] == true){
-                        list_cube.open(true, SwipeLayout.DragEdge.Bottom);
-                    }
-                    if (dealCheck[2] == true){
-                        list_cube2.open(true, SwipeLayout.DragEdge.Bottom);
-                    }
-                    if (dealCheck[3] == true){
-                        list_cube3.open(true, SwipeLayout.DragEdge.Bottom);
-                    }
-                    if (dealCheck[4] == true){
-                        list_cube4.open(true, SwipeLayout.DragEdge.Bottom);
-                    }
-                    Arrays.fill(dealCheck, false);
-
-                }
-            }, 1000);
-
-
-
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-
-                    list_cube0.close(true);
-                    list_cube.close(true);
-                    list_cube2.close(true);
-                    list_cube3.close(true);
-                    list_cube4.close(true);
-
-                }
-            }, 2000);
-
-
-
-
         }
     }
+
+    public static boolean contains(String[] arr, String targetValue) {
+        Set<String> set = new HashSet<String>(Arrays.asList(arr));
+        return set.contains(targetValue);
+    }
+//    public static boolean contains(String[] arr, String targetValue) {
+//        for(String s: arr){
+//            if(!targetValue.equals(null)) {
+//                if (s.equals(targetValue))
+//                                            return true;
+//
+//            }
+//        }
+//        return false;
+//    }
 
 
     public class RefreshTask extends AsyncTask<SwipeLayout, Void, Void> {
 
         protected void onPreExecute() {
 
-            loadingSpinner = new ProgressDialog(MainActivity.this);
+            loadingSpinner = new ProgressDialog(BarHoppingMode.this);
             loadingSpinner.setCancelable(false);
             loadingSpinner.setMessage("Refreshing Event ...");
             loadingSpinner.setProgressStyle(ProgressDialog.STYLE_SPINNER);
@@ -794,11 +790,20 @@ public class MainActivity extends  AppCompatActivity
 
                 Random random = new Random();
 
-                int randNum = random.nextInt(limit);
+                do {
+                    int randNum = random.nextInt(limit);
+                    System.out.println("Random Number:  " + randNum + " limit: " + limit + " Catagory:" + breakfast);
+                    getYelpSearchResult(randNum, refreshIndex, "Bar Club NightClub Lounge", r);
+                    Thread.sleep(100);
+                }while (contains(business,businessName));
+                    business[refreshIndex] = businessName;
+                    for (String s : business){
+                        //Log.i("XXX",business[i]);
+                        System.out.println("businessNameWr: " + s);
+                        //businesses.remove(i);
+                }
 
-
-                System.out.println("Random Number:  " + randNum + " limit: " + limit + " Catagory:" + breakfast);
-                getYelpSearchResult(randNum, refreshIndex, getCriteria(), r,0);
+                    //TODO: add an array with the bussiness instead of arraylist,
 
 
             } catch (Exception e) {
@@ -807,58 +812,13 @@ public class MainActivity extends  AppCompatActivity
             return null;
         }
 
-        private String getCriteria(){
-            String refreshcriteria = null;
-            switch (refreshIndex){
-                case 0:
-                    refreshcriteria = "breakfast " + breakfast;
-                    Log.i("getCriteria", refreshcriteria +" "+refreshIndex);
-                    break;
-                case 1:
-                    refreshcriteria = "Acivity " + activity;
-                    Log.i("getCriteria", refreshcriteria +" "+refreshIndex);
-                    break;
-                case 2:
-                    refreshcriteria = "Lunch " + lunch;
-                    Log.i("getCriteria", refreshcriteria +" "+refreshIndex);
-                    break;
-                case 3:
-                    refreshcriteria =  "Activity " + activity;
-                    Log.i("getCriteria", refreshcriteria +" "+refreshIndex);
-                    break;
-                case 4:
-                    refreshcriteria = "Dinner " + dinner;
-                    Log.i("getCriteria", refreshcriteria +" "+refreshIndex);
-                    break;
-            }
-
-            return refreshcriteria;
-        }
 
 
         @Override
-        protected void onPostExecute(Void aVoid)
-        {
+        protected void onPostExecute(Void aVoid) {
             loadingSpinner.dismiss();
         }
 
-    }
-
-    public boolean isNetworkAvailable() {
-        boolean haveConnectedWifi = false;
-        boolean haveConnectedMobile = false;
-
-        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo[] netInfo = cm.getAllNetworkInfo();
-        for (NetworkInfo ni : netInfo) {
-            if (ni.getTypeName().equalsIgnoreCase("WIFI"))
-                if (ni.isConnected())
-                    haveConnectedWifi = true;
-            if (ni.getTypeName().equalsIgnoreCase("MOBILE"))
-                if (ni.isConnected())
-                    haveConnectedMobile = true;
-        }
-        return haveConnectedWifi || haveConnectedMobile;
     }
 
     public boolean isLoggedIn() {
@@ -909,6 +869,7 @@ public class MainActivity extends  AppCompatActivity
 
 
     public void loadImage(String id) {
+
         profilePictureView.setProfileId(id);
         profilePictureView.setPresetSize(ProfilePictureView.SMALL);
     }
@@ -928,18 +889,20 @@ public class MainActivity extends  AppCompatActivity
             loadImage(fbInfo[1]);
             facebookName.setText(fbInfo[0]);
 
-
         }else{
 
             Log.d("FB", "no logged in user");
             profilePictureView.setProfileId("");
             profilePictureView.setPresetSize(ProfilePictureView.SMALL);
             facebookName.setText("User Name");
+
+
         }
 
     }
-
 }
+
+
 
 
 

@@ -1,9 +1,12 @@
 package com.example.uidesign;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -23,12 +26,23 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.facebook.AccessToken;
+import com.facebook.AccessTokenTracker;
+import com.facebook.CallbackManager;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
+import com.facebook.login.widget.LoginButton;
+import com.facebook.login.widget.ProfilePictureView;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
 import com.google.android.gms.location.places.ui.PlaceSelectionListener;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+
+import org.json.JSONObject;
 
 import java.io.InputStream;
 import java.io.InterruptedIOException;
@@ -37,6 +51,9 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Random;
+import java.util.concurrent.ExecutionException;
+
+import static com.example.uidesign.MainMenu.userId;
 
 
 /**
@@ -52,11 +69,6 @@ public class EventsActivity  extends AppCompatActivity
     boolean runAtStart = true;
     int previousIndex = 0;
 
-//    String consumerKey = "dudmo3ssHxvpUP_i_Lw60A";
-//    String consumerSecret = "fOhwH5mUo_CyzX2D2vcDUc8FNw8";
-//    String token = "yPhkb0u9cRxGE8ikWRkH3ceMCCpKYpQA";
-//    String tokenSecret = "-WoZd39mwu4X9iVDXo5bxDNOBBU";
-//    Yelp yelp = new Yelp(consumerKey, consumerSecret, token, tokenSecret);
 
 
     BussnessInfo single_activty_info = null;
@@ -66,6 +78,17 @@ public class EventsActivity  extends AppCompatActivity
     int mIndex = 0;
     String city;
     String eventAddress, webURL;
+    private InterstitialAd mInterstitial;
+
+    LoginButton facebookButton;
+    CallbackManager callbackManager;
+    private AccessToken accessToken;
+    AccessTokenTracker accessTokenTracker;
+    String[] fbInfo;
+    ProfilePictureView profilePictureView;
+    NavigationView navView;
+    View header;
+    TextView facebookName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,6 +100,13 @@ public class EventsActivity  extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        accessToken = AccessToken.getCurrentAccessToken();
+
+//        Interstitial Ad
+        mInterstitial = new InterstitialAd(this);
+        mInterstitial.setAdUnitId(getString(R.string.events_page_ad_unit_id));
+        AdRequest request = new AdRequest.Builder().build();
+        mInterstitial.loadAd(request);
 
         //SwipeLayout swipeLayout = (SwipeLayout)findViewById(R.id.resutrant_activity);
         //swipeLayout.setDragEdge(SwipeLayout.DragEdge.Bottom);
@@ -98,7 +128,13 @@ public class EventsActivity  extends AppCompatActivity
 
 
                 String addressArray[] = GPSLocationService.currentLocation.split(", ");
-                GPSLocationService.currentCity = addressArray[1];
+                if(addressArray.length > 3){
+                    GPSLocationService.currentCity = addressArray[1];
+                }
+                else{
+                    GPSLocationService.currentCity = addressArray[0];
+                }
+
                 System.out.println(GPSLocationService.currentCity);
 
                 autocompleteFragment.setText("GPSLocationService.currentLocation");
@@ -121,21 +157,20 @@ public class EventsActivity  extends AppCompatActivity
 
             @Override
             public void onClick(View v) {
-
-                try{
-                    new GeneratePlanTask().execute();
-                }catch (Exception e){
-                    e.printStackTrace();
+                if(mInterstitial.isLoaded()){
+                    mInterstitial.show();
                 }
-//                mIndex += 1;
-//                if(mIndex >= limit){
-//                    mIndex = 0;
-//                }
-//                getNextEvent(mIndex);
+                if (isNetworkAvailable() && GPSLocationService.currentLocation != null) {
+                    try {
+                        new GeneratePlanTask().execute();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
             }
         });
 
-        if(runAtStart){
+        if(runAtStart && isNetworkAvailable() && GPSLocationService.currentLocation != null){
             try{
                 new GeneratePlanTask().execute();
             }catch (Exception e){
@@ -143,27 +178,6 @@ public class EventsActivity  extends AppCompatActivity
             }
             runAtStart = false;
         }
-
-
-//
-//        ImageView prev = (ImageView) findViewById(R.id.prevEvent);
-//
-//        prev.setOnClickListener(new View.OnClickListener() {
-//
-//            @Override
-//            public void onClick(View v) {
-//                mIndex -= 1;
-//                if(mIndex < 0) {
-//                    mIndex = limit - 1;
-//                }
-//                getNextEvent(mIndex);
-//            }
-//        });
-
-
-
-
-
 
 
         ImageButton autocompleteClear = (ImageButton) findViewById(R.id.place_autocomplete_clear_button);
@@ -225,8 +239,33 @@ public class EventsActivity  extends AppCompatActivity
         });
 
 
+        navView = (NavigationView) findViewById(R.id.nav_view);
+        header = navView.getHeaderView(0);
+        profilePictureView = (ProfilePictureView) header.findViewById(R.id.facebook_picture);
+        facebookName = (TextView) header.findViewById(R.id.facebook_name);
+        if(isLoggedIn()){
+
+            try {
+                fbInfo = getFacebookInfo();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            }
+            Log.d("FB", "loading image with test " + fbInfo[1]);
+            loadImage(fbInfo[1]);
+            facebookName.setText(fbInfo[0]);
+
+
+
+        }
+
+        updateWithToken(accessToken);
 
     }
+
+
+
 
 
 
@@ -260,6 +299,23 @@ public class EventsActivity  extends AppCompatActivity
         return newCity;
     }
 
+    public boolean isNetworkAvailable() {
+        boolean haveConnectedWifi = false;
+        boolean haveConnectedMobile = false;
+
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo[] netInfo = cm.getAllNetworkInfo();
+        for (NetworkInfo ni : netInfo) {
+            if (ni.getTypeName().equalsIgnoreCase("WIFI"))
+                if (ni.isConnected())
+                    haveConnectedWifi = true;
+            if (ni.getTypeName().equalsIgnoreCase("MOBILE"))
+                if (ni.isConnected())
+                    haveConnectedMobile = true;
+        }
+        return haveConnectedWifi || haveConnectedMobile;
+    }
+
     public synchronized void getEvent() throws InterruptedIOException{
 
         //Ticket Master Work
@@ -270,8 +326,8 @@ public class EventsActivity  extends AppCompatActivity
             public void run() {
                 try  {
                     //how can I get the city from the user location or google places??? ask!
-                    //city = GPSLocationService.currentCity;
-                    city = fixCity("Los Angeles");
+                      city = fixCity(GPSLocationService.currentCity);
+                    //city = fixCity("Los Angeles");
 
                     DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
                     Date date1 = new Date();
@@ -376,7 +432,7 @@ public class EventsActivity  extends AppCompatActivity
 
 
 
-    private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
+    public class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
         ImageView bmImage;
 
         public DownloadImageTask(ImageView bmImage) {
@@ -478,6 +534,86 @@ public class EventsActivity  extends AppCompatActivity
             //arrayAdapter.notifyDataSetChanged();
             loadingSpinner.dismiss();
         }
+    }
+
+    public boolean isLoggedIn() {
+        AccessToken accessToken = AccessToken.getCurrentAccessToken();
+        return accessToken != null;
+    }
+
+
+    public static String[] getFacebookInfo() throws InterruptedException, ExecutionException {
+        final String[] info = new String[2];
+
+
+
+        // Run facebook graphRequest.
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                GraphRequest request = GraphRequest.newMeRequest(
+                        AccessToken.getCurrentAccessToken(),
+                        new GraphRequest.GraphJSONObjectCallback() {
+
+                            //當RESPONSE回來的時候
+                            @Override
+                            public void onCompleted(JSONObject object, GraphResponse response) {
+                                userId = object.optString("id");
+                                //讀出姓名 ID FB個人頁面連結
+                                Log.d("FB", "complete");
+                                Log.d("FB", object.optString("name"));
+                                Log.d("FB", object.optString("link"));
+                                Log.d("FB", userId);
+                                info[0] = object.optString("name");
+                                info[1] = object.optString("id");
+
+
+                            }
+                        });
+                Bundle parameters = new Bundle();
+                parameters.putString("fields", "id,name,link");
+                request.setParameters(parameters);
+                request.executeAndWait();
+
+            }
+        });
+        t.start();
+        t.join();
+        return info;
+    }
+
+
+    public void loadImage(String id) {
+
+
+        profilePictureView.setProfileId(id);
+        profilePictureView.setPresetSize(ProfilePictureView.SMALL);
+    }
+
+    private void updateWithToken(AccessToken currentAccessToken) {
+
+        if (currentAccessToken != null) {
+
+            try {
+                fbInfo = getFacebookInfo();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            }
+            Log.d("FB", "loading image with test " + fbInfo[1]);
+            loadImage(fbInfo[1]);
+            facebookName.setText(fbInfo[0]);
+
+        }else{
+
+            Log.d("FB", "no logged in user");
+            profilePictureView.setProfileId("");
+            profilePictureView.setPresetSize(ProfilePictureView.SMALL);
+            facebookName.setText("User Name");
+
+        }
+
     }
 
 }

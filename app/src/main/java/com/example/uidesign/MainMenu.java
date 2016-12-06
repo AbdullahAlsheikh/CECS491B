@@ -8,11 +8,18 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 
+import com.facebook.AccessToken;
+import com.facebook.CallbackManager;
+import com.facebook.FacebookSdk;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.common.api.GoogleApiClient;
+
 //import com.facebook.CallbackManager;
 //import com.facebook.FacebookSdk;
 //import com.facebook.login.widget.LoginButton;
 //import com.firebase.client.Firebase;
-import com.google.android.gms.common.api.GoogleApiClient;
 
 
 public class MainMenu extends AppCompatActivity implements View.OnClickListener{
@@ -28,14 +35,21 @@ public class MainMenu extends AppCompatActivity implements View.OnClickListener{
     private GoogleApiClient client;
     public static View screen;
     public static ImageView full, events, nights, single, options, quit;
+    private CallbackManager callbackManager;
+    public static AccessToken accessToken;
+    public static String userId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        FacebookSdk.sdkInitialize(getApplicationContext());
         super.onCreate(savedInstanceState);
-//        Firebase.setAndroidContext(this);
-//        FacebookSdk.sdkInitialize(getApplicationContext());
-//        callbackManager = CallbackManager.Factory.create();
         setContentView(R.layout.main_menu);
+        MobileAds.initialize(getApplicationContext(), "1:68912929915:android:0488b4351ca1a767");
+
+        AdView mAdView = (AdView) findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.loadAd(adRequest);
+
 
         full = (ImageView) findViewById(R.id.day);
         events = (ImageView) findViewById(R.id.event);
@@ -68,8 +82,10 @@ public class MainMenu extends AppCompatActivity implements View.OnClickListener{
         moveleft(single);
         move(quit);
         moveleft(options);
-    }
 
+
+
+    }
 
 
 
@@ -175,4 +191,9 @@ public class MainMenu extends AppCompatActivity implements View.OnClickListener{
 //
 //        }
 //    }
+public boolean isLoggedIn() {
+    AccessToken accessToken = AccessToken.getCurrentAccessToken();
+    return accessToken != null;
+}
+
 }

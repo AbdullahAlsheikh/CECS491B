@@ -52,5 +52,14 @@
 
         android:defaultValue="false"/>
 
+    <CheckBoxPreference
+
+        android:key="DealsB"
+
+        android:title="Deals"
+
+        android:defaultValue="false"/>
+
+
 
 </PreferenceScreen>

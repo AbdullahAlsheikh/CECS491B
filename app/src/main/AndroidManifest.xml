@@ -15,6 +15,7 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/app_id"/>
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
@@ -30,6 +31,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity android:name="com.facebook.FacebookActivity"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar"
+            android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
+            android:label="@string/app_name" />
 
 
         <activity android:name=".MainActivity">
@@ -53,7 +59,10 @@
         <activity android:name=".setActivityPref"></activity>
         <activity android:name=".setLunchPref"></activity>
         <activity android:name=".setBreakPref"></activity>
+
         <activity android:name=".BarHoppingMode"></activity>
+
+
 
 
 

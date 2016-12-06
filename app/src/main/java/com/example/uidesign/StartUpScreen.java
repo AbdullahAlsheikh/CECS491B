@@ -44,19 +44,13 @@ public class StartUpScreen  extends AppCompatActivity {
 
     private void permissionAndLocation(){
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
-            //startService(new Intent(this, GPSLocationService.class));
-
-
+            startService(new Intent(this, GPSLocationService.class));
         }
 
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-
-            //startService(new Intent(this, GPSLocationService.class));
-
-
+            startService(new Intent(this, GPSLocationService.class));
         }
 
     }

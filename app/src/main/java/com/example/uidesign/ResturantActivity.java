@@ -4,6 +4,8 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -27,6 +29,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.daimajia.swipe.SwipeLayout;
+import com.facebook.AccessToken;
+import com.facebook.AccessTokenTracker;
+import com.facebook.CallbackManager;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
+import com.facebook.login.widget.LoginButton;
+import com.facebook.login.widget.ProfilePictureView;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
@@ -34,8 +45,13 @@ import com.google.android.gms.location.places.ui.PlaceSelectionListener;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import org.json.JSONObject;
+
 import java.util.Calendar;
 import java.util.Random;
+import java.util.concurrent.ExecutionException;
+
+import static com.example.uidesign.MainMenu.userId;
 
 
 /**
@@ -67,6 +83,17 @@ public class ResturantActivity  extends AppCompatActivity
 
     private  boolean startSingleActivite = true;
 
+    private InterstitialAd mInterstitial;
+    LoginButton facebookButton;
+    CallbackManager callbackManager;
+    private AccessToken accessToken;
+    AccessTokenTracker accessTokenTracker;
+    String[] fbInfo;
+    NavigationView navView;
+    View header;
+    ProfilePictureView profilePictureView;
+    TextView facebookName;
+
 
 
     @Override
@@ -79,6 +106,12 @@ public class ResturantActivity  extends AppCompatActivity
         mContext = getApplicationContext();
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
 
+        accessToken = AccessToken.getCurrentAccessToken();
+//        Interstitial Ad
+        mInterstitial = new InterstitialAd(this);
+        mInterstitial.setAdUnitId(getString(R.string.single_day_ad_unit_id));
+        AdRequest request = new AdRequest.Builder().build();
+        mInterstitial.loadAd(request);
 
 //        yelp.setLimit(limit);
 
@@ -194,19 +227,25 @@ public class ResturantActivity  extends AppCompatActivity
             public void onClick(View view) {
 //                Snackbar.make(view, "Pressed Full Day", Snackbar.LENGTH_LONG)
 //                        .setAction("Action", null).show();
-                try {
-                    new GeneratePlanTask().execute();
-
-                } catch (Exception e) {
-                    System.out.println("full day set on click :Error -> " + e);
-                    e.printStackTrace();
+                if(mInterstitial.isLoaded()){
+                    mInterstitial.show();
                 }
+                if (isNetworkAvailable() && GPSLocationService.currentLocation != null) {
 
+                    try {
+                        new GeneratePlanTask().execute();
+
+
+                    } catch (Exception e) {
+                        System.out.println("full day set on click :Error -> " + e);
+                        e.printStackTrace();
+                    }
+                }
 
             }
         });
 
-        if(startSingleActivite){
+        if(startSingleActivite && isNetworkAvailable() && GPSLocationService.currentLocation != null){
 
             new GeneratePlanTask().execute();
             startSingleActivite = false;
@@ -221,6 +260,31 @@ public class ResturantActivity  extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        navView = (NavigationView) findViewById(R.id.nav_view);
+        header = navView.getHeaderView(0);
+        profilePictureView = (ProfilePictureView) header.findViewById(R.id.facebook_picture);
+        facebookName = (TextView) header.findViewById(R.id.facebook_name);
+
+        if(isLoggedIn()){
+
+            try {
+                fbInfo = getFacebookInfo();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            }
+            Log.d("FB", "loading image with test " + fbInfo[1]);
+            loadImage(fbInfo[1]);
+            facebookName.setText(fbInfo[0]);
+
+
+
+        }
+
+
+        updateWithToken(accessToken);
+
     }
 
 
@@ -233,8 +297,8 @@ public class ResturantActivity  extends AppCompatActivity
                 System.out.println("random:  " + ran +  " Term:" + term);
                 try{
 
-//                    String response = yelp.searchByLocation(term, GPSLocationService.currentLocation);
-                    String response = yelp.searchByLocation(term, address);
+                    String response = yelp.searchByLocation(term, GPSLocationService.currentLocation);
+//                    String response = yelp.searchByLocation(term, address);
                     System.out.println(response);
                     Gson gson = new GsonBuilder().create();
 
@@ -393,6 +457,101 @@ public class ResturantActivity  extends AppCompatActivity
         }
     }
 
+    public boolean isLoggedIn() {
+        AccessToken accessToken = AccessToken.getCurrentAccessToken();
+        return accessToken != null;
+    }
+
+
+    public static String[] getFacebookInfo() throws InterruptedException, ExecutionException {
+        final String[] info = new String[2];
+
+
+
+        // Run facebook graphRequest.
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                GraphRequest request = GraphRequest.newMeRequest(
+                        AccessToken.getCurrentAccessToken(),
+                        new GraphRequest.GraphJSONObjectCallback() {
+
+                            //當RESPONSE回來的時候
+                            @Override
+                            public void onCompleted(JSONObject object, GraphResponse response) {
+                                userId = object.optString("id");
+                                //讀出姓名 ID FB個人頁面連結
+                                Log.d("FB", "complete");
+                                Log.d("FB", object.optString("name"));
+                                Log.d("FB", object.optString("link"));
+                                Log.d("FB", userId);
+                                info[0] = object.optString("name");
+                                info[1] = object.optString("id");
+
+
+                            }
+                        });
+                Bundle parameters = new Bundle();
+                parameters.putString("fields", "id,name,link");
+                request.setParameters(parameters);
+                request.executeAndWait();
+
+            }
+        });
+        t.start();
+        t.join();
+        return info;
+    }
+
+
+    public void loadImage(String id) {
+        profilePictureView.setProfileId(id);
+        profilePictureView.setPresetSize(ProfilePictureView.SMALL);
+    }
+
+    private void updateWithToken(AccessToken currentAccessToken) {
+
+        if (currentAccessToken != null) {
+
+            try {
+                fbInfo = getFacebookInfo();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            }
+            Log.d("FB", "loading image with test " + fbInfo[1]);
+            loadImage(fbInfo[1]);
+            facebookName.setText(fbInfo[0]);
+
+        }else{
+
+            Log.d("FB", "no logged in user");
+
+
+            profilePictureView.setProfileId("");
+            profilePictureView.setPresetSize(ProfilePictureView.SMALL);
+            facebookName.setText("User Name");
+
+        }
+
+    }
+    public boolean isNetworkAvailable() {
+        boolean haveConnectedWifi = false;
+        boolean haveConnectedMobile = false;
+
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo[] netInfo = cm.getAllNetworkInfo();
+        for (NetworkInfo ni : netInfo) {
+            if (ni.getTypeName().equalsIgnoreCase("WIFI"))
+                if (ni.isConnected())
+                    haveConnectedWifi = true;
+            if (ni.getTypeName().equalsIgnoreCase("MOBILE"))
+                if (ni.isConnected())
+                    haveConnectedMobile = true;
+        }
+        return haveConnectedWifi || haveConnectedMobile;
+    }
 }
 
 

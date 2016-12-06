@@ -83,9 +83,17 @@ class BussnessInfo{
     public Bitmap rating_img;
 
     public String snippet_text;
+
+    public ArrayList<DealsInfo> deals = new ArrayList<DealsInfo>();
 }
 
 
+//my part 11/11
+class DealsInfo{
+    public String what_you_get;
+    public String title;
+
+}
 
 class mainlocation{
     List<String> display_address;
