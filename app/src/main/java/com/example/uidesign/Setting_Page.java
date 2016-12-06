@@ -336,8 +336,6 @@ public class Setting_Page  extends AppCompatActivity implements NavigationView.O
                 //checkPref();
 
             }});
-
-
     }
 
     public void loadImage(String id) {
@@ -447,6 +445,7 @@ public class Setting_Page  extends AppCompatActivity implements NavigationView.O
         for (String catog : lunch){
             if(mSharedPreferences.getBoolean(catog, false)){
                 lunchStr += " " + catog.substring(0,catog.length()-1);
+
             }
         }
 
@@ -492,20 +491,23 @@ public class Setting_Page  extends AppCompatActivity implements NavigationView.O
             System.out.println("Second Button");
 
         } else if (id == R.id.Third) {
+            final Intent bar = new Intent(Setting_Page.this, BarHoppingMode.class);
+            Setting_Page.this.startActivity(bar);
+            finish();
             System.out.println("Third Button");
 
 
         } else if (id == R.id.Fourth) {
+
+            final Intent event = new Intent(Setting_Page.this, EventsActivity.class);
+            Setting_Page.this.startActivity(event);
+            finish();
             System.out.println("Fourth Button");
 
 
         } else if (id == R.id.sectionOne) {
+
             System.out.println("Already in setting");
-
-
-
-        } else if (id == R.id.sectionTwo) {
-            System.out.println("Second Section Button");
 
         }
 

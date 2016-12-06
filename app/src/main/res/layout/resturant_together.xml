@@ -15,7 +15,8 @@
         <TextView
             android:id="@+id/activity_title"
             android:textSize="22sp"
-            android:text="Test single resturant"
+            android:text="Title:"
+            android:textStyle="bold"
             android:paddingTop="10dp"
             android:layout_width="wrap_content"
             android:layout_height="80dp"
@@ -35,9 +36,9 @@
 
         <TextView
             android:id="@+id/criteria"
-            android:layout_width="wrap_content"
+            android:layout_width="100dp"
             android:layout_height="wrap_content"
-            android:text= "Criteria"
+            android:text="Criteria"
             android:layout_alignParentBottom="true"
             android:layout_alignParentStart="true" />
 
@@ -49,6 +50,15 @@
             android:paddingRight="25dp"
             android:layout_alignBottom="@+id/activity_title"
             android:layout_alignParentStart="true" />
+
+        <TextView
+            android:text="Deal: "
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/isDeal"
+            android:layout_alignBaseline="@+id/criteria"
+            android:layout_alignBottom="@+id/criteria"
+            android:layout_toEndOf="@+id/criteria" />
     </RelativeLayout>
 
     <!--<include android:id="@+id/singleResutant" layout="@layout/single_cube"-->
@@ -58,7 +68,8 @@
         android:padding="10dp"
         android:background="@color/DarkYellow"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent">
+        android:layout_height="fill_parent"
+        >
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -68,10 +79,12 @@
 
             <TextView
                 android:id="@+id/description"
-                android:textSize="12sp"
+                android:textSize="20sp"
                 android:text="Description of Resturant"
+
                 android:layout_width="match_parent"
-                android:layout_height="100dp" />
+                android:layout_height="120dp"
+                android:layout_above="@+id/linearLayout" />
 
             <LinearLayout
                 android:layout_width="match_parent"

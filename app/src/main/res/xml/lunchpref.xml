@@ -2,7 +2,10 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
 
     android:key="lunch_checkbox_pref"
-    android:title="Lunch Preferences">
+    android:selectable="false"
+    android:title="Lunch Preferences"
+    >
+
     <CheckBoxPreference
 
         android:key="ChineseL"
@@ -14,6 +17,7 @@
     <CheckBoxPreference
 
         android:key="IndianL"
+
 
         android:title="Indian"
 

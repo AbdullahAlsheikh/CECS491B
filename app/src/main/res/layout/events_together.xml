@@ -14,6 +14,7 @@
 
         <TextView
             android:id="@+id/event_name"
+            android:textStyle="bold"
             android:textSize="22sp"
             android:text="Event: "
             android:paddingTop="10dp"
@@ -31,7 +32,8 @@
             android:id="@+id/eventsImage"
             android:layout_alignParentEnd="true"
             android:layout_alignParentStart="true"
-            android:scaleType="centerCrop"/>
+            android:scaleType="centerCrop"
+            />
 
 
 
@@ -55,29 +57,33 @@
             <TextView
                 android:id="@+id/Venue"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="15sp"
-                android:text= "Venue: Hollywood Pantages Theatre Hollywood Pantages Theatre  "
+                android:layout_height="35dp"
+                android:textSize="20sp"
+                android:text= "Venue:   "
                 android:layout_alignParentTop="true"
-                android:layout_alignParentStart="true" />
+                android:layout_alignParentStart="true"
+                android:paddingBottom="5dp"
+                android:layout_alignParentEnd="true" />
 
             <TextView
                 android:id="@+id/startDate"
-                android:textSize="15sp"
+                android:textSize="20sp"
                 android:text="Start Date: "
                 android:layout_width="match_parent"
                 android:layout_alignParentStart="true"
-                android:layout_height="25dp"
-                android:layout_below="@+id/Venue"/>
+                android:layout_height="35dp"
+                android:layout_below="@+id/Venue"
+                />
 
             <TextView
                 android:id="@+id/startTime"
-                android:textSize="15sp"
+                android:textSize="20sp"
                 android:text="Start Time: "
                 android:layout_width="match_parent"
-                android:layout_height="25dp"
+                android:layout_height="35dp"
                 android:layout_alignParentStart="true"
-                android:layout_below="@+id/startDate"/>
+                android:layout_below="@+id/startDate"
+                />
 
             <LinearLayout
                 android:layout_width="match_parent"

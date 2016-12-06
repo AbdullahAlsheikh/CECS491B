@@ -4,9 +4,11 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.widget.Toast;
 
 
 public class StartUpScreen  extends AppCompatActivity {
@@ -37,20 +39,31 @@ public class StartUpScreen  extends AppCompatActivity {
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           String permissions[], int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
         switch (requestCode) {
+
             case 1: {
 
-                startService(new Intent(this, GPSLocationService.class));
-                final Intent mainIntent = new Intent(StartUpScreen.this, MainMenu.class);
-                StartUpScreen.this.startActivity(mainIntent);
-                StartUpScreen.this.finish();
+                if(grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                    Toast.makeText(StartUpScreen.this,"Please restart application for changes to take effect.", Toast.LENGTH_LONG).show();
+                }
+
+                else{
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            final Intent mainIntent = new Intent(StartUpScreen.this, MainMenu.class);
+                            StartUpScreen.this.startActivity(mainIntent);
+                            StartUpScreen.this.finish();
+                        }//
+                    }, 3000);
+
+                }
             }
 
-            }
-            // other 'case' lines to check for other
-            // permissions this application might request
+        }
+        // other 'case' lines to check for other
+        // permissions this application might request
     }
 //        }
 
@@ -58,15 +71,23 @@ public class StartUpScreen  extends AppCompatActivity {
     private boolean permissionAndLocation(){
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
-            startService(new Intent(this, GPSLocationService.class));
+
+
         }
 
 
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            startService(new Intent(this, GPSLocationService.class));
-            final Intent mainIntent = new Intent(StartUpScreen.this, MainMenu.class);
-            StartUpScreen.this.startActivity(mainIntent);
-            StartUpScreen.this.finish();
+        else if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+
+
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    startService(new Intent(StartUpScreen.this, GPSLocationService.class));
+                    final Intent mainIntent = new Intent(StartUpScreen.this, MainMenu.class);
+                    StartUpScreen.this.startActivity(mainIntent);
+                    StartUpScreen.this.finish();
+                }
+            }, 3000);
         }
 
 

@@ -20,7 +20,7 @@
             android:gravity="center">
 
             <ImageView
-                android:src="@drawable/day"
+                android:src="@drawable/fulldaynew"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
                 android:gravity="center"
@@ -93,27 +93,28 @@
         </RelativeLayout>
 
     </LinearLayout>
+
     <LinearLayout
         android:layout_height="0dp"
         android:layout_width="fill_parent"
-        android:layout_weight="1"
+        android:layout_weight="0.4"
         android:orientation="horizontal">
+
+        <Button
+            android:text="Settings"
+            android:layout_width="fill_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentStart="true"
+            android:id="@+id/options"
+            />
 
         <RelativeLayout
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
             android:layout_weight="1"
             android:gravity="center">
-
-            <ImageView
-                android:src="@drawable/settings"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:gravity="center"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentStart="true"
-                android:scaleType="fitXY"
-                android:id="@+id/options" />
 
         </RelativeLayout>
 
@@ -123,19 +124,10 @@
             android:layout_width="wrap_content"
             android:layout_weight="1"
             android:gravity="center">
-
-            <ImageView
-                android:src="@drawable/day"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:gravity="center"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentStart="true"
-                android:scaleType="fitXY"
-                android:id="@+id/quit" />
 
         </RelativeLayout>
     </LinearLayout>
+
     <com.google.android.gms.ads.AdView
         android:id="@+id/adView"
         android:layout_width="377dp"

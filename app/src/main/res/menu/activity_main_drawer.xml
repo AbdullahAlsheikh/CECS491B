@@ -15,18 +15,12 @@
         <item
             android:id="@+id/Fourth"
             android:title="Event Enthusiast" />
+
+        <item
+            android:id="@+id/sectionOne"
+            android:title="Settings" />
     </group>
 
-    <item android:title="Sections #1">
-        <menu>
-            <item
-                android:id="@+id/sectionOne"
-                android:title="Setting" />
-            <item
-                android:id="@+id/sectionTwo"
-                android:title="Section _ Index Two" />
-        </menu>
-    </item>
 
 </menu>
 

@@ -1,11 +1,15 @@
 package com.example.uidesign;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.Button;
 import android.widget.ImageView;
 
 import com.facebook.AccessToken;
@@ -34,10 +38,14 @@ public class MainMenu extends AppCompatActivity implements View.OnClickListener{
      */
     private GoogleApiClient client;
     public static View screen;
-    public static ImageView full, events, nights, single, options, quit;
+    public static ImageView full, events, nights, single;
+    public Button options;
     private CallbackManager callbackManager;
     public static AccessToken accessToken;
     public static String userId;
+    private Context mContext;
+    private SharedPreferences mSharedPreferences;
+    private SharedPreferences.Editor mEditor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +56,23 @@ public class MainMenu extends AppCompatActivity implements View.OnClickListener{
 
         MobileAds.initialize(getApplicationContext(), "1:68912929915:android:0488b4351ca1a767");
 
+
+        mContext = getApplicationContext();
+        mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
+
+        mEditor = mSharedPreferences.edit();
+        boolean fullToturial = mSharedPreferences.getBoolean("fullToturial",false);
+        if(!fullToturial) {
+            mEditor.putBoolean("fullTutorial", false).commit();
+        }
+        boolean singleToturial = mSharedPreferences.getBoolean("singleToturial",false);
+        if(!singleToturial) {
+            mEditor.putBoolean("singleTutorial", false).commit();
+
+        }
+        mEditor.apply();
+
+
         AdView mAdView = (AdView) findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder().build();
         mAdView.loadAd(adRequest);
@@ -57,14 +82,14 @@ public class MainMenu extends AppCompatActivity implements View.OnClickListener{
         events = (ImageView) findViewById(R.id.event);
         nights = (ImageView) findViewById(R.id.night);
         single = (ImageView) findViewById(R.id.single);
-        options = (ImageView) findViewById(R.id.options);
-        quit = (ImageView) findViewById(R.id.quit);
+        options = (Button) findViewById(R.id.options);
+
         full.setOnClickListener(this);
         events.setOnClickListener(this);
         nights.setOnClickListener(this);
         single.setOnClickListener(this);
         options.setOnClickListener(this);
-        quit.setOnClickListener(this);
+
 
         //here
         screen = findViewById(R.id.categorias_table);
@@ -82,7 +107,6 @@ public class MainMenu extends AppCompatActivity implements View.OnClickListener{
         moveleft(full);
         move(events);
         moveleft(single);
-        move(quit);
         moveleft(options);
 
 
@@ -127,6 +151,9 @@ public class MainMenu extends AppCompatActivity implements View.OnClickListener{
                 break;
             case R.id.options:
                 screen.setBackgroundColor(getResources().getColor(R.color.Grey));
+
+
+
         }
 
 
@@ -166,7 +193,7 @@ public class MainMenu extends AppCompatActivity implements View.OnClickListener{
         events.startAnimation(animation);
         single.startAnimation(animation);
         options.startAnimation(animation);
-        quit.startAnimation(animation);
+
     }
 
 //    @Override

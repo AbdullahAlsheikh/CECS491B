@@ -3,6 +3,7 @@ package com.example.uidesign;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
@@ -11,6 +12,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -53,6 +55,9 @@ import java.util.Date;
 import java.util.Random;
 import java.util.concurrent.ExecutionException;
 
+import uk.co.deanwild.materialshowcaseview.MaterialShowcaseSequence;
+import uk.co.deanwild.materialshowcaseview.ShowcaseConfig;
+
 import static com.example.uidesign.MainMenu.userId;
 
 
@@ -63,6 +68,9 @@ public class EventsActivity  extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener{
 
     private ProgressDialog loadingSpinner;
+    private Context mContext;
+    private SharedPreferences mSharedPreferences;
+    private SharedPreferences.Editor mEditor;
 
     LinearLayout togetherlayout;
     TmResult result;
@@ -128,10 +136,9 @@ public class EventsActivity  extends AppCompatActivity
 
 
                 String addressArray[] = GPSLocationService.currentLocation.split(", ");
-                if(addressArray.length > 3){
+                if (addressArray.length > 3) {
                     GPSLocationService.currentCity = addressArray[1];
-                }
-                else{
+                } else {
                     GPSLocationService.currentCity = addressArray[0];
                 }
 
@@ -157,7 +164,7 @@ public class EventsActivity  extends AppCompatActivity
 
             @Override
             public void onClick(View v) {
-                if(mInterstitial.isLoaded()){
+                if (mInterstitial.isLoaded()) {
                     mInterstitial.show();
                 }
                 if (isNetworkAvailable() && GPSLocationService.currentLocation != null) {
@@ -170,10 +177,10 @@ public class EventsActivity  extends AppCompatActivity
             }
         });
 
-        if(runAtStart && isNetworkAvailable() && GPSLocationService.currentLocation != null){
-            try{
+        if (runAtStart && isNetworkAvailable() && GPSLocationService.currentLocation != null) {
+            try {
                 new GeneratePlanTask().execute();
-            }catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
             }
             runAtStart = false;
@@ -181,6 +188,8 @@ public class EventsActivity  extends AppCompatActivity
 
 
         ImageButton autocompleteClear = (ImageButton) findViewById(R.id.place_autocomplete_clear_button);
+        //mypart
+        ImageButton autoCompleteSearch = (ImageButton) findViewById(R.id.place_autocomplete_search_button);
 
         autocompleteClear.setOnClickListener(new Button.OnClickListener() {
             public void onClick(View v) {
@@ -202,7 +211,6 @@ public class EventsActivity  extends AppCompatActivity
 
             }
         });
-
 
 
 //      bottominformation.setText("Address:\n " + address + "\nlimit:" + limit + "\n");
@@ -243,7 +251,7 @@ public class EventsActivity  extends AppCompatActivity
         header = navView.getHeaderView(0);
         profilePictureView = (ProfilePictureView) header.findViewById(R.id.facebook_picture);
         facebookName = (TextView) header.findViewById(R.id.facebook_name);
-        if(isLoggedIn()){
+        if (isLoggedIn()) {
 
             try {
                 fbInfo = getFacebookInfo();
@@ -257,10 +265,44 @@ public class EventsActivity  extends AppCompatActivity
             facebookName.setText(fbInfo[0]);
 
 
-
         }
 
-        updateWithToken(accessToken);
+        updateWithToken(accessToken); mContext = getApplicationContext();
+        mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
+        mEditor = mSharedPreferences.edit();
+
+        boolean singleTutorial = mSharedPreferences.getBoolean("singleToturial",false);
+        if(!singleTutorial) {
+
+
+            ShowcaseConfig config = new ShowcaseConfig();
+            config.setDelay(500); // half second between each showcase view
+
+            MaterialShowcaseSequence sequence = new MaterialShowcaseSequence(this);
+
+            sequence.setConfig(config);
+
+            sequence.addSequenceItem(autoCompleteSearch,
+                    "Click and type in the desired address.", "GOT IT");
+
+            sequence.addSequenceItem(autocompleteClear,
+                    "The X button clears the entered address and activates the GPS.", "GOT IT");
+
+
+            sequence.addSequenceItem(findViewById(R.id.eventsReload),
+                    "The refresh button refreshes the search.", "GOT IT");
+
+            sequence.addSequenceItem(findViewById(R.id.navButton),
+                    "The navigation button inputs the business's address into google maps for directions.", "GOT IT");
+
+            sequence.addSequenceItem(findViewById(R.id.webButton),
+                    "The I button opens the event listing on ticketmaster.com.", "GOT IT");
+
+
+            sequence.start();
+            mEditor.putBoolean("singleToturial", true).commit();
+            mEditor.apply();
+        }
 
     }
 
@@ -489,9 +531,6 @@ public class EventsActivity  extends AppCompatActivity
             final Intent mainIntent = new Intent(EventsActivity.this, Setting_Page.class);
             EventsActivity.this.startActivity(mainIntent);
             finish();
-
-        } else if (id == R.id.sectionTwo) {
-            System.out.println("Second Section Button");
 
         }
 

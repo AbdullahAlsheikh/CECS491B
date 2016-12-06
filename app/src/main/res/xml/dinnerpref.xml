@@ -2,14 +2,13 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
 
     android:key="dinner_checkbox_pref"
-
     android:title="Dinner Preferences">
+
     <CheckBoxPreference
 
         android:key="ChineseD"
 
         android:title="Chinese"
-
         android:defaultValue="false"/>
 
     <CheckBoxPreference

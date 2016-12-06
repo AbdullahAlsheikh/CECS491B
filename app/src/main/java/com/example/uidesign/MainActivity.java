@@ -56,6 +56,10 @@ import java.util.Arrays;
 import java.util.Random;
 import java.util.concurrent.ExecutionException;
 
+import uk.co.deanwild.materialshowcaseview.MaterialShowcaseSequence;
+import uk.co.deanwild.materialshowcaseview.ShowcaseConfig;
+import uk.co.deanwild.materialshowcaseview.shape.RectangleShape;
+
 import static com.example.uidesign.BarHoppingMode.contains;
 import static com.example.uidesign.MainMenu.userId;
 
@@ -66,9 +70,6 @@ public class MainActivity extends  AppCompatActivity
     private String planExcuteText = "";
     private boolean firstPlanActivite = true;
 
-    private Context mContext;
-    private SharedPreferences mSharedPreferences;
-    private SharedPreferences.Editor mEditor;
 
     String breakfast;
     String lunch;
@@ -77,6 +78,10 @@ public class MainActivity extends  AppCompatActivity
     String businessName;
     String[] business;
     ShareLinkContent content;
+    private Context mContext;
+    private SharedPreferences mSharedPreferences;
+    private SharedPreferences.Editor mEditor;
+
 
 
 
@@ -190,6 +195,9 @@ public class MainActivity extends  AppCompatActivity
 
 
         ImageButton autocompleteClear = (ImageButton) findViewById(R.id.place_autocomplete_clear_button);
+        //mypart
+        ImageButton autoCompleteSearch = (ImageButton) findViewById(R.id.place_autocomplete_search_button);
+
 
         autocompleteClear.setOnClickListener(new Button.OnClickListener() {
             public void onClick(View v) {
@@ -284,7 +292,10 @@ public class MainActivity extends  AppCompatActivity
 //        if(firstPlanActivite && isNetworkAvailable() && GPSLocationService.currentLocation != null){
         if(firstPlanActivite && isNetworkAvailable()){
             planExcuteText = "Loading Data";
-            new GeneratePlanTask().execute();
+            GeneratePlanTask a = new GeneratePlanTask();
+            a.execute();
+
+
             firstPlanActivite = false;
         }
 
@@ -355,6 +366,46 @@ public class MainActivity extends  AppCompatActivity
         }
 
         updateWithToken(accessToken);
+
+        mContext = getApplicationContext();
+        mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
+        mEditor = mSharedPreferences.edit();
+
+        boolean fullToturial = mSharedPreferences.getBoolean("fullToturial",false);
+        if(!fullToturial) {
+
+            //mypart
+            ShowcaseConfig config = new ShowcaseConfig();
+            config.setDelay(500); // half second between each showcase view
+
+
+            MaterialShowcaseSequence sequence = new MaterialShowcaseSequence(this);
+
+            sequence.setConfig(config);
+
+            sequence.addSequenceItem(autoCompleteSearch,
+                    "Click and type in the desired address.", "GOT IT");
+
+            sequence.addSequenceItem(autocompleteClear,
+                    "The X button clears the entered address and activates the GPS.", "GOT IT");
+
+            sequence.addSequenceItem(fullday,
+                    "This floating button refreshes the search.", "GOT IT");
+
+            config.setShape(new RectangleShape(10, 10));
+
+            sequence.addSequenceItem(list_cube0,
+                    "The cube has different options dependent on the gestures used.\n\n" +
+                            "Long Press: Open Yelp\n" +
+                            "Swipe Up: View Deals\n" +
+                            "Swipe Down: Facebook Share\n" +
+                            "Swipe Left: Refresh, Navigate, Call\n" +
+                            "Swipe Right: Delete\n", "GOT IT");
+
+            sequence.start();
+            mEditor.putBoolean("fullToturial",true).commit();
+            mEditor.apply();
+        }
 
     }
 
@@ -480,7 +531,6 @@ public class MainActivity extends  AppCompatActivity
                 shareButton.setShareContent(content);
                 ShareDialog.show(MainActivity.this, content);
 
-
             }
         });
 
@@ -536,13 +586,14 @@ public class MainActivity extends  AppCompatActivity
                 System.out.println("Index:  " + ran +  " Term:" + term);
                 try{
 
-                     //String response = yelp.searchByLocation(term, GPSLocationService.currentLocation);
-                    String response = yelp.searchByLocation(term, address);
+                    String response = yelp.searchByLocation(term, GPSLocationService.currentLocation);
+//                    String response = yelp.searchByLocation(term, address);
                     System.out.println(response);
                     Gson gson = new GsonBuilder().create();
                     final String[] crit = term.split(" ");
 
                     ResultInfo result = gson.fromJson(response, ResultInfo.class);
+                    Log.d("RANDOM", "" +ran);
                     final BussnessInfo bussnessInfo = result.getBussnessInfo(ran);
                     cube_info[index] = bussnessInfo;
 
@@ -595,6 +646,7 @@ public class MainActivity extends  AppCompatActivity
                 {
                     System.out.println("GetYelpsearchRsult  Error -> "  + e);
                     e.printStackTrace();
+
                 }
             }
         });
@@ -654,9 +706,6 @@ public class MainActivity extends  AppCompatActivity
             finish();
 
 
-        } else if (id == R.id.sectionTwo) {
-            System.out.println("Second Section Button");
-
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -666,7 +715,10 @@ public class MainActivity extends  AppCompatActivity
 
 
     public class GeneratePlanTask extends AsyncTask<Void, Void, Void> {
+        long end;
         protected void onPreExecute() {
+            long start = System.currentTimeMillis();
+            end = start + 20*1000; // 20 seconds * 1000 ms/sec
 
             loadingSpinner = new ProgressDialog(MainActivity.this);
             loadingSpinner.setCancelable(false);
@@ -678,8 +730,22 @@ public class MainActivity extends  AppCompatActivity
 
         }
 
+
+
+
+
+
+
         @Override
         protected Void doInBackground(Void... params) {
+
+            if(System.currentTimeMillis() > end)
+            {
+                Log.d("Timer","Stopped");
+                this.cancel(true);
+                loadingSpinner.dismiss();
+            }
+
             try {
                 ArrayList<String> businesses = new ArrayList<>(4);
                 Random r = new Random();
@@ -693,6 +759,12 @@ public class MainActivity extends  AppCompatActivity
 
                 Thread.sleep(100);
 
+                if(System.currentTimeMillis() > end)
+                {
+                    Log.d("Timer","Stopped");
+                    this.cancel(true);
+                    loadingSpinner.dismiss();
+                }
 
                 business[0] = businessName;
 
@@ -705,8 +777,16 @@ public class MainActivity extends  AppCompatActivity
                     getYelpSearchResult(randNum, 1, "Activity " + activity, list_cube,1);
                     Thread.sleep(100);
                     Log.i("Var", "BussnessName: " + businessName + " Ran" + randNum);
+                    if(System.currentTimeMillis() > end)
+                    {
+                        Log.d("Timer","Stopped");
+                        this.cancel(true);
+                        loadingSpinner.dismiss();
+                    }
+
                 }while (contains(business,businessName));
                 business[1] = businessName;
+
 
 
                 System.out.println("Random Number:  " + randNum + " limit: " + limit + " Catagory:" + lunch);
@@ -717,6 +797,14 @@ public class MainActivity extends  AppCompatActivity
                     getYelpSearchResult(randNum, 2, "Lunch " + lunch, list_cube2,2);
                     Thread.sleep(100);
                     Log.i("Var", "BussnessName: " + businessName + " Ran" + randNum);
+
+                    if(System.currentTimeMillis() > end)
+                    {
+                        Log.d("Timer","Stopped");
+                        this.cancel(true);
+                        loadingSpinner.dismiss();
+                    }
+
                 }while(contains(business,businessName));
                 business[2] = businessName;
                 //
@@ -728,8 +816,17 @@ public class MainActivity extends  AppCompatActivity
                     getYelpSearchResult(randNum, 3, "Activity "+ activity, list_cube3,3);
                     Thread.sleep(100);
                     Log.i("Var", "BussnessName: " + businessName + " Ran" + randNum);
+
+                    if(System.currentTimeMillis() > end)
+                    {
+                        Log.d("Timer","Stopped");
+                        this.cancel(true);
+                        loadingSpinner.dismiss();
+                    }
                 }while(contains(business,businessName));
                 business[3] = businessName;
+
+
 
                 System.out.println("Random Number:  " + randNum + " limit: " + limit + " Catagory:" + dinner);
                 Log.i("Test", "Random Number:  " + randNum + " limit: " + limit + " Catagory:" + dinner);
@@ -738,8 +835,16 @@ public class MainActivity extends  AppCompatActivity
                     getYelpSearchResult(randNum, 4, "Dinner " + dinner, list_cube4,4);
                     Thread.sleep(100);
                     Log.i("Var", "BussnessName: " + businessName + " Ran" + randNum);
+                    if(System.currentTimeMillis() > end)
+                    {
+                        Log.d("Timer","Stopped");
+                        this.cancel(true);
+                        loadingSpinner.dismiss();
+                    }
                 }while(contains(business,businessName));
                 business[4] = businessName;
+
+
 
                 for (String s : business){
                     //Log.i("XXX",business[i]);
@@ -748,8 +853,11 @@ public class MainActivity extends  AppCompatActivity
                 }
 
             } catch (Exception e) {
-                e.printStackTrace();
+                //e.printStackTrace();
+                this.cancel(true);
+                loadingSpinner.dismiss();
             }
+
             return null;
         }
 

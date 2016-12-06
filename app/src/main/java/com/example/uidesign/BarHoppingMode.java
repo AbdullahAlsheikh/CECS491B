@@ -56,6 +56,10 @@ import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
+import uk.co.deanwild.materialshowcaseview.MaterialShowcaseSequence;
+import uk.co.deanwild.materialshowcaseview.ShowcaseConfig;
+import uk.co.deanwild.materialshowcaseview.shape.RectangleShape;
+
 import static com.example.uidesign.MainMenu.userId;
 
 public class BarHoppingMode extends  AppCompatActivity
@@ -182,6 +186,8 @@ public class BarHoppingMode extends  AppCompatActivity
 
 
         ImageButton autocompleteClear = (ImageButton) findViewById(R.id.place_autocomplete_clear_button);
+        //mypart
+        ImageButton autoCompleteSearch = (ImageButton) findViewById(R.id.place_autocomplete_search_button);
 
         autocompleteClear.setOnClickListener(new Button.OnClickListener() {
             public void onClick(View v) {
@@ -215,8 +221,8 @@ public class BarHoppingMode extends  AppCompatActivity
 
         list_cube0.addDrag(SwipeLayout.DragEdge.Left, list_cube0.findViewById(R.id.leftside));
         list_cube0.addDrag(SwipeLayout.DragEdge.Right, list_cube0.findViewById(R.id.rightside));
-        list_cube0.addDrag(SwipeLayout.DragEdge.Top, starBottView);
-        list_cube0.addDrag(SwipeLayout.DragEdge.Bottom, starBottView);
+//        list_cube0.addDrag(SwipeLayout.DragEdge.Top, starBottView);
+//        list_cube0.addDrag(SwipeLayout.DragEdge.Bottom, starBottView);
         PressedAction(list_cube0, 0);
 
 
@@ -226,8 +232,8 @@ public class BarHoppingMode extends  AppCompatActivity
 
         list_cube.addDrag(SwipeLayout.DragEdge.Left, list_cube.findViewById(R.id.leftside));
         list_cube.addDrag(SwipeLayout.DragEdge.Right, list_cube.findViewById(R.id.rightside));
-        list_cube.addDrag(SwipeLayout.DragEdge.Top, starBottView_2);
-        list_cube.addDrag(SwipeLayout.DragEdge.Bottom, starBottView_2);
+//        list_cube.addDrag(SwipeLayout.DragEdge.Top, starBottView_2);
+//        list_cube.addDrag(SwipeLayout.DragEdge.Bottom, starBottView_2);
         PressedAction(list_cube, 1);
 
 
@@ -237,8 +243,8 @@ public class BarHoppingMode extends  AppCompatActivity
 
         list_cube2.addDrag(SwipeLayout.DragEdge.Left, list_cube2.findViewById(R.id.leftside));
         list_cube2.addDrag(SwipeLayout.DragEdge.Right, list_cube2.findViewById(R.id.rightside));
-        list_cube2.addDrag(SwipeLayout.DragEdge.Top, starBottView_3);
-        list_cube2.addDrag(SwipeLayout.DragEdge.Bottom, starBottView_3);
+//        list_cube2.addDrag(SwipeLayout.DragEdge.Top, starBottView_3);
+//        list_cube2.addDrag(SwipeLayout.DragEdge.Bottom, starBottView_3);
         PressedAction(list_cube2,2);
 
 
@@ -248,8 +254,8 @@ public class BarHoppingMode extends  AppCompatActivity
 
         list_cube3.addDrag(SwipeLayout.DragEdge.Left, list_cube3.findViewById(R.id.leftside));
         list_cube3.addDrag(SwipeLayout.DragEdge.Right, list_cube3.findViewById(R.id.rightside));
-        list_cube3.addDrag(SwipeLayout.DragEdge.Top, starBottView_4);
-        list_cube3.addDrag(SwipeLayout.DragEdge.Bottom, starBottView_4);
+//        list_cube3.addDrag(SwipeLayout.DragEdge.Top, starBottView_4);
+//        list_cube3.addDrag(SwipeLayout.DragEdge.Bottom, starBottView_4);
         PressedAction(list_cube3,3 );
 
 
@@ -259,8 +265,8 @@ public class BarHoppingMode extends  AppCompatActivity
 
         list_cube4.addDrag(SwipeLayout.DragEdge.Left, list_cube4.findViewById(R.id.leftside));
         list_cube4.addDrag(SwipeLayout.DragEdge.Right, list_cube4.findViewById(R.id.rightside));
-        list_cube4.addDrag(SwipeLayout.DragEdge.Top, starBottView_5);
-        list_cube4.addDrag(SwipeLayout.DragEdge.Bottom, starBottView_5);
+//        list_cube4.addDrag(SwipeLayout.DragEdge.Top, starBottView_5);
+//        list_cube4.addDrag(SwipeLayout.DragEdge.Bottom, starBottView_5);
         PressedAction(list_cube4,4);
 
 
@@ -358,6 +364,45 @@ public class BarHoppingMode extends  AppCompatActivity
 
 
         updateWithToken(accessToken);
+
+        updateWithToken(accessToken);
+
+        mContext = getApplicationContext();
+        mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
+        mEditor = mSharedPreferences.edit();
+
+        boolean fullToturial = mSharedPreferences.getBoolean("fullToturial",false);
+        if(!fullToturial) {
+
+            ShowcaseConfig config = new ShowcaseConfig();
+            config.setDelay(500); // half second between each showcase view
+
+            MaterialShowcaseSequence sequence = new MaterialShowcaseSequence(this);
+
+            sequence.setConfig(config);
+
+            sequence.addSequenceItem(autoCompleteSearch,
+                    "Click and type in the desired address.", "GOT IT");
+
+            sequence.addSequenceItem(autocompleteClear,
+                    "The X button clears the entered address and activates the GPS.", "GOT IT");
+
+            sequence.addSequenceItem(fullday,
+                    "This floating button refreshes the search.", "GOT IT");
+
+            config.setShape(new RectangleShape(10, 10));
+
+            sequence.addSequenceItem(list_cube0,
+                    "The cube has different options dependent on the gestures used.\n\n" +
+                            "Long Press: Open Yelp\n" +
+                            "Swipe Left: Refresh, Navigate, Call\n" +
+                            "Swipe Right: Delete\n", "GOT IT");
+
+            sequence.start();
+            mEditor.putBoolean("fullToturial",true).commit();
+            mEditor.apply();
+
+        }
     }
 
     /**
@@ -615,12 +660,7 @@ public class BarHoppingMode extends  AppCompatActivity
             finish();
 
 
-        } else if (id == R.id.sectionTwo) {
-
-            System.out.println("Second Section Button");
-
         }
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;

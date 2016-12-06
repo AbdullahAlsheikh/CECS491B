@@ -51,6 +51,9 @@ import java.util.Calendar;
 import java.util.Random;
 import java.util.concurrent.ExecutionException;
 
+import uk.co.deanwild.materialshowcaseview.MaterialShowcaseSequence;
+import uk.co.deanwild.materialshowcaseview.ShowcaseConfig;
+
 import static com.example.uidesign.MainMenu.userId;
 
 
@@ -153,6 +156,8 @@ public class ResturantActivity  extends AppCompatActivity
 
 
         ImageButton autocompleteClear = (ImageButton) findViewById(R.id.place_autocomplete_clear_button);
+        //mypart
+        ImageButton autoCompleteSearch = (ImageButton) findViewById(R.id.place_autocomplete_search_button);
 
         autocompleteClear.setOnClickListener(new Button.OnClickListener() {
             public void onClick(View v) {
@@ -285,6 +290,44 @@ public class ResturantActivity  extends AppCompatActivity
 
         updateWithToken(accessToken);
 
+        mContext = getApplicationContext();
+        mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
+        mEditor = mSharedPreferences.edit();
+
+        boolean singleTutorial = mSharedPreferences.getBoolean("singleToturial",false);
+        if(!singleTutorial) {
+
+            ShowcaseConfig config = new ShowcaseConfig();
+            config.setDelay(500); // half second between each showcase view
+
+            MaterialShowcaseSequence sequence = new MaterialShowcaseSequence(this);
+
+            sequence.setConfig(config);
+
+            sequence.addSequenceItem(autoCompleteSearch,
+                    "Click and type in the desired address.", "GOT IT");
+
+            sequence.addSequenceItem(autocompleteClear,
+                    "The X button clears the entered address and activates the GPS.", "GOT IT");
+
+            sequence.addSequenceItem(findViewById(R.id.fullday),
+                    "The refresh button refreshes the search.", "GOT IT");
+
+            sequence.addSequenceItem(findViewById(R.id.callButton),
+                    "The call button pastes the phone number of the business into your phone app.", "GOT IT");
+
+            sequence.addSequenceItem(findViewById(R.id.navButton),
+                    "The navigation button inputs the business's address into google maps for directions.", "GOT IT");
+
+            sequence.addSequenceItem(findViewById(R.id.webButton),
+                    "The Yelp button opens the business's Yelp page from within our application.", "GOT IT");
+
+
+            sequence.start();
+            mEditor.putBoolean("singleToturial",true).commit();
+            mEditor.apply();
+        }
+
     }
 
 
@@ -317,7 +360,7 @@ public class ResturantActivity  extends AppCompatActivity
                             snippet_text.setText(bussnessInfo.snippet_text);
 
                             TextView criteria = (TextView) display.findViewById(R.id.criteria);
-                            criteria.setText(term);
+                            criteria.setText(term.split(" ")[0]);
 
                             try {
 
@@ -332,6 +375,16 @@ public class ResturantActivity  extends AppCompatActivity
 
                                 ImageView ratingImg = (ImageView) display.findViewById(R.id.rating);
                                 ratingImg.setImageBitmap(bussnessInfo.rating_img);
+
+
+                                TextView dealTitle = (TextView) display.findViewById(R.id.isDeal);
+                                dealTitle.setText("No Deal");
+
+                                //my part 11/11
+                                if (bussnessInfo.deals.get(0) != null){
+                                    dealTitle.setText(bussnessInfo.deals.get(0).title  + " *see Yelp for more details.");
+                                }
+
 
 
                             } catch (Exception e) {
@@ -390,9 +443,6 @@ public class ResturantActivity  extends AppCompatActivity
             final Intent mainIntent = new Intent(ResturantActivity.this, Setting_Page.class);
             ResturantActivity.this.startActivity(mainIntent);
             finish();
-        } else if (id == R.id.sectionTwo) {
-            System.out.println("Second Section Button");
-
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -427,12 +477,11 @@ public class ResturantActivity  extends AppCompatActivity
 
                     cri = "Breakfast "+ breakfast ;
                     Log.e("Time", cri );
-                }else if(12 <= c.get(Calendar.HOUR_OF_DAY) && c.get(Calendar.HOUR_OF_DAY) <= 17){
+                }else if(11 < c.get(Calendar.HOUR_OF_DAY) && c.get(Calendar.HOUR_OF_DAY) <= 17){
 
                     cri = "Lunch " + lunch;
                     Log.e("Time", cri );
                 }else{
-
                     cri = "Dinner " + dinner ;
                     Log.e("Time", cri );
                 }

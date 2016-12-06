@@ -6,32 +6,31 @@
     android:weightSum="1">
 
 
-    <Button
 
-        android:id="@+id/breakPref"
 
-        android:layout_width="fill_parent"
+    <Space android:layout_height="60dp"
+        android:layout_width="15dp" />
 
-        android:text="Break Fast Preference"
-
-        android:elevation="0dp"
-        android:layout_weight="0.25"
-        android:layout_height="100dp" />
+        <Button
+            android:id="@+id/breakPref"
+            android:layout_width="fill_parent"
+            android:text="Break Fast Preference"
+            android:elevation="0dp"
+            android:layout_weight="0.25"
+            android:layout_height="100dp"
+            android:drawableLeft="@drawable/egg"/>
 
     <Button
 
         android:id="@+id/lunchPref"
-
         android:layout_width="fill_parent"
-
         android:layout_height="100dp"
-
         android:text="Lunch Preference"
-
         android:elevation="0dp"
         android:layout_weight="0.25"
         android:layout_below="@+id/breakPref"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:drawableRight="@drawable/lunch1"/>
 
     <Button
 
@@ -42,19 +41,18 @@
         android:elevation="0dp"
         android:layout_weight="0.25"
         android:layout_below="@+id/lunchPref"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:drawableLeft="@drawable/dinner"/>
 
     <Button
 
         android:id="@+id/activityPref"
-
         android:layout_width="fill_parent"
-
         android:text="Activity Preference"
-
         android:elevation="0dp"
         android:layout_weight="0.25"
-        android:layout_height="100dp" />
+        android:layout_height="100dp"
+        android:drawableRight="@drawable/activity"/>
 
     <TableRow>
 

@@ -27,7 +27,7 @@ public class ResultInfo {
             URL url = new URL(imageurl);
 
 
-            businesses.get(index).icon_img = BitmapFactory.decodeStream(businesses.get(index).image_url.openConnection().getInputStream());
+            businesses.get(index).icon_img = BitmapFactory.decodeStream(url.openConnection().getInputStream());
             businesses.get(index).rating_img = BitmapFactory.decodeStream(businesses.get(index).rating_img_url_large.openConnection().getInputStream());
 
         }catch (Exception e)
