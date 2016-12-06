@@ -36,6 +36,9 @@ import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.facebook.login.widget.LoginButton;
 import com.facebook.login.widget.ProfilePictureView;
+import com.facebook.share.model.ShareLinkContent;
+import com.facebook.share.widget.ShareButton;
+import com.facebook.share.widget.ShareDialog;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.InterstitialAd;
@@ -73,6 +76,7 @@ public class MainActivity extends  AppCompatActivity
 
     String businessName;
     String[] business;
+    ShareLinkContent content;
 
 
 
@@ -215,10 +219,12 @@ public class MainActivity extends  AppCompatActivity
         list_cube0 = (SwipeLayout) findViewById(R.id.first_cube);
         list_cube0.setShowMode(SwipeLayout.ShowMode.PullOut);
         View starBottView = list_cube0.findViewById(R.id.starbott);
+        View topView = list_cube0.findViewById(R.id.top_facebook_share);
+
 
         list_cube0.addDrag(SwipeLayout.DragEdge.Left, list_cube0.findViewById(R.id.leftside));
         list_cube0.addDrag(SwipeLayout.DragEdge.Right, list_cube0.findViewById(R.id.rightside));
-        list_cube0.addDrag(SwipeLayout.DragEdge.Top, starBottView);
+        list_cube0.addDrag(SwipeLayout.DragEdge.Top, topView);
         list_cube0.addDrag(SwipeLayout.DragEdge.Bottom, starBottView);
         PressedAction(list_cube0, 0);
 
@@ -226,10 +232,11 @@ public class MainActivity extends  AppCompatActivity
         list_cube = (SwipeLayout) findViewById(R.id.second_cube);
         list_cube.setShowMode(SwipeLayout.ShowMode.PullOut);
         View starBottView_2 = list_cube.findViewById(R.id.starbott);
+        View topView2 = list_cube.findViewById(R.id.top_facebook_share);
 
         list_cube.addDrag(SwipeLayout.DragEdge.Left, list_cube.findViewById(R.id.leftside));
         list_cube.addDrag(SwipeLayout.DragEdge.Right, list_cube.findViewById(R.id.rightside));
-        list_cube.addDrag(SwipeLayout.DragEdge.Top, starBottView_2);
+        list_cube.addDrag(SwipeLayout.DragEdge.Top, topView2);
         list_cube.addDrag(SwipeLayout.DragEdge.Bottom, starBottView_2);
         PressedAction(list_cube, 1);
 
@@ -237,10 +244,11 @@ public class MainActivity extends  AppCompatActivity
         list_cube2 = (SwipeLayout) findViewById(R.id.thrid_cube);
         list_cube2.setShowMode(SwipeLayout.ShowMode.PullOut);
         View starBottView_3 = list_cube2.findViewById(R.id.starbott);
+        View topView3 = list_cube2.findViewById(R.id.top_facebook_share);
 
         list_cube2.addDrag(SwipeLayout.DragEdge.Left, list_cube2.findViewById(R.id.leftside));
         list_cube2.addDrag(SwipeLayout.DragEdge.Right, list_cube2.findViewById(R.id.rightside));
-        list_cube2.addDrag(SwipeLayout.DragEdge.Top, starBottView_3);
+        list_cube2.addDrag(SwipeLayout.DragEdge.Top, topView3);
         list_cube2.addDrag(SwipeLayout.DragEdge.Bottom, starBottView_3);
         PressedAction(list_cube2,2);
 
@@ -248,10 +256,11 @@ public class MainActivity extends  AppCompatActivity
         list_cube3 = (SwipeLayout) findViewById(R.id.fourth_cube);
         list_cube3.setShowMode(SwipeLayout.ShowMode.PullOut);
         View starBottView_4 = list_cube3.findViewById(R.id.starbott);
+        View topView4 = list_cube3.findViewById(R.id.top_facebook_share);
 
         list_cube3.addDrag(SwipeLayout.DragEdge.Left, list_cube3.findViewById(R.id.leftside));
         list_cube3.addDrag(SwipeLayout.DragEdge.Right, list_cube3.findViewById(R.id.rightside));
-        list_cube3.addDrag(SwipeLayout.DragEdge.Top, starBottView_4);
+        list_cube3.addDrag(SwipeLayout.DragEdge.Top, topView4);
         list_cube3.addDrag(SwipeLayout.DragEdge.Bottom, starBottView_4);
         PressedAction(list_cube3,3 );
 
@@ -259,10 +268,11 @@ public class MainActivity extends  AppCompatActivity
         list_cube4 = (SwipeLayout) findViewById(R.id.fifth_cube);
         list_cube4.setShowMode(SwipeLayout.ShowMode.PullOut);
         View starBottView_5 = list_cube4.findViewById(R.id.starbott);
+        View topView5 = list_cube4.findViewById(R.id.top_facebook_share);
 
         list_cube4.addDrag(SwipeLayout.DragEdge.Left, list_cube4.findViewById(R.id.leftside));
         list_cube4.addDrag(SwipeLayout.DragEdge.Right, list_cube4.findViewById(R.id.rightside));
-        list_cube4.addDrag(SwipeLayout.DragEdge.Top, starBottView_5);
+        list_cube4.addDrag(SwipeLayout.DragEdge.Top, topView5);
         list_cube4.addDrag(SwipeLayout.DragEdge.Bottom, starBottView_5);
         PressedAction(list_cube4,4);
 
@@ -271,8 +281,8 @@ public class MainActivity extends  AppCompatActivity
         assert fullday != null;
 
 
-        if(firstPlanActivite && isNetworkAvailable() && GPSLocationService.currentLocation != null){
-
+//        if(firstPlanActivite && isNetworkAvailable() && GPSLocationService.currentLocation != null){
+        if(firstPlanActivite && isNetworkAvailable()){
             planExcuteText = "Loading Data";
             new GeneratePlanTask().execute();
             firstPlanActivite = false;
@@ -409,12 +419,14 @@ public class MainActivity extends  AppCompatActivity
         });
 
 
-        display.addRevealListener(R.id.delete, new SwipeLayout.OnRevealListener() {
+        display.addRevealListener(R.id.share_button, new SwipeLayout.OnRevealListener() {
             @Override
             public void onReveal(View child, SwipeLayout.DragEdge edge, float fraction, int distance) {
 
             }
         });
+
+
 
         display.getSurfaceView().setOnClickListener(new View.OnClickListener() {
             @Override
@@ -448,6 +460,26 @@ public class MainActivity extends  AppCompatActivity
                 Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(map));
                 display.close();
                 startActivity(i);
+
+            }
+        });
+
+        final ShareButton shareButton = (ShareButton) display.findViewById(R.id.share_button);
+
+        display.findViewById(R.id.share_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(MainActivity.this, "FaceBook share been pressed", Toast.LENGTH_SHORT).show();
+                content = new ShareLinkContent.Builder()
+                        .setContentTitle("I'm going to " + cube_info[index].name)
+                        .setContentDescription(cube_info[index].snippet_text)
+                        .setContentUrl(Uri.parse(cube_info[index].mobile_url))
+                        .setImageUrl(Uri.parse(cube_info[index].image_url.toString()))
+                        .build();
+
+                shareButton.setShareContent(content);
+                ShareDialog.show(MainActivity.this, content);
+
 
             }
         });
@@ -504,8 +536,8 @@ public class MainActivity extends  AppCompatActivity
                 System.out.println("Index:  " + ran +  " Term:" + term);
                 try{
 
-                     String response = yelp.searchByLocation(term, GPSLocationService.currentLocation);
-                    //String response = yelp.searchByLocation(term, address);
+                     //String response = yelp.searchByLocation(term, GPSLocationService.currentLocation);
+                    String response = yelp.searchByLocation(term, address);
                     System.out.println(response);
                     Gson gson = new GsonBuilder().create();
                     final String[] crit = term.split(" ");
