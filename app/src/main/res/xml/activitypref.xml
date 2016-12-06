@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+
+    android:key="lunch_checkbox_pref"
+    android:title="Lunch Preferences">
+    <CheckBoxPreference
+
+        android:key="MuseumA"
+
+        android:title="Museum"
+
+        android:defaultValue="false"/>
+
+    <CheckBoxPreference
+
+        android:key="AquariumA"
+
+        android:title="Aquarium"
+
+        android:defaultValue="false" />
+
+    <CheckBoxPreference
+
+        android:key="ParkA"
+
+        android:title="Park"
+
+        android:defaultValue="false" />
+
+    <CheckBoxPreference
+
+        android:key="Amusement ParkA"
+
+        android:title="Amusement Park"
+
+        android:defaultValue="false" />
+
+    <CheckBoxPreference
+
+        android:key="MallA"
+
+        android:title="Mall"
+
+        android:defaultValue="false"/>
+
+    <CheckBoxPreference
+
+        android:key="Movie TheatreA"
+
+        android:title="Movie Theatre"
+
+        android:defaultValue="false" />
+
+    <CheckBoxPreference
+
+        android:key="Skate ParkA"
+
+        android:title="Skate Park"
+
+        android:defaultValue="false" />
+
+    <CheckBoxPreference
+
+        android:key="Skating RinkA"
+
+        android:title="Skating Rink"
+
+        android:defaultValue="false" />
+
+    <CheckBoxPreference
+
+        android:key="BeachA"
+
+        android:title="Beach"
+
+        android:defaultValue="false" />
+
+    <CheckBoxPreference
+
+        android:key="SkiingA"
+
+        android:title="Skiing"
+
+        android:defaultValue="false" />
+
+    <CheckBoxPreference
+
+        android:key="SnowboardingA"
+
+        android:title="Snowboarding"
+
+        android:defaultValue="false"/>
+    <CheckBoxPreference
+
+        android:key="DealsA"
+
+        android:title="Deals"
+
+        android:defaultValue="false"/>
+
+</PreferenceScreen>

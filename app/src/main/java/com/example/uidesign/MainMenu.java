@@ -44,6 +44,8 @@ public class MainMenu extends AppCompatActivity implements View.OnClickListener{
         FacebookSdk.sdkInitialize(getApplicationContext());
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_menu);
+
+
         MobileAds.initialize(getApplicationContext(), "1:68912929915:android:0488b4351ca1a767");
 
         AdView mAdView = (AdView) findViewById(R.id.adView);
