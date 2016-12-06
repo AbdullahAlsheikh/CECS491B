@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "68912929915",
+    "firebase_url": "https://takemeoutfacebook-2ab8d.firebaseio.com",
+    "project_id": "takemeoutfacebook-2ab8d",
+    "storage_bucket": "takemeoutfacebook-2ab8d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:68912929915:android:0488b4351ca1a767",
+        "android_client_info": {
+          "package_name": "com.example.uidesign"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "68912929915-trrr43ef8mo6afb1lqtoqieipoi9aje2.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.uidesign",
+            "certificate_hash": "26D4DF4F7C559D4233D8B293E02AC817F6F8DCE6"
+          }
+        },
+        {
+          "client_id": "68912929915-cln5s576ivfcm13ut932pbt7oc70vipv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDfwzN_ygkuah4Ugmk1z4A-mfzAziUqSG4"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "68912929915-cln5s576ivfcm13ut932pbt7oc70vipv.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
