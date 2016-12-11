@@ -3,6 +3,8 @@ package com.example.uidesign;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.NavigationView;
@@ -80,47 +82,52 @@ public class Setting_Page  extends AppCompatActivity implements NavigationView.O
         profilePictureView = (ProfilePictureView) header.findViewById(R.id.facebook_picture);
         facebookName = (TextView) header.findViewById(R.id.facebook_name);
 
-        LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+        if(isNetworkAvailable()) {
+            LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
 
 
-            @Override
-            public void onSuccess(LoginResult loginResult) {
+                @Override
+                public void onSuccess(LoginResult loginResult) {
 
-                //accessToken之後或許還會用到 先存起來
-                accessToken = loginResult.getAccessToken();
+                    //accessToken之後或許還會用到 先存起來
+                    accessToken = loginResult.getAccessToken();
+                    if (isNetworkAvailable()) {
+                        try {
 
-                try {
-                    fbInfo = getFacebookInfo();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                } catch (ExecutionException e) {
-                    e.printStackTrace();
+                            fbInfo = getFacebookInfo();
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        } catch (ExecutionException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    Log.d("FB", "loading image with test " + fbInfo[1]);
+                    loadImage(fbInfo[1]);
+                    facebookName.setText(fbInfo[0]);
+
                 }
-                Log.d("FB", "loading image with test " + fbInfo[1]);
-                loadImage(fbInfo[1]);
-                facebookName.setText(fbInfo[0]);
 
-            }
+                //登入取消
+                @Override
+                public void onCancel() {
+                    // App code
+                    Log.d("FB", "CANCEL");
+                }
 
-            //登入取消
-            @Override
-            public void onCancel() {
-                // App code
-                Log.d("FB", "CANCEL");
-            }
-
-            //登入失敗
-            @Override
-            public void onError(FacebookException exception) {
-                // App code
-                Log.d("FB", exception.toString());
-            }
+                //登入失敗
+                @Override
+                public void onError(FacebookException exception) {
+                    // App code
+                    Log.d("FB", exception.toString());
+                }
 
 
-        });
+            });
+        }
         //always update
-        updateWithToken(accessToken);
-
+        if(isNetworkAvailable()) {
+            updateWithToken(accessToken);
+        }
         accessTokenTracker = new AccessTokenTracker() {
             @Override
             protected void onCurrentAccessTokenChanged(AccessToken oldAccessToken, AccessToken newAccessToken) {
@@ -128,7 +135,7 @@ public class Setting_Page  extends AppCompatActivity implements NavigationView.O
             }
         };
 
-        if(isLoggedIn()){
+        if(isLoggedIn() && isNetworkAvailable()){
 
             try {
                 fbInfo = getFacebookInfo();
@@ -515,6 +522,23 @@ public class Setting_Page  extends AppCompatActivity implements NavigationView.O
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+    public boolean isNetworkAvailable() {
+        boolean haveConnectedWifi = false;
+        boolean haveConnectedMobile = false;
+
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo[] netInfo = cm.getAllNetworkInfo();
+        for (NetworkInfo ni : netInfo) {
+            if (ni.getTypeName().equalsIgnoreCase("WIFI"))
+                if (ni.isConnected())
+                    haveConnectedWifi = true;
+            if (ni.getTypeName().equalsIgnoreCase("MOBILE"))
+                if (ni.isConnected())
+                    haveConnectedMobile = true;
+        }
+        return haveConnectedWifi || haveConnectedMobile;
+    }
+
 
     public boolean isLoggedIn() {
         AccessToken accessToken = AccessToken.getCurrentAccessToken();
