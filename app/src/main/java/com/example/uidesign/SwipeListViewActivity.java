@@ -8,6 +8,10 @@ import android.view.GestureDetector;
 import android.view.View;
 import android.view.MotionEvent;
 import android.view.GestureDetector.SimpleOnGestureListener;
+
+/**
+ * This class is used for the swipe list layout in the full day plan and bar hopping mode
+ */
 public abstract class SwipeListViewActivity extends Activity {
 
     private ListView list;

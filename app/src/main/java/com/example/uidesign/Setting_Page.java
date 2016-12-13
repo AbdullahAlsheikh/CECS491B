@@ -3,6 +3,8 @@ package com.example.uidesign;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.NavigationView;
@@ -38,19 +40,21 @@ import java.util.concurrent.ExecutionException;
 import static com.example.uidesign.MainMenu.userId;
 
 /**
- * Created by Abdullah on 10/6/16.
+ * Class that handles the settings page
  */
 public class Setting_Page  extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
+    //all the variables that are being used
     private Context mContext;
 
-    Button breakPref, lunchPref, dinnerPref, activityPref;
-    Button next;
-    private SharedPreferences mSharedPreferences;
-    SeekBar seekBar, radiusBar;
-    TextView limitText, radiusText;
-    private SharedPreferences.Editor mEditor;
 
+    Button breakPref, lunchPref, dinnerPref, activityPref;
+
+    private SharedPreferences mSharedPreferences;
+    SeekBar radiusBar;
+    TextView radiusText;
+    private SharedPreferences.Editor mEditor;
+    //facebook variables
     LoginButton facebookButton;
     CallbackManager callbackManager;
     private AccessToken accessToken;
@@ -61,18 +65,20 @@ public class Setting_Page  extends AppCompatActivity implements NavigationView.O
     ProfilePictureView profilePictureView;
     TextView facebookName;
 
-
+    /**
+     * this method runs when the settings pages is loaded
+     * @param savedInstanceState - the program saved instance
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.setting_activity_main);
 
-
+        //array to save the logged in facebook user
         fbInfo = new String[2];
 
-
+        //facebook initialization
         callbackManager = CallbackManager.Factory.create();
-
         facebookButton = (LoginButton) findViewById(R.id.button_facebook_login);
         accessToken = AccessToken.getCurrentAccessToken();
         navView = (NavigationView) findViewById(R.id.nav_view);
@@ -80,55 +86,72 @@ public class Setting_Page  extends AppCompatActivity implements NavigationView.O
         profilePictureView = (ProfilePictureView) header.findViewById(R.id.facebook_picture);
         facebookName = (TextView) header.findViewById(R.id.facebook_name);
 
-        LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+        //check if network is available
+        if(isNetworkAvailable()) {
+            LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
 
+                /**
+                 * runs if there is a logged in facebook user
+                 * @param loginResult
+                 */
+                @Override
+                public void onSuccess(LoginResult loginResult) {
 
-            @Override
-            public void onSuccess(LoginResult loginResult) {
+                    //accessToken之後或許還會用到 先存起來
+                    accessToken = loginResult.getAccessToken();
+                    if (isNetworkAvailable()) {
+                        try {
 
-                //accessToken之後或許還會用到 先存起來
-                accessToken = loginResult.getAccessToken();
+                            fbInfo = getFacebookInfo();
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        } catch (ExecutionException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    Log.d("FB", "loading image with test " + fbInfo[1]);
+                    loadImage(fbInfo[1]);
+                    facebookName.setText(fbInfo[0]);
 
-                try {
-                    fbInfo = getFacebookInfo();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                } catch (ExecutionException e) {
-                    e.printStackTrace();
                 }
-                Log.d("FB", "loading image with test " + fbInfo[1]);
-                loadImage(fbInfo[1]);
-                facebookName.setText(fbInfo[0]);
 
-            }
+                /**
+                 * on log in is canceled
+                 */
+                @Override
+                public void onCancel() {
+                    // App code
+                    Log.d("FB", "CANCEL");
+                }
 
-            //登入取消
-            @Override
-            public void onCancel() {
-                // App code
-                Log.d("FB", "CANCEL");
-            }
-
-            //登入失敗
-            @Override
-            public void onError(FacebookException exception) {
-                // App code
-                Log.d("FB", exception.toString());
-            }
+                /**
+                 * if there is an error this will run
+                 * @param exception
+                 */
+                @Override
+                public void onError(FacebookException exception) {
+                    // App code
+                    Log.d("FB", exception.toString());
+                }
 
 
-        });
-        //always update
-        updateWithToken(accessToken);
+            });
+        }
+        //always check before updating
+        if(isNetworkAvailable()) {
+            updateWithToken(accessToken);
+        }
 
         accessTokenTracker = new AccessTokenTracker() {
             @Override
             protected void onCurrentAccessTokenChanged(AccessToken oldAccessToken, AccessToken newAccessToken) {
+
                 updateWithToken(newAccessToken);
+
             }
         };
 
-        if(isLoggedIn()){
+        if(isLoggedIn() && isNetworkAvailable()){
 
             try {
                 fbInfo = getFacebookInfo();
@@ -168,31 +191,13 @@ public class Setting_Page  extends AppCompatActivity implements NavigationView.O
         lunchPref = (Button)findViewById(R.id.lunchPref);
         dinnerPref = (Button)findViewById(R.id.dinnerPref);
 
-        //seekBar = (SeekBar)findViewById(R.id.seekBar);
+
         radiusBar = (SeekBar)findViewById(R.id.radiusBar);
-       // limitText = (TextView)findViewById(R.id.limitValue);
+
         radiusText = (TextView)findViewById(R.id.radiusValue);
 
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
         mEditor = mSharedPreferences.edit();
-
-//        int defLimit = mSharedPreferences.getInt("limit", 0);
-//        if ( defLimit == 0 ){
-//            defLimit = 5;
-//            limitText.setText(String.valueOf(defLimit));
-//            seekBar.setProgress(0);
-//            mEditor.putInt("limit", defLimit).commit();
-//            System.out.println("Value of limit on first run: "+ defLimit);
-//
-//
-//        }else {
-//            limitText.setText(String.valueOf(defLimit));
-//            seekBar.setProgress(0);
-//            seekBar.setProgress(defLimit - 5);
-//            System.out.println("Value of limit on second run: "+ defLimit);
-//        }
-
-        //System.out.println("Value of limit: "+ defLimit);
 
 
         int defRadius = (mSharedPreferences.getInt("radius", 0));
@@ -210,40 +215,6 @@ public class Setting_Page  extends AppCompatActivity implements NavigationView.O
             System.out.println("Value of radius on second run: "+ defRadius);
         }
 
-
-
-
-
-
-
-
-//
-//        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-//            @Override
-//            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-//                limitText.setText(String.valueOf(seekBar.getProgress() + 5));
-//            }
-//
-//            @Override
-//            public void onStartTrackingTouch(SeekBar seekBar) {
-//                limitText.setText(String.valueOf(seekBar.getProgress()+ 5) );
-//            }
-//
-//            @Override
-//            public void onStopTrackingTouch(SeekBar seekBar) {
-//                limitText.setText(String.valueOf(seekBar.getProgress() + 5) );
-//
-//                int mProgress = seekBar.getProgress() + 5;
-//                mEditor.putInt("limit", mProgress).commit();
-//
-//                /**
-//                 * to get value of seek bar use this
-//                 *  int mProgress = mSharedPrefs.getInt("limit", 0);
-//                 *  mSeekBar.setProgress(mProgress);
-//                 */
-//            }
-//
-//        });
 
         radiusBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -272,7 +243,7 @@ public class Setting_Page  extends AppCompatActivity implements NavigationView.O
 
         });
 
-
+        //BREAKFAST preferences buttons pressed
         breakPref.setOnClickListener(new Button.OnClickListener(){
             @Override
 
@@ -288,6 +259,7 @@ public class Setting_Page  extends AppCompatActivity implements NavigationView.O
 
             }});
 
+        //DINNER preferences buttons pressed
         dinnerPref.setOnClickListener(new Button.OnClickListener(){
             @Override
             public void onClick(View arg0) {
@@ -300,7 +272,7 @@ public class Setting_Page  extends AppCompatActivity implements NavigationView.O
                 //checkPref();
 
             }});
-
+        //LUNCH preferences buttons pressed
         lunchPref.setOnClickListener(new Button.OnClickListener(){
 
 
@@ -318,7 +290,7 @@ public class Setting_Page  extends AppCompatActivity implements NavigationView.O
                 //checkPref();
 
             }});
-
+        //ACTIVITIES preferences buttons pressed
         activityPref.setOnClickListener(new Button.OnClickListener(){
 
 
@@ -338,11 +310,19 @@ public class Setting_Page  extends AppCompatActivity implements NavigationView.O
             }});
     }
 
+    /**
+     * This function loads the facebook user picture into the Navigation layout
+     * @param id - the facebook user id
+     */
     public void loadImage(String id) {
         profilePictureView.setProfileId(id);
         profilePictureView.setPresetSize(ProfilePictureView.SMALL);
     }
 
+    /**
+     * This function is run when the access Token for facebook is updated
+     * @param currentAccessToken
+     */
     private void updateWithToken(AccessToken currentAccessToken) {
 
         if (currentAccessToken != null) {
@@ -374,12 +354,21 @@ public class Setting_Page  extends AppCompatActivity implements NavigationView.O
 
     }
 
+    /**
+     * This function runs when the result of the activity is returned
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
     @Override
     protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         callbackManager.onActivityResult(requestCode, resultCode, data);
     }
 
+    /**
+     *A method to be run when the facebook is resumed
+     */
     @Override
     protected void onResume() {
         super.onResume();
@@ -388,6 +377,9 @@ public class Setting_Page  extends AppCompatActivity implements NavigationView.O
         AppEventsLogger.activateApp(this);
     }
 
+    /**
+     *This is run when the facebook logging in is paused
+     */
     @Override
     protected void onPause() {
         super.onPause();
@@ -396,7 +388,10 @@ public class Setting_Page  extends AppCompatActivity implements NavigationView.O
         AppEventsLogger.deactivateApp(this);
     }
 
-
+    /**
+     * When back button is pressed this function gets called to
+     * save the user preferences.
+     */
     @Override
     public void onBackPressed() {
         checkPref();
@@ -404,6 +399,9 @@ public class Setting_Page  extends AppCompatActivity implements NavigationView.O
         super.onBackPressed();
     }
 
+    /**
+     * This function saves the preferences that the user picked into the sharedPreferences variables
+     */
     public void menuSave() {
         checkPref();
         String a = mSharedPreferences.getString("lunchCat", "");
@@ -416,6 +414,10 @@ public class Setting_Page  extends AppCompatActivity implements NavigationView.O
         System.out.println("String from preferences for activity: "+ a4);
     }
 
+    /**
+     * This function gets the choosen preferences values
+     * and puts them into their sharedPreferences variables
+     */
     private void checkPref(){
 
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(Setting_Page.this);
@@ -472,6 +474,11 @@ public class Setting_Page  extends AppCompatActivity implements NavigationView.O
 
     }
 
+    /**
+     * This function is run when an item on the navigation view is pressed
+     * @param item
+     * @return
+     */
     @SuppressWarnings("StatementWithEmptyBody")
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
@@ -516,11 +523,42 @@ public class Setting_Page  extends AppCompatActivity implements NavigationView.O
         return true;
     }
 
+    /**
+     * This functions checks if there is a network connection so the application doesn't crash
+     * @return - true if there is internet connection, false otherwise.
+     */
+    public boolean isNetworkAvailable() {
+        boolean haveConnectedWifi = false;
+        boolean haveConnectedMobile = false;
+
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo[] netInfo = cm.getAllNetworkInfo();
+        for (NetworkInfo ni : netInfo) {
+            if (ni.getTypeName().equalsIgnoreCase("WIFI"))
+                if (ni.isConnected())
+                    haveConnectedWifi = true;
+            if (ni.getTypeName().equalsIgnoreCase("MOBILE"))
+                if (ni.isConnected())
+                    haveConnectedMobile = true;
+        }
+        return haveConnectedWifi || haveConnectedMobile;
+    }
+
+    /**
+     * This function checks if there is a facebook user logged in.
+     * @return - true if yes false otherwise
+     */
     public boolean isLoggedIn() {
         AccessToken accessToken = AccessToken.getCurrentAccessToken();
         return accessToken != null;
     }
 
+    /**
+     * This function gets the facebook user name and id and puts them in fbInfo
+     * @return a string array that hold the values
+     * @throws InterruptedException
+     * @throws ExecutionException
+     */
     public static String[] getFacebookInfo() throws InterruptedException, ExecutionException {
         final String[] info = new String[2];
 

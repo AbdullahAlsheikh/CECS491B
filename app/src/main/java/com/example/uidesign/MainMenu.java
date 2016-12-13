@@ -20,24 +20,34 @@ import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.common.api.GoogleApiClient;
 
-//import com.facebook.CallbackManager;
-//import com.facebook.FacebookSdk;
-//import com.facebook.login.widget.LoginButton;
-//import com.firebase.client.Firebase;
 
-
+/**
+ * This class is responsible for handling the main menu page
+ */
 public class MainMenu extends AppCompatActivity implements View.OnClickListener{
+    //---------------------------------------Declarations---------------------------------------
 
-    private static View screen;
+    public static final String DB_URL = "https://incandescent-heat-931.firebaseio.com/";
+
+    /**
+     * ATTENTION: This was auto-generated to implement the App Indexing API.
+     * See https://g.co/AppIndexing/AndroidStudio for more information.
+     */
+
+    private GoogleApiClient client;
+    //These are variables that are being used in the main menu layout
+    public static View screen;
     public static ImageView full, events, nights, single;
     public Button options;
+    private CallbackManager callbackManager;
+    public static AccessToken accessToken;
     public static String userId;
     private Context mContext;
     private SharedPreferences mSharedPreferences;
     private SharedPreferences.Editor mEditor;
 
     /**
-     *
+     * The function that will be run when the main menu layout is created
      * @param savedInstanceState
      */
     @Override
@@ -46,7 +56,7 @@ public class MainMenu extends AppCompatActivity implements View.OnClickListener{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_menu);
 
-
+        //ads initialization
         MobileAds.initialize(getApplicationContext(), "1:68912929915:android:0488b4351ca1a767");
 
 
@@ -86,8 +96,7 @@ public class MainMenu extends AppCompatActivity implements View.OnClickListener{
 
         //here
         screen = findViewById(R.id.categorias_table);
-
-
+        //animation for the main menu buttons at the startup
         move(nights);
         moveleft(full);
         move(events);
@@ -100,8 +109,8 @@ public class MainMenu extends AppCompatActivity implements View.OnClickListener{
 
 
     /**
-     *
-     * @param view
+     * This function handles the animation of the buttons on the main menu
+     * @param view - the view that is being moved
      */
     public void move(View view) {
         Animation animation1 = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.move);
@@ -109,7 +118,7 @@ public class MainMenu extends AppCompatActivity implements View.OnClickListener{
     }
 
     /**
-     *
+     * This function handles the animation of the buttons to move them to the left
      * @param view
      */
     public void moveleft(View view) {
@@ -118,8 +127,8 @@ public class MainMenu extends AppCompatActivity implements View.OnClickListener{
     }
 
     /**
-     *
-     * @param view
+     * This function makes the button zooms in
+     * @param view the view to be zoomed in
      */
     public void zoom(View view) {
         Animation animation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.zoom);
@@ -127,7 +136,7 @@ public class MainMenu extends AppCompatActivity implements View.OnClickListener{
     }
 
     /**
-     *
+     *A function that runs when a button is pressed
      * @param v
      */
     @Override
@@ -156,8 +165,8 @@ public class MainMenu extends AppCompatActivity implements View.OnClickListener{
 
 
         moveButtons();
-        //to get clicked view id
-        switch (v.getId() ) {
+
+        switch (v.getId() /*to get clicked view id**/) {
             case R.id.night:
                 Intent activity = new Intent(this,BarHoppingMode.class);
                 startActivity(activity);
@@ -185,7 +194,7 @@ public class MainMenu extends AppCompatActivity implements View.OnClickListener{
     }
 
     /**
-     *
+     * This function moves all the buttons at the same time.
      */
     private void moveButtons() {
         Animation animation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.moveaway);
@@ -197,13 +206,6 @@ public class MainMenu extends AppCompatActivity implements View.OnClickListener{
 
     }
 
-    /**
-     *
-     * @return
-     */
-    public boolean isLoggedIn() {
-        AccessToken accessToken = AccessToken.getCurrentAccessToken();
-        return accessToken != null;
-    }
+
 
 }
