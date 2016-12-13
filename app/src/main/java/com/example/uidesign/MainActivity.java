@@ -66,50 +66,51 @@ import static com.example.uidesign.MainMenu.userId;
 public class MainActivity extends  AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+
+    //Data loading Varables
     private ProgressDialog loadingSpinner;
     private String planExcuteText = "";
     private boolean firstPlanActivite = true;
 
 
+    //String Data for each activiy
     String breakfast;
     String lunch;
     String dinner, activity;
 
+
+    //Data Relating to store Yelp's Bussiness data
     String businessName;
     String[] business;
     ShareLinkContent content;
+    BussnessInfo[] cube_info = new BussnessInfo[5];
+    int refreshIndex = 0;
+    int limit = 19;
+
+    String address = "California State University, Long Beach, CA";
+
+    //Data from setting's prefernces
     private Context mContext;
     private SharedPreferences mSharedPreferences;
     private SharedPreferences.Editor mEditor;
 
-
-
-
+    //Yelp server Kays
     private String consumerKey = "dudmo3ssHxvpUP_i_Lw60A";
     private String consumerSecret = "fOhwH5mUo_CyzX2D2vcDUc8FNw8";
     private String token = "yPhkb0u9cRxGE8ikWRkH3ceMCCpKYpQA";
     private String tokenSecret = "-WoZd39mwu4X9iVDXo5bxDNOBBU";
     Yelp yelp = new Yelp(consumerKey, consumerSecret, token, tokenSecret);
+    double radius = yelp.getraduis();
 
+    //Varables for SwipLayout display
     SwipeLayout list_cube0 = null;
     SwipeLayout list_cube = null;
     SwipeLayout list_cube2 = null;
     SwipeLayout list_cube3 = null;
     SwipeLayout list_cube4 = null;
 
-
-    BussnessInfo[] cube_info = new BussnessInfo[5];
-
-    int refreshIndex = 0;
-
-
-    int limit = 19;
-    double radius = yelp.getraduis();
-    String address = "California State University, Long Beach, CA";
-
-
+    //Data for FaceBook data withtin the side header
     private InterstitialAd mInterstitial;
-
     LoginButton facebookButton;
     CallbackManager callbackManager;
     private AccessToken accessToken;
@@ -121,15 +122,17 @@ public class MainActivity extends  AppCompatActivity
     TextView facebookName;
     public boolean[] dealCheck = new boolean[5];
 
+
+    /**
+     * Main onClick method
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-
         mContext = getApplicationContext();
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
-
         accessToken = AccessToken.getCurrentAccessToken();
 
 
@@ -138,10 +141,7 @@ public class MainActivity extends  AppCompatActivity
         mAdView.loadAd(adRequest);
 
 
-
-        //limit = mSharedPreferences.getInt("limit", 0);
         limit = 19;
-        //yelp.setLimit(limit);
 
         radius = (double) mSharedPreferences.getInt("radius", 0);
         yelp.setRadius(radius);
@@ -161,10 +161,11 @@ public class MainActivity extends  AppCompatActivity
         SwipeLayout swipeLayout = (SwipeLayout)findViewById(R.id.content_main);
         swipeLayout.setDragEdge(SwipeLayout.DragEdge.Bottom);
 
-        TextView bottominformation = (TextView) findViewById(R.id.information);
 
 
-
+        //
+        //Getting Data from Phone's Navigation
+        //
         final PlaceAutocompleteFragment autocompleteFragment = (PlaceAutocompleteFragment)
                 getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
 
@@ -218,24 +219,34 @@ public class MainActivity extends  AppCompatActivity
                 Log.i(MainActivity.class.getName(), "Place: " + GPSLocationService.currentLocation);
 
             }
-        });
+        });//End of Phone navigation
 
 
-        System.out.println("TestNetwork: " + isNetworkAvailable());
 
 
+        //Initalizing The swipeLayout cubes
+
+        //initalize each cube with it's layout counterpart
         list_cube0 = (SwipeLayout) findViewById(R.id.first_cube);
         list_cube0.setShowMode(SwipeLayout.ShowMode.PullOut);
+        //Get the view of cubes botom swipe
         View starBottView = list_cube0.findViewById(R.id.starbott);
+        //Get the view of cubes top swipe
         View topView = list_cube0.findViewById(R.id.top_facebook_share);
 
-
+        //Setting Drag to each layout
+        //Left swipe
         list_cube0.addDrag(SwipeLayout.DragEdge.Left, list_cube0.findViewById(R.id.leftside));
+        //Right swipe
         list_cube0.addDrag(SwipeLayout.DragEdge.Right, list_cube0.findViewById(R.id.rightside));
+        //top swipe
         list_cube0.addDrag(SwipeLayout.DragEdge.Top, topView);
+        //bootm swipe
         list_cube0.addDrag(SwipeLayout.DragEdge.Bottom, starBottView);
         PressedAction(list_cube0, 0);
 
+
+        //applied throughout the rest of the swipeLayouts
 
         list_cube = (SwipeLayout) findViewById(R.id.second_cube);
         list_cube.setShowMode(SwipeLayout.ShowMode.PullOut);
@@ -283,40 +294,39 @@ public class MainActivity extends  AppCompatActivity
         list_cube4.addDrag(SwipeLayout.DragEdge.Top, topView5);
         list_cube4.addDrag(SwipeLayout.DragEdge.Bottom, starBottView_5);
         PressedAction(list_cube4,4);
+        //Finish initalizing swipelayout
 
 
+        //Initilize Floating Button
         FloatingActionButton fullday = (FloatingActionButton) findViewById(R.id.fullday);
         assert fullday != null;
 
 
-//        if(firstPlanActivite && isNetworkAvailable() && GPSLocationService.currentLocation != null){
+        //If the user just entered the page it would activate
         if(firstPlanActivite && isNetworkAvailable()){
             planExcuteText = "Loading Data";
             GeneratePlanTask a = new GeneratePlanTask();
             a.execute();
-
-
             firstPlanActivite = false;
         }
 
-            fullday.setOnClickListener(new View.OnClickListener() {
+        fullday.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    //Snackbar.make(view, "Pressed Full Day", Snackbar.LENGTH_LONG)
-                    //.setAction("Action", null).show();
+
+                    //If the network and the gps location is activie
                     if (isNetworkAvailable() && GPSLocationService.currentLocation != null) {
-
-                    try {
-
+                        try {
+                        //Making each cube visible
                         list_cube0.setVisibility(list_cube0.VISIBLE);
                         list_cube.setVisibility(list_cube.VISIBLE);
                         list_cube2.setVisibility(list_cube2.VISIBLE);
                         list_cube3.setVisibility(list_cube3.VISIBLE);
                         list_cube4.setVisibility(list_cube4.VISIBLE);
+                         //Set the loading screen text
                         planExcuteText = "Refreshing Entire Plan";
+                         //Send request Yelp request
                         new GeneratePlanTask().execute();
-//
-
 
                     } catch (Exception e) {
                         System.out.println("full day set on click :Error -> " + e);
@@ -325,24 +335,17 @@ public class MainActivity extends  AppCompatActivity
                     }else {
                         Toast.makeText(MainActivity.this,"No Internet Connection", Toast.LENGTH_SHORT).show();
                     }
-
-
                 }
             });
 
 
 
-        bottominformation.setText("Address:\n " + GPSLocationService.currentLocation + "\nlimit:" +
-                limit + "\nRadius:" + radius + "\n" + "breakfast" + breakfast  + "\nlunch" + lunch
-                + "\nDinner" + dinner + " Activity: " + activity);
-
-
+        //Getting side menu Data for facebook login
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
-
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         navView = (NavigationView) findViewById(R.id.nav_view);
@@ -350,6 +353,8 @@ public class MainActivity extends  AppCompatActivity
         profilePictureView = (ProfilePictureView) header.findViewById(R.id.facebook_picture);
         facebookName = (TextView) header.findViewById(R.id.facebook_name);
 
+
+        //Checks if Facebook is logged in
         if(isLoggedIn()){
 
             try {
@@ -365,8 +370,10 @@ public class MainActivity extends  AppCompatActivity
             //loadImage(fbInfo[1]);
         }
 
-        updateWithToken(accessToken);
 
+
+        //Tutorial Data
+        updateWithToken(accessToken);
         mContext = getApplicationContext();
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
         mEditor = mSharedPreferences.edit();
@@ -421,42 +428,34 @@ public class MainActivity extends  AppCompatActivity
         display.setOnTouchListener(new View.OnTouchListener() {
             public boolean onTouch(View v, MotionEvent event) {
                 if (event.getAction() == MotionEvent.ACTION_MOVE) {
+
+                    //Checks if anyother cube
                     switch (index) {
                         case 0:
-//                            Log.i("list", "is list0");
-//                            list_cube0.open();
                             list_cube.close();
                             list_cube2.close();
                             list_cube3.close();
                             list_cube4.close();
                             break;
                         case 1:
-//                            Log.i("list", "is list");
-//                            list_cube.open();
                             list_cube0.close();
                             list_cube2.close();
                             list_cube3.close();
                             list_cube4.close();
                             break;
                         case 2:
-//                            Log.i("list", "is list2");
-//                            list_cube2.open();
                             list_cube0.close();
                             list_cube.close();
                             list_cube3.close();
                             list_cube4.close();
                             break;
                         case 3:
-//                            Log.i("list", "is list3");
-//                            list_cube3.open();
                             list_cube0.close();
                             list_cube2.close();
                             list_cube.close();
                             list_cube4.close();
                             break;
                         case 4:
-                            Log.i("list", "is list4");
-//                            list_cube4.open();
                             list_cube0.close();
                             list_cube2.close();
                             list_cube3.close();
@@ -478,14 +477,6 @@ public class MainActivity extends  AppCompatActivity
         });
 
 
-
-        display.getSurfaceView().setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-            }
-        });
-
         display.getSurfaceView().setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
@@ -504,7 +495,7 @@ public class MainActivity extends  AppCompatActivity
         display.findViewById(R.id.star2).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //Show Navigation
+                //Show Google Maps of bussiness
                 String searchAddre = cube_info[index].location.display_address.get(0) + " "+ cube_info[index].location.display_address.get(1);
                 Log.i("test", "" +  searchAddre);
                 String map = "http://maps.google.co.in/maps?q=" + searchAddre;
@@ -520,6 +511,7 @@ public class MainActivity extends  AppCompatActivity
         display.findViewById(R.id.share_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //Share with FaceBook
                 Toast.makeText(MainActivity.this, "FaceBook share been pressed", Toast.LENGTH_SHORT).show();
                 content = new ShareLinkContent.Builder()
                         .setContentTitle("I'm going to " + cube_info[index].name)
@@ -547,7 +539,7 @@ public class MainActivity extends  AppCompatActivity
         display.findViewById(R.id.magnifier2).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //Toast.makeText(MainActivity.this, display.getId() + "Magnifier", Toast.LENGTH_SHORT).show();
+                //Call bussiness
                 Intent callIntent = new Intent(Intent.ACTION_DIAL);
                 callIntent.setData(Uri.parse("tel:" + cube_info[index].phone));
                 display.close();
@@ -564,7 +556,6 @@ public class MainActivity extends  AppCompatActivity
             public void onClick(View v) {
                 //Toast.makeText(MainActivity.this, display.getId() + "Delete", Toast.LENGTH_SHORT).show();
                 //Delete Event
-                //display.setVisibility(display.INVISIBLE);
                 display.setVisibility(SwipeLayout.INVISIBLE);
                 display.close();
 
@@ -574,7 +565,15 @@ public class MainActivity extends  AppCompatActivity
 
     }
 
-
+    /**
+     *  Sending and Reciving Yelp request
+     * @param ran
+     * @param index
+     * @param term
+     * @param display
+     * @param dealChecker
+     * @throws InterruptedException
+     */
     public synchronized void getYelpSearchResult(final int ran, final int index ,final String term, final SwipeLayout display, int dealChecker) throws InterruptedException{
 
         final int dealChecking = dealChecker;
@@ -626,7 +625,7 @@ public class MainActivity extends  AppCompatActivity
                                 TextView dealTitle = (TextView) display.findViewById(R.id.deal_title);
                                 dealTitle.setText("No Deal");
 
-                                //my part 11/11
+                                //If deal is found
                                 if (bussnessInfo.deals.get(0) != null){
                                     dealCheck[dealChecking] = true;
                                     dealTitle.setText(bussnessInfo.deals.get(0).title + "\n" + "*see Yelp for more details.");
@@ -637,7 +636,6 @@ public class MainActivity extends  AppCompatActivity
                                 System.out.println("Thread Error -> " + e);
                                 e.printStackTrace();
                             }
-
                             businessName = bussnessInfo.name;
                         }
                     });
@@ -655,14 +653,18 @@ public class MainActivity extends  AppCompatActivity
         thread.join();
     }
 
+
+    /**
+     * if the user presses back
+     */
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
-
             drawer.closeDrawer(GravityCompat.START);
 
-        } else {
+        }
+        else {
 
             super.onBackPressed();
 
@@ -670,42 +672,42 @@ public class MainActivity extends  AppCompatActivity
     }
 
 
+    /**
+     *  Slide menu selection options
+     * @param item
+     * @return
+     */
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
         if (id == R.id.First) {
+            //Same Page
 
-            System.out.println("within Full Day Activity");
-
-            // Handle the camera action
         } else if (id == R.id.Second) {
+            //Send to Single Resturant Finder
             final Intent singleResturant = new Intent(MainActivity.this, ResturantActivity.class);
             MainActivity.this.startActivity(singleResturant);
             finish();
-            System.out.println("Second Button");
 
         } else if (id == R.id.Third) {
-            //this takes you to the bar hopping mode
-            System.out.println("Third Button");
+            //Send to  BarHopper
             final Intent barMode = new Intent(MainActivity.this, BarHoppingMode.class);
             MainActivity.this.startActivity(barMode);
             finish();
 
-
-
         } else if (id == R.id.Fourth) {
-            System.out.println("Fourth Button");
-
+            //Send to  Events Activity
+            final Intent activitymod = new Intent(MainActivity.this, EventsActivity.class);
+            MainActivity.this.startActivity(activitymod);
+            finish();
 
         } else if (id == R.id.sectionOne) {
-            System.out.println("First Section Button");
+            //Send to Settings Page
             final Intent mainIntent = new Intent(MainActivity.this, Setting_Page.class);
             MainActivity.this.startActivity(mainIntent);
             finish();
-
-
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -714,12 +716,15 @@ public class MainActivity extends  AppCompatActivity
     }
 
 
+    /**
+     * Loading Page for generating Full Day
+     */
     public class GeneratePlanTask extends AsyncTask<Void, Void, Void> {
         long end;
         protected void onPreExecute() {
             long start = System.currentTimeMillis();
             end = start + 20*1000; // 20 seconds * 1000 ms/sec
-
+            //Loading spinner
             loadingSpinner = new ProgressDialog(MainActivity.this);
             loadingSpinner.setCancelable(false);
             loadingSpinner.setMessage(planExcuteText + " ...");
@@ -730,15 +735,9 @@ public class MainActivity extends  AppCompatActivity
 
         }
 
-
-
-
-
-
-
         @Override
         protected Void doInBackground(Void... params) {
-
+            //Data request from yelp
             if(System.currentTimeMillis() > end)
             {
                 Log.d("Timer","Stopped");
@@ -863,9 +862,8 @@ public class MainActivity extends  AppCompatActivity
 
         protected void onPostExecute(Void aVoid) {
             loadingSpinner.dismiss();
+            //After Data is loaded
 
-
-            //my part 11/11
             final Handler handler = new Handler();
             handler.postDelayed(new Runnable() {
                 @Override
@@ -891,8 +889,6 @@ public class MainActivity extends  AppCompatActivity
                 }
             }, 1000);
 
-
-
             handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
@@ -912,11 +908,13 @@ public class MainActivity extends  AppCompatActivity
         }
     }
 
-
+    /**
+     * Refershing single activity
+     */
     public class RefreshTask extends AsyncTask<SwipeLayout, Void, Void> {
 
         protected void onPreExecute() {
-
+            //Loading Spinner
             loadingSpinner = new ProgressDialog(MainActivity.this);
             loadingSpinner.setCancelable(false);
             loadingSpinner.setMessage("Refreshing Event ...");
@@ -929,6 +927,7 @@ public class MainActivity extends  AppCompatActivity
 
         @Override
         protected Void doInBackground(SwipeLayout... params) {
+            //Send request from yelp
             SwipeLayout r = params[0];
             try {
 
@@ -948,6 +947,7 @@ public class MainActivity extends  AppCompatActivity
         }
 
         private String getCriteria(){
+            //Getting criteria from setting
             String refreshcriteria = null;
             switch (refreshIndex){
                 case 0:
@@ -979,11 +979,18 @@ public class MainActivity extends  AppCompatActivity
         @Override
         protected void onPostExecute(Void aVoid)
         {
+
+            //After data is loaded
             loadingSpinner.dismiss();
         }
 
-    }
+    }//End of RefreshTask
 
+
+    /**
+     * Checking if the Network
+     * @return
+     */
     public boolean isNetworkAvailable() {
         boolean haveConnectedWifi = false;
         boolean haveConnectedMobile = false;
@@ -1001,16 +1008,23 @@ public class MainActivity extends  AppCompatActivity
         return haveConnectedWifi || haveConnectedMobile;
     }
 
+    /**
+     * Checking if the user is loggedIn in FaceBook
+     * @return
+     */
     public boolean isLoggedIn() {
         AccessToken accessToken = AccessToken.getCurrentAccessToken();
         return accessToken != null;
     }
 
-
+    /**
+     * Getting Facebook Information
+     * @return
+     * @throws InterruptedException
+     * @throws ExecutionException
+     */
     public static String[] getFacebookInfo() throws InterruptedException, ExecutionException {
         final String[] info = new String[2];
-
-
 
         // Run facebook graphRequest.
         Thread t = new Thread(new Runnable() {
@@ -1048,13 +1062,20 @@ public class MainActivity extends  AppCompatActivity
     }
 
 
+    /**
+     * Loading images from FaceBook
+     * @param id
+     */
     public void loadImage(String id) {
         profilePictureView.setProfileId(id);
         profilePictureView.setPresetSize(ProfilePictureView.SMALL);
     }
 
+    /**
+     * Update FaceBook Data
+     * @param currentAccessToken
+     */
     private void updateWithToken(AccessToken currentAccessToken) {
-
         if (currentAccessToken != null) {
 
             try {

@@ -13,41 +13,43 @@ import android.widget.Toast;
 
 public class StartUpScreen  extends AppCompatActivity {
     //private AccessTokenTracker accessTokenTracker;
+
+    /**
+     * OnStart finishes after onclick is closed
+     * Starts another Activity
+     */
     @Override
     public void onStart(){
         super.onStart();
         startService(new Intent(this, GPSLocationService.class));
     }
+    /**
+     * Main onCreate
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.start_up_screen);
-//        FacebookSdk.sdkInitialize(getApplicationContext());
-//
-//
-//
-//        accessTokenTracker = new AccessTokenTracker() {
-//            @Override
-//            protected void onCurrentAccessTokenChanged(AccessToken oldAccessToken, AccessToken newAccessToken) {
-//                updateWithToken(newAccessToken);
-//            }
-//
-//        };
-
         permissionAndLocation();
 
     }
-
+    /**
+     *  Requesting premission from user to get location Data
+     * @param requestCode
+     * @param permissions
+     * @param grantResults
+     */
     @Override
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
         switch (requestCode) {
 
             case 1: {
-
+                //
                 if(grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                    //If first time accepting the user has to restart
                     Toast.makeText(StartUpScreen.this,"Please restart application for changes to take effect.", Toast.LENGTH_LONG).show();
-                }
-
+                }//end if
                 else{
                     new Handler().postDelayed(new Runnable() {
                         @Override
@@ -57,25 +59,22 @@ public class StartUpScreen  extends AppCompatActivity {
                             StartUpScreen.this.finish();
                         }//
                     }, 3000);
+                }//end else
+            }//end case
 
-                }
-            }
+        }//end switich
 
-        }
-        // other 'case' lines to check for other
-        // permissions this application might request
-    }
-//        }
-
-
+    }//end method
+    /**
+     * Asking for user premission
+     * @return
+     */
     private boolean permissionAndLocation(){
+        //Ask user for premission
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
 
-
         }
-
-
         else if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
 
 
@@ -89,12 +88,6 @@ public class StartUpScreen  extends AppCompatActivity {
                 }
             }, 3000);
         }
-
-
         return true;
     }
-
-
-
-
 }

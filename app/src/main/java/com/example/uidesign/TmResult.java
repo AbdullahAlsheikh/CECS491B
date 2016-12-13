@@ -7,44 +7,48 @@ import java.util.ArrayList;
  */
 
 public class TmResult {
+    //Ticket Master Gson Object Data for parsing purpuses
     public eventsInfo _embedded = new eventsInfo();
     public eventsSize page = new eventsSize();
 
 
+    /**
+     * Returns Data from TicketMaster
+     * @param index
+     * @return
+     */
     public basicInfo getevent(int index){
         basicInfo a = _embedded.getBusinnessInfo(index);
-//        Log.i("result", "Name: " + a.name);
-//        Log.i("result", "type: " + a.type);
-//        Log.i("result", "url: " + a.url);
-//        Log.i("result", "imageUrl: " + a.images.get(0).url);
-//        Log.i("result", "name of venue: " + a._embedded.venues.get(0).name);
-//        Log.i("result", "postal code of venue: " + a._embedded.venues.get(0).postalCode);
-
         return a;
     }
+
+    /**
+     * Returns Size of the Result
+     * @return
+     */
     public int getSizeOfResult(){
-//        Log.i("result", "size of info: " + page.size);
         return page.size;
     }
-
 
 }
 
 class eventsInfo{
+    //List of all events
     public ArrayList<basicInfo> events = new ArrayList<>();
-
+    //events informaiton
     public basicInfo getBusinnessInfo(int index){
         return events.get(index);
     }
 }
 
 class eventsSize{
+    //Returns size of event data
     public int size;
-
 }
 
 
 class basicInfo{
+    //Basic Information of event
     public String name;
     public String url;
     public String type;
@@ -55,8 +59,8 @@ class basicInfo{
 }
 
 class Dates {
+    //Returns Time of Events
     public StartDate start;
-    // "America/Los_Angeles"
     public String timezone;
 }
 
@@ -71,14 +75,17 @@ class StartDate {
 
 
 class imagesInfo{
+    //Event Image
     String url;
 }
 
 class embeddedClass{
+    //List of venues Data
     public ArrayList<Venues> venues = new ArrayList<>();
 }
 
 class Venues {
+    //Loaction Address
     public String name;
     public String postalCode;
     public City city;
