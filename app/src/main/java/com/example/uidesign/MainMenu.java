@@ -20,23 +20,22 @@ import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.common.api.GoogleApiClient;
 
-//import com.facebook.CallbackManager;
-//import com.facebook.FacebookSdk;
-//import com.facebook.login.widget.LoginButton;
-//import com.firebase.client.Firebase;
 
-
+/**
+ * This class is responsible for handling the main menu page
+ */
 public class MainMenu extends AppCompatActivity implements View.OnClickListener{
     //---------------------------------------Declarations---------------------------------------
-    //Firebase mRef;
+
     public static final String DB_URL = "https://incandescent-heat-931.firebaseio.com/";
-    //private CallbackManager callbackManager;
-    //private LoginButton FbLoginButton;
+
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
      */
+
     private GoogleApiClient client;
+    //These are variables that are being used in the main menu layout
     public static View screen;
     public static ImageView full, events, nights, single;
     public Button options;
@@ -47,13 +46,17 @@ public class MainMenu extends AppCompatActivity implements View.OnClickListener{
     private SharedPreferences mSharedPreferences;
     private SharedPreferences.Editor mEditor;
 
+    /**
+     * The function that will be run when the main menu layout is created
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         FacebookSdk.sdkInitialize(getApplicationContext());
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_menu);
 
-
+        //ads initialization
         MobileAds.initialize(getApplicationContext(), "1:68912929915:android:0488b4351ca1a767");
 
 
@@ -93,16 +96,7 @@ public class MainMenu extends AppCompatActivity implements View.OnClickListener{
 
         //here
         screen = findViewById(R.id.categorias_table);
-
-        /**
-         move(full);
-         moveleft(nights);
-         move(single);
-         moveleft(events);
-         move(options);
-         moveleft(quit);
-         */
-
+        //animation for the main menu buttons at the startup
         move(nights);
         moveleft(full);
         move(events);
@@ -114,24 +108,37 @@ public class MainMenu extends AppCompatActivity implements View.OnClickListener{
     }
 
 
-
-
-
+    /**
+     * This function handles the animation of the buttons on the main menu
+     * @param view - the view that is being moved
+     */
     public void move(View view) {
         Animation animation1 = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.move);
         view.startAnimation(animation1);
     }
 
+    /**
+     * This function handles the animation of the buttons to move them to the left
+     * @param view
+     */
     public void moveleft(View view) {
         Animation animation1 = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.moveleft);
         view.startAnimation(animation1);
     }
 
+    /**
+     * This function makes the button zooms in
+     * @param view the view to be zoomed in
+     */
     public void zoom(View view) {
         Animation animation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.zoom);
         view.startAnimation(animation);
     }
 
+    /**
+     *A function that runs when a button is pressed
+     * @param v
+     */
     @Override
     public void onClick(View v) {
         zoom(v);
@@ -186,6 +193,9 @@ public class MainMenu extends AppCompatActivity implements View.OnClickListener{
 
     }
 
+    /**
+     * This function moves all the buttons at the same time.
+     */
     private void moveButtons() {
         Animation animation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.moveaway);
         full.startAnimation(animation);
@@ -196,33 +206,6 @@ public class MainMenu extends AppCompatActivity implements View.OnClickListener{
 
     }
 
-//    @Override
-//    public void onClick(View v) {
-//        zoom(v);
-//        switch (v.getId() /*to get clicked view id**/) {
-//            case R.id.night:
-//                ImageView purple = (ImageView) findViewById(R.id.purple);
-//                purple.setVisibility(View.VISIBLE);
-//                zoom(purple);
-//                // do something when the corky is clicked
-//                break;
-//
-//            case R.id.day:
-//                final Intent mainIntent = new Intent(MainMenu.this, MainActivity.class);
-//                MainMenu.this.startActivity(mainIntent);
-//                break;
-//
-//            case R.id.single:
-//                System.out.println("Single Activity");
-//                final Intent singleResturant = new Intent(MainMenu.this, ResturantActivity.class);
-//                MainMenu.this.startActivity(singleResturant);
-//                break;
-//
-//        }
-//    }
-public boolean isLoggedIn() {
-    AccessToken accessToken = AccessToken.getCurrentAccessToken();
-    return accessToken != null;
-}
+
 
 }

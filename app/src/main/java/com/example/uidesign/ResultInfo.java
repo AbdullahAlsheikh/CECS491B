@@ -12,8 +12,12 @@ import java.util.List;
  * Created by Abdullah on 9/9/16.
  */
 
+/**
+ * This class is used to parse the yelp response using Gson by google
+ * every class is a data that we will be parsed by Gson.
+ */
 public class ResultInfo {
-
+    //business will be placed in this arraylist
     private ArrayList<BussnessInfo> businesses = new ArrayList<BussnessInfo>();
 
     public BussnessInfo getBussnessInfo(int index){
@@ -40,24 +44,13 @@ public class ResultInfo {
         return businesses.get(index);
     }
 
-//    public String getName(int index){ return businesses.get(index).name; }
-//
-//    public String getRating(int index) { return businesses.get(index).rating; }
-//
-//    public void setImages(int index){
-//        try{
-//
-//            businesses.get(index).icon_img = BitmapFactory.decodeStream(businesses.get(index).image_url.openConnection().getInputStream());
-//
-//
-//        }catch (Exception e)
-//        {
-//            businesses.get(index).icon_img  = null;
-//        }
-//    }
 }
 
-
+/**
+ * This class represents the  information from the actual response,
+ * Gson needs them to be defined the same way they are displayed in the response,
+ * in order to parse them.
+ */
 class BussnessInfo{
     //name Of Bussness
     public String name;
@@ -88,13 +81,19 @@ class BussnessInfo{
 }
 
 
-//my part 11/11
+/**
+ * This class represents the deals portion of the response
+ */
 class DealsInfo{
     public String what_you_get;
     public String title;
 
 }
 
+/**
+ * This class represents the main location of the business from the yelp
+ * response
+ */
 class mainlocation{
     List<String> display_address;
 
