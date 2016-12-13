@@ -557,8 +557,9 @@ public class BarHoppingMode extends  AppCompatActivity
                 System.out.println("Index:  " + ran +  " Term:" + term);
                 try{
 
-                    String response = yelp.searchByLocation(term, GPSLocationService.currentLocation);
-//                    String response = yelp.searchByLocation(term, address);
+
+                    String response = yelp.searchByLocation(term, address);
+//                    String response = yelp.searchByLocation(term, GPSLocationService.currentLocation);
                     System.out.println(response);
                     Gson gson = new GsonBuilder().create();
 

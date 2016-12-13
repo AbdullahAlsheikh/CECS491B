@@ -57,12 +57,10 @@ import uk.co.deanwild.materialshowcaseview.ShowcaseConfig;
 import static com.example.uidesign.MainMenu.userId;
 
 
-/**
- * Created by Abdullah on 10/3/16.
- */
 public class ResturantActivity  extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener{
 
+    //Variables used in this class
     private ProgressDialog loadingSpinner;
 
     private Context mContext;
@@ -99,6 +97,7 @@ public class ResturantActivity  extends AppCompatActivity
 
 
 
+    //onCreate of the application
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -109,14 +108,14 @@ public class ResturantActivity  extends AppCompatActivity
         mContext = getApplicationContext();
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
 
+        //used to access facebook
         accessToken = AccessToken.getCurrentAccessToken();
-//        Interstitial Ad
+        //Ad implepentation
         mInterstitial = new InterstitialAd(this);
         mInterstitial.setAdUnitId(getString(R.string.single_day_ad_unit_id));
         AdRequest request = new AdRequest.Builder().build();
         mInterstitial.loadAd(request);
 
-//        yelp.setLimit(limit);
 
         breakfast = mSharedPreferences.getString("breakfastCat", "");
         lunch = mSharedPreferences.getString("lunchCat", "");
@@ -128,13 +127,13 @@ public class ResturantActivity  extends AppCompatActivity
 
         SwipeLayout swipeLayout = (SwipeLayout)findViewById(R.id.resutrant_activity);
         swipeLayout.setDragEdge(SwipeLayout.DragEdge.Bottom);
-//
-//        TextView bottominformation = (TextView) findViewById(R.id.single_filer_information);
 
+        //autocomplete fragment to input address
         final PlaceAutocompleteFragment autocompleteFragment = (PlaceAutocompleteFragment)
                 getFragmentManager().findFragmentById(R.id.single_place_autocomplete_fragment);
         autocompleteFragment.setText(GPSLocationService.currentLocation);
 
+        //Listeneer for the autocomplete fragment. Saves the entered address for use in with yelp
         autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
             public void onPlaceSelected(Place place) {
@@ -156,9 +155,10 @@ public class ResturantActivity  extends AppCompatActivity
 
 
         ImageButton autocompleteClear = (ImageButton) findViewById(R.id.place_autocomplete_clear_button);
-        //mypart
+
         ImageButton autoCompleteSearch = (ImageButton) findViewById(R.id.place_autocomplete_search_button);
 
+        //Used to clear the inputted address and start the gps service
         autocompleteClear.setOnClickListener(new Button.OnClickListener() {
             public void onClick(View v) {
 
@@ -180,7 +180,7 @@ public class ResturantActivity  extends AppCompatActivity
             }
         });
 
-
+        //Call button and listener used to call a business
         ImageButton call = (ImageButton) findViewById(R.id.callButton);
         call.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -196,6 +196,7 @@ public class ResturantActivity  extends AppCompatActivity
 
         });
 
+        //Nav button and listener to open google maps with the locations address
         ImageButton nav = (ImageButton) findViewById(R.id.navButton);
         nav.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -208,6 +209,7 @@ public class ResturantActivity  extends AppCompatActivity
             }
         });
 
+        //Web button and listener to open yelp through the app
         ImageButton web = (ImageButton) findViewById(R.id.webButton);
         web.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -226,7 +228,7 @@ public class ResturantActivity  extends AppCompatActivity
 
 
 
-
+        //Refreshes the search listener
         fullday.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -265,6 +267,7 @@ public class ResturantActivity  extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        //Changes upper view in menu if logged into facebook
         navView = (NavigationView) findViewById(R.id.nav_view);
         header = navView.getHeaderView(0);
         profilePictureView = (ProfilePictureView) header.findViewById(R.id.facebook_picture);
@@ -289,11 +292,12 @@ public class ResturantActivity  extends AppCompatActivity
 
 
         updateWithToken(accessToken);
-
+        //access the shared prefrence library for saved optoins
         mContext = getApplicationContext();
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
         mEditor = mSharedPreferences.edit();
 
+        //Live tutorial implementation
         boolean singleTutorial = mSharedPreferences.getBoolean("singleToturial",false);
         if(!singleTutorial) {
 
@@ -331,7 +335,15 @@ public class ResturantActivity  extends AppCompatActivity
     }
 
 
-
+    /**
+     * getYelResult
+     * Description: A function that gets the response from help when we searched for certain criteria. Returns
+     * json information of businesses
+     * @param ran
+     * @param term
+     * @param display
+     * @throws InterruptedException
+     */
     public synchronized void getYelpSearchResult(final int ran, final String term, final LinearLayout display) throws InterruptedException{
         Thread thread = new Thread(new Runnable() {
             @Override
@@ -411,6 +423,12 @@ public class ResturantActivity  extends AppCompatActivity
 
     }
 
+    /**
+     * OnNavigationItemSelected
+     * Description: Inflates the menu and gives the user options of where to jump to within the application
+     * @param item
+     * @return
+     */
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
@@ -450,7 +468,7 @@ public class ResturantActivity  extends AppCompatActivity
         return true;
     }
 
-
+    //used for the loading spinner to make sure user can't intervene until it is done
     public class GeneratePlanTask extends AsyncTask<Void, Void, Void> {
         protected void onPreExecute() {
             //progressBarStatus = 0;
@@ -466,6 +484,7 @@ public class ResturantActivity  extends AppCompatActivity
 
         }
 
+        //Checks what time of day it is and figures out which preference list to use
         @Override
         protected Void doInBackground(Void... params) {
             try {
@@ -498,7 +517,7 @@ public class ResturantActivity  extends AppCompatActivity
 
             return null;
         }
-
+        //disolves the loading spinner
         @Override
         protected void onPostExecute(Void aVoid) {
             //arrayAdapter.notifyDataSetChanged();
@@ -506,12 +525,13 @@ public class ResturantActivity  extends AppCompatActivity
         }
     }
 
+    //checks if user is logged into facebook
     public boolean isLoggedIn() {
         AccessToken accessToken = AccessToken.getCurrentAccessToken();
         return accessToken != null;
     }
 
-
+    //Gets user data and puts it  into an array
     public static String[] getFacebookInfo() throws InterruptedException, ExecutionException {
         final String[] info = new String[2];
 
@@ -552,12 +572,13 @@ public class ResturantActivity  extends AppCompatActivity
         return info;
     }
 
-
+    //Sets the menu image to that of the facebook account image
     public void loadImage(String id) {
         profilePictureView.setProfileId(id);
         profilePictureView.setPresetSize(ProfilePictureView.SMALL);
     }
 
+    //Updates facebook information
     private void updateWithToken(AccessToken currentAccessToken) {
 
         if (currentAccessToken != null) {
@@ -585,6 +606,8 @@ public class ResturantActivity  extends AppCompatActivity
         }
 
     }
+
+    //Checks if there is a wifi or any internet connection
     public boolean isNetworkAvailable() {
         boolean haveConnectedWifi = false;
         boolean haveConnectedMobile = false;
@@ -603,27 +626,3 @@ public class ResturantActivity  extends AppCompatActivity
     }
 }
 
-
-//class BlurBuilder {
-//    private static final float BITMAP_SCALE = 0.4f;
-//    private static final float BLUR_RADIUS = 0.1f;
-//
-//    public static Bitmap blur(Context context, Bitmap image) {
-//        int width = Math.round(image.getWidth() * BITMAP_SCALE);
-//        int height = Math.round(image.getHeight() * BITMAP_SCALE);
-//
-//        Bitmap inputBitmap = Bitmap.createScaledBitmap(image, width, height, false);
-//        Bitmap outputBitmap = Bitmap.createBitmap(inputBitmap);
-//
-//        RenderScript rs = RenderScript.create(context);
-//        ScriptIntrinsicBlur theIntrinsic = ScriptIntrinsicBlur.create(rs, Element.U8_4(rs));
-//        Allocation tmpIn = Allocation.createFromBitmap(rs, inputBitmap);
-//        Allocation tmpOut = Allocation.createFromBitmap(rs, outputBitmap);
-//        theIntrinsic.setRadius(BLUR_RADIUS);
-//        theIntrinsic.setInput(tmpIn);
-//        theIntrinsic.forEach(tmpOut);
-//        tmpOut.copyTo(outputBitmap);
-//
-//        return outputBitmap;
-//    }
-//}

@@ -67,6 +67,8 @@ import static com.example.uidesign.MainMenu.userId;
 public class EventsActivity  extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener{
 
+
+    //Variables used in this class
     private ProgressDialog loadingSpinner;
     private Context mContext;
     private SharedPreferences mSharedPreferences;
@@ -98,6 +100,7 @@ public class EventsActivity  extends AppCompatActivity
     View header;
     TextView facebookName;
 
+    //onCreate of the application
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -108,23 +111,20 @@ public class EventsActivity  extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        //used to access facebook
         accessToken = AccessToken.getCurrentAccessToken();
-
-//        Interstitial Ad
+        //Ad implepentation
         mInterstitial = new InterstitialAd(this);
         mInterstitial.setAdUnitId(getString(R.string.events_page_ad_unit_id));
         AdRequest request = new AdRequest.Builder().build();
         mInterstitial.loadAd(request);
 
-        //SwipeLayout swipeLayout = (SwipeLayout)findViewById(R.id.resutrant_activity);
-        //swipeLayout.setDragEdge(SwipeLayout.DragEdge.Bottom);
-//
-//        TextView bottominformation = (TextView) findViewById(R.id.single_filer_information);
-
+        //autocomplete fragment to input address
         final PlaceAutocompleteFragment autocompleteFragment = (PlaceAutocompleteFragment)
                 getFragmentManager().findFragmentById(R.id.single_place_autocomplete_fragment);
         autocompleteFragment.setText(GPSLocationService.currentLocation);
 
+        //Listeneer for the autocomplete fragment. Saves the entered address for use in with yelp
         autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
             public void onPlaceSelected(Place place) {
@@ -188,9 +188,10 @@ public class EventsActivity  extends AppCompatActivity
 
 
         ImageButton autocompleteClear = (ImageButton) findViewById(R.id.place_autocomplete_clear_button);
-        //mypart
+
         ImageButton autoCompleteSearch = (ImageButton) findViewById(R.id.place_autocomplete_search_button);
 
+        //Used to clear the inputted address and start the gps service
         autocompleteClear.setOnClickListener(new Button.OnClickListener() {
             public void onClick(View v) {
 
@@ -224,6 +225,7 @@ public class EventsActivity  extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
 
+        //Nav button and listener to open google maps with the locations address
         ImageButton nav = (ImageButton) findViewById(R.id.navButton);
         nav.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -236,7 +238,7 @@ public class EventsActivity  extends AppCompatActivity
             }
         });
 
-
+        //Web button and listener to open ticketmaster.com
         ImageButton web = (ImageButton) findViewById(R.id.webButton);
         web.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -246,7 +248,7 @@ public class EventsActivity  extends AppCompatActivity
             }
         });
 
-
+        //Changes upper view in menu if logged into facebook
         navView = (NavigationView) findViewById(R.id.nav_view);
         header = navView.getHeaderView(0);
         profilePictureView = (ProfilePictureView) header.findViewById(R.id.facebook_picture);
@@ -267,10 +269,13 @@ public class EventsActivity  extends AppCompatActivity
 
         }
 
+
         updateWithToken(accessToken); mContext = getApplicationContext();
+        //access the shared prefrence library for saved optoins
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
         mEditor = mSharedPreferences.edit();
 
+        //Live tutorial implementation
         boolean singleTutorial = mSharedPreferences.getBoolean("singleToturial",false);
         if(!singleTutorial) {
 
@@ -335,12 +340,19 @@ public class EventsActivity  extends AppCompatActivity
 //        return super.onOptionsItemSelected(item);
 //    }
 
+    /**
+     * fixCity
+     * Description: Edits the city of an address to exclude the white space for use with ticketmaster
+     * @param city
+     * @return
+     */
     public String fixCity(String city){
         String newCity = city.replaceAll("\\s","+");
         System.out.println(newCity);
         return newCity;
     }
 
+    //Checks if there is a wifi or any internet connection
     public boolean isNetworkAvailable() {
         boolean haveConnectedWifi = false;
         boolean haveConnectedMobile = false;
@@ -358,6 +370,12 @@ public class EventsActivity  extends AppCompatActivity
         return haveConnectedWifi || haveConnectedMobile;
     }
 
+    /**
+     * getEvent
+     * Description: Returns json response from ticketmaster of events in the city given by the inputted addres or gps.
+     * json information of businesses
+     * @throws InterruptedException
+     */
     public synchronized void getEvent() throws InterruptedIOException{
 
         //Ticket Master Work
@@ -368,7 +386,7 @@ public class EventsActivity  extends AppCompatActivity
             public void run() {
                 try  {
                     //how can I get the city from the user location or google places??? ask!
-                      city = fixCity(GPSLocationService.currentCity);
+                    city = fixCity(GPSLocationService.currentCity);
                     //city = fixCity("Los Angeles");
 
                     DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
@@ -408,6 +426,12 @@ public class EventsActivity  extends AppCompatActivity
         thread.start();
 
     }
+
+    /**
+     * getNextEvent
+     * Description: Gets a new event from the previous json response.
+     * @param index
+     */
     public void getNextEvent(int index) {
         final int in = index;
         runOnUiThread(new Runnable() {
@@ -439,8 +463,8 @@ public class EventsActivity  extends AppCompatActivity
 //        TextView state = (TextView) findViewById(R.id.State);
 //        TextView postalCode = (TextView) findViewById(R.id.PostalCode);
 
-            TextView startTime = (TextView) findViewById(R.id.startTime);
-            TextView startDate = (TextView) findViewById(R.id.startDate);
+                TextView startTime = (TextView) findViewById(R.id.startTime);
+                TextView startDate = (TextView) findViewById(R.id.startDate);
 
                 name.setText("Event: " + resultInfo.name);
                 venue.setText("Venue: " + resultInfo._embedded.venues.get(0).name);
@@ -473,7 +497,10 @@ public class EventsActivity  extends AppCompatActivity
     }
 
 
-
+    /**
+     * DownloadImageTask
+     * Description: Converts url to a bitmap image
+     */
     public class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
         ImageView bmImage;
 
@@ -499,6 +526,12 @@ public class EventsActivity  extends AppCompatActivity
         }
     }
 
+    /**
+     * OnNavigationItemSelected
+     * Description: Inflates the menu and gives the user options of where to jump to within the application
+     * @param item
+     * @return
+     */
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
@@ -539,6 +572,7 @@ public class EventsActivity  extends AppCompatActivity
         return true;
     }
 
+    //used for the loading spinner to make sure user can't intervene until it is done
     public class GeneratePlanTask extends AsyncTask<Void, Void, Void> {
         protected void onPreExecute() {
             //progressBarStatus = 0;
@@ -567,7 +601,7 @@ public class EventsActivity  extends AppCompatActivity
 
             return null;
         }
-
+        //disolves the loading spinner
         @Override
         protected void onPostExecute(Void aVoid) {
             //arrayAdapter.notifyDataSetChanged();
@@ -575,12 +609,14 @@ public class EventsActivity  extends AppCompatActivity
         }
     }
 
+    //checks if user is logged into facebook
     public boolean isLoggedIn() {
         AccessToken accessToken = AccessToken.getCurrentAccessToken();
         return accessToken != null;
     }
 
 
+    //Gets user data and puts it  into an array
     public static String[] getFacebookInfo() throws InterruptedException, ExecutionException {
         final String[] info = new String[2];
 
@@ -621,7 +657,7 @@ public class EventsActivity  extends AppCompatActivity
         return info;
     }
 
-
+    //Sets the menu image to that of the facebook account image
     public void loadImage(String id) {
 
 
@@ -629,6 +665,7 @@ public class EventsActivity  extends AppCompatActivity
         profilePictureView.setPresetSize(ProfilePictureView.SMALL);
     }
 
+    //Updates facebook information
     private void updateWithToken(AccessToken currentAccessToken) {
 
         if (currentAccessToken != null) {
@@ -656,4 +693,3 @@ public class EventsActivity  extends AppCompatActivity
     }
 
 }
-

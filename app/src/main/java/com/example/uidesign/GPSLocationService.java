@@ -13,11 +13,10 @@ import android.os.IBinder;
 import java.io.IOException;
 import java.util.List;
 
-/**
- * Created by Abdullah on 9/27/16.
- */
+
 public class GPSLocationService extends Service
 {
+    //Variables used in the GPSLocationService class
     private static final String TAG = "GPSService";
     private LocationManager mLocationManager = null;
     private static final int LOCATION_INTERVAL = 0;
@@ -25,15 +24,25 @@ public class GPSLocationService extends Service
     public static String currentLocation = null;
     public static String currentCity = null;
 
+    //Inner class as a listener to handle gps actions
     private class LocationListener implements android.location.LocationListener
     {
+
+        //Location object to store use location
         Location mLastLocation;
 
+        //setter of the location object
         public LocationListener(String provider)
         {
             mLastLocation = new Location(provider);
         }
 
+        /**
+         * onLocationChanged
+         * Description: This method is a listener that is triggered whenever the gps senses the user has physically moved.
+         * it then calls the reverseGeocode function to decipher the location object into a string containing the user's address location.
+         * @param location
+         */
         @Override
         public void onLocationChanged(Location location)
         {
@@ -44,18 +53,21 @@ public class GPSLocationService extends Service
             } catch(IOException ie){}
         }
 
+        //unimplemented function.. required to state but not necessary to use
         @Override
         public void onProviderDisabled(String provider)
         {
 
         }
 
+        //unimplemented function.. required to state but not necessary to use
         @Override
         public void onProviderEnabled(String provider)
         {
 
         }
 
+        //unimplemented function.. required to state but not necessary to use
         @Override
         public void onStatusChanged(String provider, int status, Bundle extras)
         {
@@ -63,17 +75,20 @@ public class GPSLocationService extends Service
         }
     }
 
+    //Sets the location listeners for both the gps and network antenna
     LocationListener[] mLocationListeners = new LocationListener[] {
             new LocationListener(LocationManager.GPS_PROVIDER),
             new LocationListener(LocationManager.NETWORK_PROVIDER)
     };
 
+    //used to bind to the gps satellite
     @Override
     public IBinder onBind(Intent arg0)
     {
         return null;
     }
 
+    //Used to start up since this class is really a service running in the background of the application
     @Override
     public int onStartCommand(Intent intent, int flags, int startId)
     {
@@ -81,6 +96,10 @@ public class GPSLocationService extends Service
         return START_STICKY;
     }
 
+    /**
+     * onCreate
+     * Description: The method that creates the class attributes on initialization
+     */
     @Override
     public void onCreate()
     {
@@ -103,6 +122,8 @@ public class GPSLocationService extends Service
         }
     }
 
+    //Ensures that the gps service truly turns off when the appliction has exited. Otherwise the gps service would continue
+    //to run regardless of whether the application was alive or not.
     @Override
     public void onDestroy()
     {
@@ -118,6 +139,7 @@ public class GPSLocationService extends Service
         }
     }
 
+    //Manages location objects as they come from the gps
     private void initializeLocationManager() {
         if (mLocationManager == null) {
             mLocationManager = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
@@ -125,6 +147,16 @@ public class GPSLocationService extends Service
     }
 
 
+    /**
+     * reverseGeocode
+     * Description: When provided a lat/long position, the function runs it through the geocoder class built into android
+     * which gives the elements of an address(ex: city/zipcode). From there it builds an address in an order that will work with the
+     * yelp api.
+     * @param latitude
+     * @param longitude
+     * @return
+     * @throws IOException
+     */
     public String reverseGeocode(double latitude, double longitude) throws IOException {
         Geocoder gc = new Geocoder(this);
 
@@ -142,14 +174,7 @@ public class GPSLocationService extends Service
             if (address.getAddressLine(0) != null && address.getLocality() != null &&
                     address.getAdminArea() != null && address.getPostalCode() != null &&
                     address.getCountryName() != null) {
-                //str.append(address.getAddressLine(0) + ", ");
-                //str.append(address.getLocality() + ", ");
-                //str.append(address.getAdminArea() + " ");
-                //str.append(address.getPostalCode() + ", ");
-                //str.append(address.getCountryName());
-                //str.append("USA");
 
-                //String strAddress = str.toString();
 
                 String strAddress = (address.getAddressLine(0) + ", " + address.getLocality() + ", " + address.getAdminArea() + " " + address.getPostalCode() + ", " + "USA");
                 currentCity = address.getLocality();
