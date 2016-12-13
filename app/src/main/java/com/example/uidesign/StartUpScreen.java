@@ -45,7 +45,7 @@ public class StartUpScreen  extends AppCompatActivity {
         switch (requestCode) {
 
             case 1: {
-
+                //
                 if(grantResults[0] == PackageManager.PERMISSION_GRANTED){
                     //If first time accepting the user has to restart
                     Toast.makeText(StartUpScreen.this,"Please restart application for changes to take effect.", Toast.LENGTH_LONG).show();
