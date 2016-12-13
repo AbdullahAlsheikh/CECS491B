@@ -27,26 +27,19 @@ import com.google.android.gms.common.api.GoogleApiClient;
 
 
 public class MainMenu extends AppCompatActivity implements View.OnClickListener{
-    //---------------------------------------Declarations---------------------------------------
-    //Firebase mRef;
-    public static final String DB_URL = "https://incandescent-heat-931.firebaseio.com/";
-    //private CallbackManager callbackManager;
-    //private LoginButton FbLoginButton;
-    /**
-     * ATTENTION: This was auto-generated to implement the App Indexing API.
-     * See https://g.co/AppIndexing/AndroidStudio for more information.
-     */
-    private GoogleApiClient client;
-    public static View screen;
+
+    private static View screen;
     public static ImageView full, events, nights, single;
     public Button options;
-    private CallbackManager callbackManager;
-    public static AccessToken accessToken;
     public static String userId;
     private Context mContext;
     private SharedPreferences mSharedPreferences;
     private SharedPreferences.Editor mEditor;
 
+    /**
+     *
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         FacebookSdk.sdkInitialize(getApplicationContext());
@@ -94,14 +87,6 @@ public class MainMenu extends AppCompatActivity implements View.OnClickListener{
         //here
         screen = findViewById(R.id.categorias_table);
 
-        /**
-         move(full);
-         moveleft(nights);
-         move(single);
-         moveleft(events);
-         move(options);
-         moveleft(quit);
-         */
 
         move(nights);
         moveleft(full);
@@ -114,24 +99,37 @@ public class MainMenu extends AppCompatActivity implements View.OnClickListener{
     }
 
 
-
-
-
+    /**
+     *
+     * @param view
+     */
     public void move(View view) {
         Animation animation1 = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.move);
         view.startAnimation(animation1);
     }
 
+    /**
+     *
+     * @param view
+     */
     public void moveleft(View view) {
         Animation animation1 = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.moveleft);
         view.startAnimation(animation1);
     }
 
+    /**
+     *
+     * @param view
+     */
     public void zoom(View view) {
         Animation animation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.zoom);
         view.startAnimation(animation);
     }
 
+    /**
+     *
+     * @param v
+     */
     @Override
     public void onClick(View v) {
         zoom(v);
@@ -158,8 +156,8 @@ public class MainMenu extends AppCompatActivity implements View.OnClickListener{
 
 
         moveButtons();
-
-        switch (v.getId() /*to get clicked view id**/) {
+        //to get clicked view id
+        switch (v.getId() ) {
             case R.id.night:
                 Intent activity = new Intent(this,BarHoppingMode.class);
                 startActivity(activity);
@@ -186,6 +184,9 @@ public class MainMenu extends AppCompatActivity implements View.OnClickListener{
 
     }
 
+    /**
+     *
+     */
     private void moveButtons() {
         Animation animation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.moveaway);
         full.startAnimation(animation);
@@ -196,33 +197,13 @@ public class MainMenu extends AppCompatActivity implements View.OnClickListener{
 
     }
 
-//    @Override
-//    public void onClick(View v) {
-//        zoom(v);
-//        switch (v.getId() /*to get clicked view id**/) {
-//            case R.id.night:
-//                ImageView purple = (ImageView) findViewById(R.id.purple);
-//                purple.setVisibility(View.VISIBLE);
-//                zoom(purple);
-//                // do something when the corky is clicked
-//                break;
-//
-//            case R.id.day:
-//                final Intent mainIntent = new Intent(MainMenu.this, MainActivity.class);
-//                MainMenu.this.startActivity(mainIntent);
-//                break;
-//
-//            case R.id.single:
-//                System.out.println("Single Activity");
-//                final Intent singleResturant = new Intent(MainMenu.this, ResturantActivity.class);
-//                MainMenu.this.startActivity(singleResturant);
-//                break;
-//
-//        }
-//    }
-public boolean isLoggedIn() {
-    AccessToken accessToken = AccessToken.getCurrentAccessToken();
-    return accessToken != null;
-}
+    /**
+     *
+     * @return
+     */
+    public boolean isLoggedIn() {
+        AccessToken accessToken = AccessToken.getCurrentAccessToken();
+        return accessToken != null;
+    }
 
 }

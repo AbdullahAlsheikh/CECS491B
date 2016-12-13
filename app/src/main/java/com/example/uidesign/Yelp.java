@@ -12,6 +12,7 @@ public class Yelp {
 
 
 
+    //Data for sending request
     OAuthService service;
     Token accessToken;
     int limit = 19;
@@ -41,6 +42,10 @@ public class Yelp {
 //        return limit;
 //    }
 
+    /**
+     * Getting adjusted Radius
+     * @param radiusPar
+     */
     public void setRadius(double radiusPar){
         //Validate radius
         if(radiusPar > 24.85)
@@ -53,34 +58,22 @@ public class Yelp {
         }
         radius = radiusPar;
     }
+
+    /**
+     *
+     * @return radius
+     */
     public double getraduis(){return radius;}
 
     /**
-     * Search with term and location.
-     *
-     * @param term Search term
-     * @param latitude Latitude
-     * @param longitude Longitude
-     * @return JSON string response
+     * Searching Yelp by user location
+     * @param term
+     * @param address
+     * @return
      */
-    public String search(String term, double latitude, double longitude) {
-
-
-        OAuthRequest request = new OAuthRequest(Verb.GET, "http://api.yelp.com/v2/search");
-        request.addQuerystringParameter("term", term);
-        request.addQuerystringParameter("ll", latitude + "," + longitude);
-        request.addQuerystringParameter("limit", String.valueOf(limit));
-        this.service.signRequest(this.accessToken, request);
-        request.setConnectionKeepAlive(false);
-        Response response = request.send();
-
-        return response.getBody();
-    }
-
-
-
     public String searchByLocation(String term, String address){
 
+        //Correcting radius
         if(radius > 24.85)
             radius = 40000;
         else if ( radius < 1) {
@@ -90,43 +83,20 @@ public class Yelp {
         {
             radius *= 1609.34;
         }
+
+        //Set yelp parameters
         OAuthRequest request = new OAuthRequest(Verb.GET, "http://api.yelp.com/v2/search/");
         request.addQuerystringParameter("term", term);
         request.addQuerystringParameter("location", address);
         request.addQuerystringParameter("limit", "19");
         request.addQuerystringParameter("radius_filter", String.valueOf(radius));
-        this.service.signRequest(this.accessToken, request);
-        request.setConnectionKeepAlive(false);
-        Response response = request.send();
-
-        return response.getBody();
-    }
-
-    public String searchByLocation(String term, String address, double radius){
-        //Validate radius
-        if(radius > 24.85)
-            radius = 40000;
-        else if ( radius < 1) {
-            radius = 1609.34;
-        }
-        else
-            radius *= 1609.34;
-        //Create a new request
-        OAuthRequest request = new OAuthRequest(Verb.GET, "http://api.yelp.com/v2/search");
-        //Send the parameters
-        request.addQuerystringParameter("term", term);
-        request.addQuerystringParameter("location", address);
-        request.addQuerystringParameter("limit", String.valueOf(limit));
-        request.addQuerystringParameter("radius_filter", String.valueOf(radius));
-
         //Connect to yelp web service
         this.service.signRequest(this.accessToken, request);
         request.setConnectionKeepAlive(false);
         //Get a response
         Response response = request.send();
         //Return the response
-        System.out.println(response.getBody());
         return response.getBody();
-    }//End searchByLocation()
+    }
 
 }
